@@ -1,0 +1,200 @@
+// Bilingual Translation Dictionary for Sawera Sweets & Bakers
+// Supports English ('en') and Urdu ('ur')
+
+export const TRANSLATIONS = {
+  en: {
+    // Brand & Header
+    brandName: "Sawera Sweets & Bakers",
+    tagline: "Authentic Sweets, Fresh Bakery & Daily Mart Essentials",
+    mottoUrdu: "ہر خوشی کیساتھ",
+    phoneOrders: "Orders / Call",
+    operatingHours: "Opening Hours",
+    allPakistanDelivery: "Delivery Across Pakistan",
+    shop1Location: "Gojra Road, Opposite DHQ Hospital, Jhang",
+    
+    // Navigation
+    home: "Home",
+    allProducts: "All Products",
+    sweets: "Sweets",
+    bakery: "Fresh Bakery",
+    grocery: "Kiryana & Grocery",
+    cosmetics: "Cosmetics & Personal Care",
+    perfumes: "Perfumes & Fragrances",
+    beverages: "Cold Drinks & Beverages",
+    aboutUs: "About Us",
+    contactUs: "Contact Us",
+    ourLocations: "Our Locations",
+    faq: "FAQ",
+    trackOrder: "Track Order",
+    cart: "Cart",
+    myAccount: "My Account",
+    wishlist: "Wishlist",
+    adminPanel: "Admin Panel",
+    riderPortal: "Rider Portal",
+    login: "Login",
+    register: "Register",
+    logout: "Logout",
+    
+    // Actions
+    searchPlaceholder: "Search fresh sweets, cakes, grocery, attar, cosmetics...",
+    searchButton: "Search",
+    addToCart: "Add to Cart",
+    buyNow: "Buy Now",
+    proceedToCheckout: "Proceed to Checkout",
+    viewCart: "View Cart",
+    placeOrder: "Place Order",
+    apply: "Apply",
+    clearAll: "Clear All",
+    save: "Save",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    edit: "Edit",
+    delete: "Delete",
+    viewDetails: "View Details",
+    downloadInvoice: "Download Invoice",
+    chatWithUs: "Live Chat",
+    askQuestion: "Ask a Question",
+    writeReview: "Write a Review",
+    
+    // Statuses & Badges
+    inStock: "In Stock",
+    outOfStock: "Out of Stock",
+    preOrder: "Pre-Order",
+    demoItem: "Demo Item",
+    demoModeNotice: "Demo Store Mode • Initial architecture preview. All products, demo prices, and store details are placeholders.",
+    bestSeller: "Best Seller",
+    freshBatch: "Fresh Batch",
+    popular: "Popular",
+    new: "New",
+    
+    // Order Pipeline
+    statusPlaced: "Order Placed",
+    statusConfirmed: "Confirmed",
+    statusPreparing: "Preparing",
+    statusOutForDelivery: "Out for Delivery",
+    statusDelivered: "Delivered",
+    statusCancelled: "Cancelled",
+    
+    // Fulfillment Modes
+    homeDelivery: "Home Delivery",
+    shopPickup: "Shop Pickup",
+    deliveryFee: "Delivery Fee",
+    subtotal: "Subtotal",
+    total: "Total Payable",
+    cashOnDelivery: "Cash on Delivery (COD)",
+    easypaisa: "Easypaisa",
+    bankTransfer: "Bank Transfer (MCB)",
+    uploadPaymentProof: "Upload Payment Screenshot / Receipt",
+    
+    // Product & Units
+    unit: "Unit",
+    quantity: "Quantity",
+    packagingOptions: "Packaging / Weight Options",
+    ingredients: "Ingredients / Composition",
+    customerReviews: "Customer Reviews",
+    verifiedBuyer: "Verified Purchaser",
+    productQuestions: "Product Questions & Answers",
+    
+    // Footers & Policies
+    noReturnsPolicy: "Returns: No returns allowed. Exchange is allowed only if the product is defective or damaged upon delivery.",
+    copyright: "All rights reserved. Sawera Sweets & Bakers."
+  },
+  
+  ur: {
+    // Brand & Header
+    brandName: "سویرا سویٹس اینڈ بیکرز",
+    tagline: "خالص روایتی مٹھائیاں، تازہ بیکری اور روزمرہ کریانہ راشن",
+    mottoUrdu: "ہر خوشی کیساتھ",
+    phoneOrders: "آرڈرز اور فون",
+    operatingHours: "اوقاتِ کار",
+    allPakistanDelivery: "پورے پاکستان میں ہوم ڈلیوری",
+    shop1Location: "گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ",
+    
+    // Navigation
+    home: "ہوم",
+    allProducts: "تمام پروڈکٹس",
+    sweets: "مٹھائی",
+    bakery: "تازہ بیکری",
+    grocery: "کریانہ و راشن",
+    cosmetics: "کاسمیٹکس و نگہداشت",
+    perfumes: "خوشبویات و عطر",
+    beverages: "کولڈ ڈرنکس و مشروبات",
+    aboutUs: "ہمارے بارے میں",
+    contactUs: "رابطہ کریں",
+    ourLocations: "ہماری برانچز",
+    faq: "عام سوالات",
+    trackOrder: "آرڈر ٹریک کریں",
+    cart: "شاپنگ کارٹ",
+    myAccount: "میرا اکاؤنٹ",
+    wishlist: "پسندیدہ اشیاء",
+    adminPanel: "ایڈمن پینل",
+    riderPortal: "رائڈر پورٹل",
+    login: "لاگ ان",
+    register: "رجسٹر ہوں",
+    logout: "لاگ آؤٹ",
+    
+    // Actions
+    searchPlaceholder: "مٹھائی، کیک، کریانہ راشن، عطر، کاسمیٹکس تلاش کریں...",
+    searchButton: "تلاش کریں",
+    addToCart: "کارٹ میں شامل کریں",
+    buyNow: "ابھی خریدیں",
+    proceedToCheckout: "چیک آؤٹ پر جائیں",
+    viewCart: "کارٹ دیکھیں",
+    placeOrder: "آرڈر مکمل کریں",
+    apply: "لاگو کریں",
+    clearAll: "سب ختم کریں",
+    save: "محفوظ کریں",
+    cancel: "منسوخ کریں",
+    confirm: "تصدیق کریں",
+    edit: "ترمیم کریں",
+    delete: "حذف کریں",
+    viewDetails: "تفصیلات دیکھیں",
+    downloadInvoice: "انوائس ڈاؤن لوڈ کریں",
+    chatWithUs: "لائیو چیٹ",
+    askQuestion: "سوال پوچھیں",
+    writeReview: "رائے درج کریں",
+    
+    // Statuses & Badges
+    inStock: "دستیاب ہے",
+    outOfStock: "ختم ہوچکا ہے",
+    preOrder: "پیشگی آرڈر",
+    demoItem: "ڈیمو آئٹم",
+    demoModeNotice: "ڈیمو اسٹور موڈ • ویب سائٹ کا ابتدائی ماڈل۔ اصل اشیاء اور قیمتیں ایڈمن پینل سے شامل کی جائیں گی۔",
+    bestSeller: "سب سے زیادہ فروخت",
+    freshBatch: "تازہ تیار شدہ",
+    popular: "مقبول",
+    new: "نیا",
+    
+    // Order Pipeline
+    statusPlaced: "آرڈر موصول ہوا",
+    statusConfirmed: "تصدیق شدہ",
+    statusPreparing: "تیاری کے مرحلے میں",
+    statusOutForDelivery: "ڈلیوری کے لیے روانہ",
+    statusDelivered: "پہنچا دیا گیا",
+    statusCancelled: "منسوخ شدہ",
+    
+    // Fulfillment Modes
+    homeDelivery: "ہوم ڈلیوری",
+    shopPickup: "شاپ سے وصولی (پک اپ)",
+    deliveryFee: "ڈلیوری چارجز",
+    subtotal: "اشیاء کی قیمت",
+    total: "کل قابلِ ادائیگی رقم",
+    cashOnDelivery: "کیش آن ڈلیوری",
+    easypaisa: "ایزی پیسہ",
+    bankTransfer: "بینک ٹرانسفر (MCB)",
+    uploadPaymentProof: "ادائیگی کی رسید / اسکرین شاٹ اپلوڈ کریں",
+    
+    // Product & Units
+    unit: "یونٹ / وزن",
+    quantity: "تعداد",
+    packagingOptions: "پیکنگ اور وزن کا انتخاب",
+    ingredients: "اجزائے ترکیبی",
+    customerReviews: "خریداروں کی آراء",
+    verifiedBuyer: "تصدیق شدہ خریدار",
+    productQuestions: "پروڈکٹ سے متعلق سوالات و جوابات",
+    
+    // Footers & Policies
+    noReturnsPolicy: "پالیسی: اشیاء کی واپسی نہیں ہوگی، صرف خرابی یا نقصان کی صورت میں تبادلہ ممکن ہے۔",
+    copyright: "جملہ حقوق محفوظ ہیں۔ سویرا سویٹس اینڈ بیکرز۔"
+  }
+};

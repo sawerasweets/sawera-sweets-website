@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F4EFE6"/>
+    </linearGradient>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#07643D" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Card -->
+  <rect width="600" height="600" fill="url(#bg)"/>
+  
+  <!-- Decorative Pattern -->
+  <circle cx="300" cy="270" r="180" fill="none" stroke="#D4AF37" stroke-width="1.5" stroke-dasharray="6,6" opacity="0.4"/>
+  <circle cx="300" cy="270" r="150" fill="url(#grad)" opacity="0.12"/>
+  
+  <!-- Main Emblem Circle -->
+  <g filter="url(#shadow)">
+    <circle cx="300" cy="270" r="115" fill="url(#grad)"/>
+    <circle cx="300" cy="270" r="105" fill="none" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+  </g>
+  
+  <!-- Icon text in circle -->
+  <text x="300" y="260" font-family="'Playfair Display', Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">
+    SAWERA
+  </text>
+  <text x="300" y="295" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle" letter-spacing="2" opacity="0.95">
+    PURE DESI GHEE
+  </text>
+
+  <!-- Category Tag -->
+  <rect x="230" y="420" width="140" height="28" rx="14" fill="#07643D" opacity="0.9"/>
+  <text x="300" y="439" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FDFBF7" text-anchor="middle" letter-spacing="1">
+    GROCERY
+  </text>
+  
+  <!-- Product Label -->
+  <text x="300" y="480" font-family="'Playfair Display', Georgia, serif" font-size="28" font-weight="bold" fill="#07643D" text-anchor="middle">
+    Desi Makhan Ghee
+  </text>
+  <text x="300" y="515" font-family="'Noto Nastaliq Urdu', serif" font-size="16" fill="#D4AF37" text-anchor="middle">
+    ہر خوشی کیساتھ • SAWERA Sweets &amp; Bakers
+  </text>
+</svg>
