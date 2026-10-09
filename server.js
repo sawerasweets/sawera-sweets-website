@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 3000;
 // Serve static assets from Vite build directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// SPA Fallback: send index.html for all frontend routes
-app.get('*', (req, res) => {
+// SPA Fallback: send index.html for all frontend routes (Express 5 compatible)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
