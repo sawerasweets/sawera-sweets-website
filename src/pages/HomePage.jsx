@@ -41,6 +41,10 @@ export default function HomePage() {
     return products.filter(p => p.discountPrice && p.discountPrice < p.price).slice(0, 4);
   }, [products]);
 
+  const marqueeCategories = useMemo(() => {
+    return [...CATEGORIES, ...CATEGORIES, ...CATEGORIES, ...CATEGORIES];
+  }, []);
+
   return (
     <div className="space-y-12 sm:space-y-16 pb-12">
 
@@ -193,30 +197,40 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              to={`/category/${cat.slug}`}
-              className="group bg-white rounded-2xl border border-gray-200 hover:border-[#D4AF37] p-4 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg transition-all duration-300"
-            >
-              <div className="w-16 h-16 rounded-full bg-emerald-50 group-hover:bg-[#07643D] text-[#07643D] group-hover:text-white flex items-center justify-center transition-colors mb-3 border border-emerald-100">
-                <span className="text-lg font-serif font-bold group-hover:scale-110 transition-transform">
-                  {cat.name.slice(0, 2).toUpperCase()}
+        {/* Infinite Auto-Scrolling Categories Marquee */}
+        <div className="relative w-full overflow-hidden py-3" dir="ltr">
+          {/* Left Disappearing Edge Mask */}
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-[#FDFBF7] via-[#FDFBF7]/90 to-transparent z-10" />
+
+          {/* Right Emerging Edge Mask */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-[#FDFBF7] via-[#FDFBF7]/90 to-transparent z-10" />
+
+          {/* Scrolling Track */}
+          <div className="animate-marquee-infinite flex gap-4 w-max py-1">
+            {marqueeCategories.map((cat, idx) => (
+              <Link
+                key={`${cat.id}-${idx}`}
+                to={`/category/${cat.slug}`}
+                className="group w-44 sm:w-48 shrink-0 flex-shrink-0 bg-white rounded-2xl border border-gray-200 hover:border-[#D4AF37] p-4 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+              >
+                <div className="w-16 h-16 rounded-full bg-emerald-50 group-hover:bg-[#07643D] text-[#07643D] group-hover:text-white flex items-center justify-center transition-colors mb-3 border border-emerald-100 shadow-2xs">
+                  <span className="text-lg font-serif font-bold group-hover:scale-110 transition-transform">
+                    {cat.name.slice(0, 2).toUpperCase()}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className={`text-xs sm:text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-tight ${isUrdu ? 'urdu-text text-sm' : ''}`}>
+                    {isUrdu ? (cat.urduName || cat.name) : cat.name}
+                  </h3>
+                </div>
+
+                <span className="mt-3 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100/60">
+                  {cat.badge}
                 </span>
-              </div>
-
-              <div className="space-y-1">
-                <h3 className={`text-xs sm:text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-tight ${isUrdu ? 'urdu-text text-sm' : ''}`}>
-                  {isUrdu ? (cat.urduName || cat.name) : cat.name}
-                </h3>
-              </div>
-
-              <span className="mt-3 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
-                {cat.badge}
-              </span>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
