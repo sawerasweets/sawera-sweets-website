@@ -66,9 +66,15 @@ export default function Header() {
             <span className="text-emerald-100 hidden sm:inline">
               {isUrdu ? 'خالص دیسی گھی اور تازہ بیکری' : 'Pure Desi Ghee Sweets & Fresh Daily Bakery'}
             </span>
-            <span className="text-[#F4D375] font-semibold urdu-text text-sm">
-              ہر خوشی کیساتھ
-            </span>
+            {isUrdu ? (
+              <span className="text-[#F4D375] font-semibold urdu-text text-sm">
+                ہر خوشی کیساتھ
+              </span>
+            ) : (
+              <span className="text-[#F4D375] font-semibold text-xs tracking-wide">
+                • With Every Joy
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-4 text-emerald-100 text-xs">
@@ -122,11 +128,10 @@ export default function Header() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs font-semibold text-[#D4AF37] uppercase tracking-widest">
-                  Sweets &amp; Bakers
-                </span>
-                <span className="text-xs text-[#07643D] font-bold urdu-text">
-                  سویرا
+                <span className={`tracking-widest ${
+                  isUrdu ? 'text-xs text-[#07643D] font-bold urdu-text' : 'text-[10px] sm:text-xs font-semibold text-[#D4AF37] uppercase'
+                }`}>
+                  {isUrdu ? 'سویرا سویٹس اینڈ بیکرز' : 'Sweets & Bakers'}
                 </span>
               </div>
             </div>

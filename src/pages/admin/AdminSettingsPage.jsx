@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { Settings, Save, AlertTriangle, RotateCcw, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { Settings, Save, AlertTriangle, RotateCcw, CheckCircle2, ShieldAlert, Lock, KeyRound } from 'lucide-react';
 import db from '../../services/db';
+import { useAuth } from '../../context/AuthContext';
+import { supabase, isSupabaseConfigured } from '../../services/supabase';
 
 export default function AdminSettingsPage() {
+  const { user, updateProfile } = useAuth();
   const [settings, setSettings] = useState(() => db.getSettings());
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Admin Password Change State
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMsg, setPasswordMsg] = useState(null);
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -13,12 +22,42 @@ export default function AdminSettingsPage() {
     setTimeout(() => setSavedSuccess(false), 2500);
   };
 
-  const handleResetDefaults = () => {
-    if (window.confirm('Reset database and settings to factory defaults? All test changes will be re-seeded.')) {
-      db.resetToFactory();
-      setSettings(db.getSettings());
-      alert('System reset to factory defaults.');
+  const handlePasswordChange = (e) => {
+    e.preventDefault();
+    setPasswordMsg(null);
+
+    if (!newPassword || newPassword.length < 5) {
+      setPasswordMsg({ type: 'error', text: 'New password must be at least 5 characters long.' });
+      return;
     }
+    if (newPassword !== confirmPassword) {
+      setPasswordMsg({ type: 'error', text: 'New password and Confirm password do not match.' });
+      return;
+    }
+
+    const users = db.get('users');
+    const adminUser = users.find(u => u.email === (user?.email || 'admin@sawerasweets.pk')) || users.find(u => u.role === 'super_admin');
+    
+    if (adminUser && currentPassword && adminUser.password !== currentPassword) {
+      setPasswordMsg({ type: 'error', text: 'Current password is incorrect.' });
+      return;
+    }
+
+    const updatedUsers = users.map(u => (u.id === (adminUser?.id || 'usr-admin') || u.role === 'super_admin') ? { ...u, password: newPassword } : u);
+    db.set('users', updatedUsers);
+    updateProfile({ password: newPassword });
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('sawera_settings').upsert({
+        id: 'admin_security',
+        data: { adminEmail: adminUser?.email || 'admin@sawerasweets.pk', password: newPassword, updatedAt: new Date().toISOString() }
+      }).then(() => {});
+    }
+
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordMsg({ type: 'success', text: 'Admin password changed successfully! Remember your new password for your next login.' });
   };
 
   return (
@@ -375,22 +414,84 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Save Bar & Factory Reset */}
+        {/* Admin Account Security & Password Change Card */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 pb-2 border-b">
+            <Lock className="w-4 h-4 text-[#07643D]" />
+            <h2 className="text-sm font-bold text-gray-900">Admin Account Security &amp; Password Change</h2>
+          </div>
+
+          <p className="text-[11px] text-gray-500">
+            Update your admin password for <strong>{user?.email || 'admin@sawerasweets.pk'}</strong>. The new password will sync to the cloud database.
+          </p>
+
+          {passwordMsg && (
+            <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+              passwordMsg.type === 'success' 
+                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' 
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}>
+              {passwordMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" /> : <AlertTriangle className="w-4 h-4 text-red-600 flex-shrink-0" />}
+              <span>{passwordMsg.text}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block font-bold text-gray-700 mb-1">Current Password</label>
+              <input
+                type="password"
+                placeholder="Current password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="w-full p-2 border rounded-xl bg-white outline-none"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-gray-700 mb-1">New Password</label>
+              <input
+                type="password"
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="w-full p-2 border rounded-xl bg-white outline-none"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-gray-700 mb-1">Confirm New Password</label>
+              <input
+                type="password"
+                placeholder="Confirm new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-2 border rounded-xl bg-white outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={handlePasswordChange}
+              className="px-5 py-2.5 rounded-xl bg-[#07643D] text-white hover:bg-[#043E26] font-bold text-xs shadow-sm transition-colors flex items-center gap-1.5"
+            >
+              <KeyRound className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>Update Admin Password</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Save Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
-          <button
-            type="button"
-            onClick={handleResetDefaults}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-red-600 hover:bg-red-50 font-bold border border-red-200"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Reset to Factory Defaults</span>
-          </button>
+          <div className="text-[11px] text-gray-400">
+            Cloud Sync: All products, orders &amp; settings are permanently backed up to Supabase.
+          </div>
 
           <button
             type="submit"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#07643D] text-white hover:bg-[#043E26] font-bold text-xs shadow-md transition-colors"
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-4 h-4 text-[#D4AF37]" />
             <span>Save All Store Settings</span>
           </button>
         </div>

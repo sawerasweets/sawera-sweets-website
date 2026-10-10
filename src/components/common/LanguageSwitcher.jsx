@@ -3,21 +3,32 @@ import { Languages } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function LanguageSwitcher({ className = "" }) {
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
 
   return (
-    <button
-      onClick={toggleLanguage}
-      type="button"
-      aria-label="Toggle Language"
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-all duration-200 ${
-        language === 'ur'
-          ? 'bg-amber-100/90 text-amber-900 border-amber-300 hover:bg-amber-200'
-          : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
-      } ${className}`}
-    >
-      <Languages className="w-3.5 h-3.5" />
-      <span>{language === 'en' ? 'اردو' : 'English'}</span>
-    </button>
+    <div className={`inline-flex items-center rounded-full bg-gray-100 p-0.5 border border-gray-200 text-xs shadow-2xs ${className}`}>
+      <button
+        type="button"
+        onClick={() => setLanguage('en')}
+        className={`px-2.5 py-1 rounded-full font-bold transition-all text-[11px] ${
+          language === 'en'
+            ? 'bg-[#07643D] text-white shadow-xs'
+            : 'text-gray-600 hover:text-gray-900'
+        }`}
+      >
+        English
+      </button>
+      <button
+        type="button"
+        onClick={() => setLanguage('ur')}
+        className={`px-2.5 py-1 rounded-full font-bold transition-all text-[11px] urdu-text ${
+          language === 'ur'
+            ? 'bg-[#07643D] text-white shadow-xs'
+            : 'text-gray-600 hover:text-gray-900'
+        }`}
+      >
+        اردو
+      </button>
+    </div>
   );
 }

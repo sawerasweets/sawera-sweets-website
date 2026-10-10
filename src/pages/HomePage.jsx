@@ -21,11 +21,13 @@ import { CATEGORIES } from '../data/categories';
 import { STORE_CONFIG } from '../data/storeConfig';
 import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import ProductCard from '../components/product/ProductCard';
 
 export default function HomePage() {
   const { products } = useStore();
   const { isAdmin } = useAuth();
+  const { isUrdu, t } = useLanguage();
 
   const featuredProducts = useMemo(() => {
     return products.filter(p => p.isFeatured).slice(0, 4);
@@ -56,26 +58,41 @@ export default function HomePage() {
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               
-              {/* Badge & Urdu motto */}
+              {/* Badge & motto */}
               <div className="inline-flex items-center gap-2 bg-emerald-900/80 border border-[#D4AF37]/50 px-3.5 py-1.5 rounded-full shadow-inner">
                 <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
-                  Authentic Taste &amp; Freshness
-                </span>
-                <span className="text-[#D4AF37] font-bold urdu-text text-sm">
-                  • {STORE_CONFIG.mottoUrdu}
-                </span>
+                {isUrdu ? (
+                  <span className="text-[#D4AF37] font-bold urdu-text text-sm">
+                    {STORE_CONFIG.mottoUrdu} • خالص اور تازہ
+                  </span>
+                ) : (
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    Authentic Taste &amp; Freshness • With Every Joy
+                  </span>
+                )}
               </div>
 
               {/* Main Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight text-white">
-                Fresh Traditional <span className="text-[#F4D375]">Sweets</span>, Bakery &amp; Daily Essentials
-              </h1>
+              {isUrdu ? (
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold urdu-text tracking-tight leading-tight text-white">
+                  خالص روایتی <span className="text-[#F4D375]">مٹھائیاں</span>، بیکری اور ضروریاتِ زندگی
+                </h1>
+              ) : (
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight text-white">
+                  Fresh Traditional <span className="text-[#F4D375]">Sweets</span>, Bakery &amp; Daily Essentials
+                </h1>
+              )}
 
               {/* Subtitle */}
-              <p className="text-xs sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                Indulge in melt-in-the-mouth Gulab Jamun made with pure desi ghee, fresh daily celebration cakes, kitchen grocery staples, and fine personal fragrances delivered to your doorstep.
-              </p>
+              {isUrdu ? (
+                <p className="text-sm sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed urdu-text">
+                  خالص دیسی گھی سے بنے گلاب جامن، تازہ کیک، روزمرہ کریانہ، اور خوشبودار عطورات سیدھے آپ کے گھر تک۔
+                </p>
+              ) : (
+                <p className="text-xs sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                  Indulge in melt-in-the-mouth Gulab Jamun made with pure desi ghee, fresh daily celebration cakes, kitchen grocery staples, and fine personal fragrances delivered to your doorstep.
+                </p>
+              )}
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
@@ -84,14 +101,14 @@ export default function HomePage() {
                   className="px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#F4D375] text-[#07643D] font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-transform hover:-translate-y-0.5"
                 >
                   <Sparkles className="w-4 h-4" />
-                  <span>Order Fresh Mithai</span>
+                  <span>{isUrdu ? 'مٹھائی آرڈر کریں' : 'Order Fresh Mithai'}</span>
                 </Link>
 
                 <Link
                   to="/category/bakery"
                   className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 backdrop-blur-xs transition-colors"
                 >
-                  <span>Explore Bakery</span>
+                  <span>{isUrdu ? 'بیکری کا وزٹ کریں' : 'Explore Bakery'}</span>
                   <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
                 </Link>
 
@@ -102,23 +119,23 @@ export default function HomePage() {
                   className="px-5 py-3.5 rounded-xl bg-[#043E26] hover:bg-emerald-950 border border-emerald-600/50 text-emerald-100 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
                 >
                   <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
-                  <span>WhatsApp Order</span>
+                  <span>{isUrdu ? 'واٹس ایپ آرڈر' : 'WhatsApp Order'}</span>
                 </a>
               </div>
 
               {/* Mini Guarantees */}
               <div className="pt-4 border-t border-emerald-800/80 grid grid-cols-3 gap-2 text-center lg:text-left text-[11px] text-emerald-200">
                 <div>
-                  <span className="font-bold text-white block">100% Desi Ghee</span>
-                  <span>Pure ingredients</span>
+                  <span className="font-bold text-white block">{isUrdu ? '۱۰۰٪ خالص دیسی گھی' : '100% Desi Ghee'}</span>
+                  <span>{isUrdu ? 'معیاری اجزاء' : 'Pure ingredients'}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-white block">Daily Fresh Batches</span>
-                  <span>Baked &amp; made today</span>
+                  <span className="font-bold text-white block">{isUrdu ? 'روزانہ تازہ تیاری' : 'Daily Fresh Batches'}</span>
+                  <span>{isUrdu ? 'آج ہی تیار کردہ' : 'Baked & made today'}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-white block">Doorstep Delivery</span>
-                  <span>Fast local delivery</span>
+                  <span className="font-bold text-white block">{isUrdu ? 'گھر پر فوری ترسیل' : 'Doorstep Delivery'}</span>
+                  <span>{isUrdu ? 'جھنگ اور گردونواح' : 'Fast local delivery'}</span>
                 </div>
               </div>
 
@@ -142,7 +159,9 @@ export default function HomePage() {
                 {/* Floating Tag */}
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white text-[#07643D] px-4 py-1.5 rounded-full border-2 border-[#D4AF37] shadow-lg flex items-center gap-1.5 whitespace-nowrap">
                   <Award className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="text-xs font-extrabold uppercase tracking-wider">Premium Quality Guaranteed</span>
+                  <span className="text-xs font-extrabold uppercase tracking-wider">
+                    {isUrdu ? 'اعلیٰ ترین معیار کی ضمانت' : 'Premium Quality Guaranteed'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -157,12 +176,11 @@ export default function HomePage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
-                Curated Departments
+                {isUrdu ? 'ہمارے شعبہ جات' : 'Curated Departments'}
               </span>
-              <span className="urdu-text text-[#A5841D] text-sm font-semibold">ہمارے شعبہ جات</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-              Shop by Category
+              {isUrdu ? 'کیٹیگری منتخب کریں' : 'Shop by Category'}
             </h2>
           </div>
 
@@ -170,7 +188,7 @@ export default function HomePage() {
             to="/products"
             className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
           >
-            <span>View All Departments</span>
+            <span>{isUrdu ? 'تمام شعبہ جات دیکھیں' : 'View All Departments'}</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
@@ -189,12 +207,9 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-xs sm:text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-tight">
-                  {cat.name}
+                <h3 className={`text-xs sm:text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-tight ${isUrdu ? 'urdu-text text-sm' : ''}`}>
+                  {isUrdu ? (cat.urduName || cat.name) : cat.name}
                 </h3>
-                <p className="urdu-text text-xs text-[#A5841D] font-medium">
-                  {cat.urduName}
-                </p>
               </div>
 
               <span className="mt-3 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
@@ -215,18 +230,17 @@ export default function HomePage() {
             
             <div className="space-y-1">
               <span className="text-[11px] uppercase font-bold tracking-widest text-[#07643D] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                Fresh Inventory in Progress
+                {isUrdu ? 'تازہ مینو تیاری میں ہے' : 'Fresh Inventory in Progress'}
               </span>
-              <h3 className="text-xl sm:text-2xl font-extrabold font-serif text-gray-900 pt-2">
-                Store Catalog Being Freshly Updated
+              <h3 className={`text-xl sm:text-2xl font-extrabold font-serif text-gray-900 pt-2 ${isUrdu ? 'urdu-text' : ''}`}>
+                {isUrdu ? 'اسٹور کیٹیلاگ اپڈیٹ ہو رہا ہے' : 'Store Catalog Being Freshly Updated'}
               </h3>
-              <p className="urdu-text text-[#A5841D] font-bold text-base">
-                نئی تازہ مصنوعات جلد شامل کی جا رہی ہیں — ہر خوشی کیساتھ
-              </p>
             </div>
 
-            <p className="text-xs sm:text-sm text-gray-600 max-w-md mx-auto leading-relaxed">
-              We are currently loading fresh batches of traditional sweets, bakery goods, and groceries into our online catalog. You can order directly by phone or WhatsApp in the meantime.
+            <p className={`text-xs sm:text-sm text-gray-600 max-w-md mx-auto leading-relaxed ${isUrdu ? 'urdu-text' : ''}`}>
+              {isUrdu 
+                ? 'ہم نئی تازہ مٹھائیاں، بیکری اور راشن آئٹمز آن لائن کیٹیلاگ میں شامل کر رہے ہیں۔ آپ فون یا واٹس ایپ پر براہِ راست آرڈر کر سکتے ہیں۔'
+                : 'We are currently loading fresh batches of traditional sweets, bakery goods, and groceries into our online catalog. You can order directly by phone or WhatsApp in the meantime.'}
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -260,10 +274,10 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
                 <div>
                   <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
-                    Handcrafted With Love
+                    {isUrdu ? 'محبت سے تیار کردہ' : 'Handcrafted With Love'}
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-                    {featuredProducts.length > 0 ? "Featured Selections" : "Fresh Daily Selections"}
+                    {isUrdu ? 'خاص منتخب مصنوعات' : (featuredProducts.length > 0 ? "Featured Selections" : "Fresh Daily Selections")}
                   </h2>
                 </div>
 
@@ -271,7 +285,7 @@ export default function HomePage() {
                   to="/products"
                   className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
                 >
-                  <span>See more items</span>
+                  <span>{isUrdu ? 'مزید دیکھیں' : 'See more items'}</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -291,10 +305,10 @@ export default function HomePage() {
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
                   <div>
                     <span className="text-xs uppercase font-bold tracking-widest text-[#D4AF37]">
-                      Customer Favorites
+                      {isUrdu ? 'گاہکوں کی پسندیدہ' : 'Customer Favorites'}
                     </span>
                     <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-                      Best-Selling Products
+                      {isUrdu ? 'سب سے زیادہ فروخت ہونے والی اشیاء' : 'Best-Selling Products'}
                     </h2>
                   </div>
 
@@ -302,7 +316,7 @@ export default function HomePage() {
                     to="/products"
                     className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
                   >
-                    <span>Explore all items</span>
+                    <span>{isUrdu ? 'تمام مصنوعات دیکھیں' : 'Explore all items'}</span>
                     <ChevronRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -323,13 +337,15 @@ export default function HomePage() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="space-y-2 text-center md:text-left">
                     <span className="bg-[#D4AF37] text-[#07643D] font-extrabold text-[10px] sm:text-xs px-3 py-1 rounded-full uppercase tracking-wider inline-block">
-                      Limited Time Deals
+                      {isUrdu ? 'محدود مدت کی آفرز' : 'Limited Time Deals'}
                     </span>
                     <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-white">
-                      Special Festive &amp; Celebration Offers
+                      {isUrdu ? 'خصوصی جشن اور خوشیوں کی آفرز' : 'Special Festive & Celebration Offers'}
                     </h2>
                     <p className="text-xs sm:text-sm text-emerald-100 max-w-lg">
-                      Exclusive bundle discounts on traditional sweet boxes, family packs, and premium groceries.
+                      {isUrdu 
+                        ? 'روایتی مٹھائی کے ڈبوں، فیملی پیکس اور پریمیم کریانے پر خصوصی رعایت۔'
+                        : 'Exclusive bundle discounts on traditional sweet boxes, family packs, and premium groceries.'}
                     </p>
                   </div>
 
@@ -337,7 +353,7 @@ export default function HomePage() {
                     to="/products"
                     className="px-6 py-3 rounded-xl bg-white hover:bg-[#FDFBF7] text-[#07643D] font-extrabold text-xs shadow-md transition-colors flex-shrink-0"
                   >
-                    Browse All Deals &rarr;
+                    {isUrdu ? 'تمام ڈیلز دیکھیں ←' : 'Browse All Deals →'}
                   </Link>
                 </div>
               </div>
@@ -356,13 +372,17 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-xl mx-auto mb-10 space-y-2">
           <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
-            Our Commitment to Excellence
+            {isUrdu ? 'ہماری امتیازی خصوصیات' : 'Our Commitment to Excellence'}
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900">
-            Why Choose Sawera Sweets &amp; Bakers?
+            {isUrdu ? 'سویرا سویٹس اینڈ بیکرز کا انتخاب کیوں؟' : 'Why Choose Sawera Sweets & Bakers?'}
           </h2>
-          <p className="urdu-text text-base text-[#A5841D] font-bold">
-            {STORE_CONFIG.mottoUrdu}
+          <p className="text-base text-[#A5841D] font-bold">
+            {isUrdu ? (
+              <span className="urdu-text">{STORE_CONFIG.mottoUrdu}</span>
+            ) : (
+              'With Every Joy - Pure Desi Ghee & Fresh Daily Bakery'
+            )}
           </p>
         </div>
 
@@ -375,9 +395,12 @@ export default function HomePage() {
               <div className="w-12 h-12 rounded-xl bg-emerald-50 text-[#07643D] flex items-center justify-center border border-emerald-100">
                 <CheckCircle2 className="w-6 h-6 text-[#07643D]" />
               </div>
-              <h3 className="text-base font-bold text-gray-900">{feat.title}</h3>
-              <p className="urdu-text text-xs text-[#A5841D] font-semibold">{feat.titleUrdu}</p>
-              <p className="text-xs text-gray-500 leading-relaxed">{feat.description}</p>
+              <h3 className={`text-base font-bold text-gray-900 ${isUrdu ? 'urdu-text text-lg' : ''}`}>
+                {isUrdu ? (feat.titleUrdu || feat.title) : feat.title}
+              </h3>
+              <p className={`text-xs text-gray-500 leading-relaxed ${isUrdu ? 'urdu-text text-sm' : ''}`}>
+                {isUrdu ? (feat.descriptionUrdu || feat.description) : feat.description}
+              </p>
             </div>
           ))}
         </div>
@@ -392,13 +415,13 @@ export default function HomePage() {
             <div className="p-8 sm:p-10 space-y-6">
               <div className="space-y-1">
                 <span className="text-xs uppercase font-bold tracking-widest text-[#D4AF37]">
-                  Local Retail Store
+                  {isUrdu ? 'ہماری دکان' : 'Local Retail Store'}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900">
-                  Visit Us or Order Locally
+                  {isUrdu ? 'دکان پر تشریف لائیں یا گھر بیٹھے منگوائیں' : 'Visit Us or Order Locally'}
                 </h2>
                 <p className="text-xs text-gray-500">
-                  We look forward to serving your family with fresh sweets, bakery delights, and daily mart groceries.
+                  {isUrdu ? 'ہم آپ کی فیملی کی خدمت کے لیے تازہ مٹھائیوں اور بیکری کے ساتھ حاضر ہیں۔' : 'We look forward to serving your family with fresh sweets, bakery delights, and daily mart groceries.'}
                 </p>
               </div>
 
@@ -406,12 +429,11 @@ export default function HomePage() {
                 <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FDFBF7] border border-gray-200">
                   <MapPin className="w-5 h-5 text-[#07643D] flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-gray-900 block">Shop 1 (Main Head Office Store):</span>
-                    <span className="text-gray-700 font-semibold text-xs block mt-0.5">
-                      Gojra Road, Opposite DHQ Hospital, Jhang
+                    <span className="font-bold text-gray-900 block">
+                      {isUrdu ? 'دکان ۱ (مین ہیڈ آفس اسٹور):' : 'Shop 1 (Main Head Office Store):'}
                     </span>
-                    <span className="text-[11px] text-amber-800 font-semibold urdu-text block mt-0.5">
-                      گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ
+                    <span className="text-gray-700 font-semibold text-xs block mt-0.5">
+                      {isUrdu ? 'گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ' : 'Gojra Road, Opposite DHQ Hospital, Jhang'}
                     </span>
                   </div>
                 </div>
@@ -419,12 +441,14 @@ export default function HomePage() {
                 <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FDFBF7] border border-gray-200">
                   <Clock className="w-5 h-5 text-[#07643D] flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-gray-900 block">Opening Timings:</span>
+                    <span className="font-bold text-gray-900 block">
+                      {isUrdu ? 'اوقاتِ کار:' : 'Opening Timings:'}
+                    </span>
                     <span className="text-gray-700 text-xs block mt-0.5 font-medium">
-                      Every Day: 5:30 AM to 12:00 AM (Midnight)
+                      {isUrdu ? 'روزانہ: صبح ۵:۳۰ سے رات ۱۲:۰۰ بجے تک (رات گئے)' : 'Every Day: 5:30 AM to 12:00 AM (Midnight)'}
                     </span>
                     <span className="text-[10px] text-[#07643D] font-bold block mt-0.5">
-                      Open 7 days a week with fresh morning batches
+                      {isUrdu ? 'ہفتے کے ساتوں دن کھلی ہے' : 'Open 7 days a week with fresh morning batches'}
                     </span>
                   </div>
                 </div>
@@ -432,7 +456,9 @@ export default function HomePage() {
                 <div className="flex items-start gap-3 p-3.5 rounded-xl bg-[#FDFBF7] border border-gray-200">
                   <Phone className="w-5 h-5 text-[#07643D] flex-shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-bold text-gray-900 block">Direct Orders &amp; WhatsApp:</span>
+                    <span className="font-bold text-gray-900 block">
+                      {isUrdu ? 'براہِ راست آرڈرز اور واٹس ایپ:' : 'Direct Orders & WhatsApp:'}
+                    </span>
                     <span className="font-mono text-gray-800 text-xs block mt-0.5">
                       Call: <a href="tel:03227434080" className="font-bold hover:underline">0322 7434080</a> • WhatsApp: <a href="https://wa.me/923471702710" target="_blank" rel="noreferrer" className="text-[#07643D] font-bold hover:underline">0347 1702710</a>
                     </span>
@@ -446,14 +472,14 @@ export default function HomePage() {
                   className="px-5 py-2.5 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  <span>Call Store (0322 7434080)</span>
+                  <span>{isUrdu ? 'دکان پر کال کریں (0322 7434080)' : 'Call Store (0322 7434080)'}</span>
                 </a>
 
                 <Link
                   to="/locations"
                   className="px-5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold flex items-center justify-center transition-colors"
                 >
-                  Visit Store Location
+                  {isUrdu ? 'لوکیشن دیکھیں' : 'Visit Store Location'}
                 </Link>
               </div>
             </div>
@@ -472,15 +498,19 @@ export default function HomePage() {
                 />
               </div>
 
-              <h3 className="text-xl font-bold font-serif text-white">Sawera Sweets &amp; Bakers</h3>
-              <p className="urdu-text text-xl text-[#F4D375] font-bold mt-1">
-                سویرا سویٹس اینڈ بیکرز - ہر خوشی کیساتھ
+              <h3 className="text-xl font-bold font-serif text-white">
+                {isUrdu ? 'سویرا سویٹس اینڈ بیکرز' : 'Sawera Sweets & Bakers'}
+              </h3>
+              <p className={`text-xl text-[#F4D375] font-bold mt-1 ${isUrdu ? 'urdu-text' : ''}`}>
+                {isUrdu ? 'ہر خوشی کیساتھ' : 'With Every Joy'}
               </p>
 
               <div className="mt-6 p-4 rounded-2xl bg-emerald-900/60 border border-emerald-700/60 text-xs max-w-sm">
-                <p className="font-semibold text-emerald-200">30+ Years Heritage Guarantee</p>
+                <p className="font-semibold text-emerald-200">
+                  {isUrdu ? '۳۰+ سالہ روایتی معیار کی ضمانت' : '30+ Years Heritage Guarantee'}
+                </p>
                 <p className="text-[11px] text-emerald-300 mt-1">
-                  Proudly serving authentic pure desi ghee sweets and fresh bakery treats across Jhang and Pakistan.
+                  {isUrdu ? 'جھنگ اور پورے پاکستان میں خالص دیسی گھی کی روایتی مٹھائیاں پیش کر رہے ہیں۔' : 'Proudly serving authentic pure desi ghee sweets and fresh bakery treats across Jhang and Pakistan.'}
                 </p>
               </div>
             </div>
@@ -497,9 +527,11 @@ export default function HomePage() {
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-gray-900">Need Custom Sweets or Bulk Orders?</h4>
+              <h4 className="text-sm font-bold text-gray-900">
+                {isUrdu ? 'شادی بیاہ یا بڑی تقاریب کے آرڈرز درکار ہیں؟' : 'Need Custom Sweets or Bulk Orders?'}
+              </h4>
               <p className="text-xs text-gray-500">
-                Call 0322 7434080 or WhatsApp 0347 1702710 for wedding boxes, celebration cakes, and event catering.
+                {isUrdu ? 'شادی کے ڈبوں، کیکس اور کیٹرنگ کے لیے 0322 7434080 یا واٹس ایپ 0347 1702710 پر رابطہ فرمائیں۔' : 'Call 0322 7434080 or WhatsApp 0347 1702710 for wedding boxes, celebration cakes, and event catering.'}
               </p>
             </div>
           </div>
@@ -511,7 +543,7 @@ export default function HomePage() {
             className="px-5 py-2.5 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-colors flex-shrink-0"
           >
             <MessageSquare className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Chat on WhatsApp</span>
+            <span>{isUrdu ? 'واٹس ایپ پر رابطہ کریں' : 'Chat on WhatsApp'}</span>
           </a>
         </div>
       </section>

@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Eye, Star, Zap, Check } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { isUrdu } = useLanguage();
   const navigate = useNavigate();
 
   const hasVariations = product.variations && product.variations.length > 0;
@@ -86,7 +88,7 @@ export default function ProductCard({ product }) {
         {/* Quick View Overlay on Hover */}
         <div className="absolute inset-0 bg-[#07643D]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
           <span className="bg-white text-[#07643D] font-bold text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-            <Eye className="w-3.5 h-3.5" /> Quick View
+            <Eye className="w-3.5 h-3.5" /> {isUrdu ? 'دیکھیں' : 'Quick View'}
           </span>
         </div>
       </Link>
@@ -94,35 +96,30 @@ export default function ProductCard({ product }) {
       {/* Content */}
       <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
-          {/* Category & Urdu Name */}
+          {/* Category */}
           <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
             <span className="uppercase text-[10px] font-bold tracking-wider text-[#07643D]">
               {product.category}
             </span>
-            {product.urduName && (
-              <span className="urdu-text text-[#A5841D] text-xs font-semibold">
-                {product.urduName}
-              </span>
-            )}
           </div>
 
           {/* Title */}
           <Link to={`/product/${product.id}`}>
-            <h3 className="text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors line-clamp-2 leading-snug">
-              {product.name}
+            <h3 className={`text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors line-clamp-2 leading-snug ${isUrdu ? 'urdu-text text-base' : ''}`}>
+              {isUrdu ? (product.urduName || product.name) : product.name}
             </h3>
           </Link>
 
           {/* Packaging Unit / Subtitle */}
           <p className="text-xs text-gray-500 mt-1">
-            Packaging: <span className="font-medium text-gray-700">{selectedVariation ? selectedVariation.label : product.unit}</span>
+            {isUrdu ? 'پیکنگ:' : 'Packaging:'} <span className="font-medium text-gray-700">{selectedVariation ? selectedVariation.label : product.unit}</span>
           </p>
 
           {/* Variation Selector (if available) */}
           {hasVariations && product.variations.length > 1 && (
             <div className="mt-2.5">
               <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
-                Select Option:
+                {isUrdu ? 'آپشن منتخب کریں:' : 'Select Option:'}
               </label>
               <div className="flex flex-wrap gap-1">
                 {product.variations.map((v, i) => (
@@ -172,7 +169,7 @@ export default function ProductCard({ product }) {
               title="Add to Shopping Cart"
             >
               <ShoppingBag className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
-              <span>Add</span>
+              <span>{isUrdu ? 'شامل کریں' : 'Add'}</span>
             </button>
 
             <button
@@ -181,7 +178,7 @@ export default function ProductCard({ product }) {
               title="Buy Now and Proceed to Checkout"
             >
               <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Buy Now</span>
+              <span>{isUrdu ? 'ابھی خریدیں' : 'Buy Now'}</span>
             </button>
           </div>
         </div>
