@@ -224,10 +224,16 @@ export default function HomePage() {
                 to={`/category/${cat.slug}`}
                 className="group w-44 sm:w-48 shrink-0 flex-shrink-0 bg-white rounded-2xl border border-gray-200 hover:border-[#D4AF37] p-4 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
               >
-                <div className="w-16 h-16 rounded-full bg-emerald-50 group-hover:bg-[#07643D] text-[#07643D] group-hover:text-white flex items-center justify-center transition-colors mb-3 border border-emerald-100 shadow-2xs">
-                  <span className="text-lg font-serif font-bold group-hover:scale-110 transition-transform">
-                    {cat.name.slice(0, 2).toUpperCase()}
-                  </span>
+                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full overflow-hidden mb-3 border-2 border-emerald-200 group-hover:border-[#D4AF37] shadow-sm group-hover:shadow-md transition-all duration-300 relative bg-emerald-50 flex-shrink-0">
+                  <img
+                    src={cat.image || `/images/categories/${cat.id}.jpg`}
+                    alt={cat.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/images/products/gulab-jamun.svg";
+                    }}
+                  />
                 </div>
 
                 <div className="space-y-1">

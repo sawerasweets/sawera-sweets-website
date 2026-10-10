@@ -54,7 +54,7 @@ export default function CategoryPage({ explicitCategorySlug }) {
         </div>
 
         {/* Category Header Banner */}
-        <div className="relative rounded-3xl bg-gradient-to-r from-[#043E26] via-[#07643D] to-[#0A4D3C] text-white p-6 sm:p-10 shadow-lg overflow-hidden border-2 border-[#D4AF37]/50">
+        <div className="relative rounded-3xl bg-gradient-to-r from-[#043E26] via-[#07643D] to-[#0A4D3C] text-white p-6 sm:p-10 shadow-lg overflow-hidden border-2 border-[#D4AF37]/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 pointer-events-none flex items-center justify-center">
             <span className="urdu-text text-8xl font-bold">{category.urduName}</span>
           </div>
@@ -77,6 +77,21 @@ export default function CategoryPage({ explicitCategorySlug }) {
               {category.description}
             </p>
           </div>
+
+          {/* Category Visual Avatar */}
+          {category.image && (
+            <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-2 border-[#D4AF37] shadow-xl flex-shrink-0 bg-white/10">
+              <img
+                src={category.image}
+                alt={category.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/images/products/gulab-jamun.svg";
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Subcategory Pills & Sort Bar */}
