@@ -216,15 +216,16 @@ export default function HomePage() {
           {/* Right Emerging Edge Mask */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-[#FDFBF7] via-[#FDFBF7]/90 to-transparent z-10" />
 
-          {/* Scrolling Track */}
-          <div className="animate-marquee-infinite flex gap-4 w-max py-1">
+          {/* Scrolling Track with Enlarged Category Cards */}
+          <div className="animate-marquee-infinite flex gap-5 sm:gap-6 w-max py-2">
             {marqueeCategories.map((cat, idx) => (
               <Link
                 key={`${cat.id}-${idx}`}
                 to={`/category/${cat.slug}`}
-                className="group w-44 sm:w-48 shrink-0 flex-shrink-0 bg-white rounded-2xl border border-gray-200 hover:border-[#D4AF37] p-4 text-center flex flex-col items-center justify-between shadow-2xs hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                className="group w-56 sm:w-64 shrink-0 flex-shrink-0 bg-white rounded-3xl border border-gray-200 hover:border-[#D4AF37] p-5 sm:p-6 text-center flex flex-col items-center justify-between shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
               >
-                <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-full overflow-hidden mb-3 border-2 border-emerald-200 group-hover:border-[#D4AF37] shadow-sm group-hover:shadow-md transition-all duration-300 relative bg-emerald-50 flex-shrink-0">
+                {/* Enlarged Category Photo Circle */}
+                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden mb-4 border-3 border-emerald-100 group-hover:border-[#D4AF37] shadow-md group-hover:shadow-xl transition-all duration-300 relative bg-emerald-50 flex-shrink-0">
                   <img
                     src={cat.image || `/images/categories/${cat.id}.jpg`}
                     alt={cat.name}
@@ -237,12 +238,12 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-1">
-                  <h3 className={`text-xs sm:text-sm font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-tight ${isUrdu ? 'urdu-text text-sm' : ''}`}>
+                  <h3 className={`text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-snug ${isUrdu ? 'urdu-text text-base sm:text-lg' : ''}`}>
                     {isUrdu ? (cat.urduName || cat.name) : cat.name}
                   </h3>
                 </div>
 
-                <span className="mt-3 text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100/60">
+                <span className="mt-3.5 text-[11px] sm:text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80">
                   {cat.badge}
                 </span>
               </Link>
