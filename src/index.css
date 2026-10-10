@@ -92,18 +92,18 @@
 
 @keyframes hero-bg-pan {
   0% {
-    transform: scale(1.08) translate3d(0%, 0, 0);
+    transform: scale(1.15) translate3d(0%, 0, 0);
   }
   50% {
-    transform: scale(1.08) translate3d(-8%, 0, 0);
+    transform: scale(1.15) translate3d(-15%, 0, 0);
   }
   100% {
-    transform: scale(1.08) translate3d(0%, 0, 0);
+    transform: scale(1.15) translate3d(0%, 0, 0);
   }
 }
 
 .animate-hero-bg-pan {
-  animation: hero-bg-pan 22s ease-in-out infinite;
+  animation: hero-bg-pan 18s ease-in-out infinite;
   will-change: transform;
 }
 

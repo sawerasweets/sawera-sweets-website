@@ -30,50 +30,6 @@ export default function HomePage() {
   const { isAdmin } = useAuth();
   const { isUrdu, t } = useLanguage();
 
-  const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
-
-  const heroSlides = useMemo(() => [
-    {
-      id: 'sweets-platter',
-      image: '/images/hero/all-sweets.jpg',
-      badgeEn: '✨ All Traditional Sweets',
-      badgeUr: '✨ تمام روایتی مٹھائیاں',
-      titleEn: 'Pure Desi Ghee Platter',
-      titleUr: 'خالص دیسی گھی مٹھائی تھال',
-      descEn: 'Gulab Jamun, Barfi, Kaju Katli, Laddoo & Crispy Jalebi',
-      descUr: 'گلاب جامن، برفی، کاجو قتلی، لڈو اور خستہ جلیبی'
-    },
-    {
-      id: 'bakery-banquet',
-      image: '/images/hero/bakery-sweets.jpg',
-      badgeEn: '🎂 Fresh Bakery & Celebration',
-      badgeUr: '🎂 تازہ بیکری و خوشیاں',
-      titleEn: 'Celebration Treats & Cakes',
-      titleUr: 'جشن و خوشیوں کے کیکس و بیکری',
-      descEn: 'Oven-fresh cakes, crispy patties, and cookies',
-      descUr: 'تازہ دم کیک، خستہ پیٹیز اور نان خطائی بسکٹس'
-    }
-  ], []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 6500);
-    return () => clearInterval(timer);
-  }, [heroSlides.length]);
-
-  const handlePrevSlide = (e) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setCurrentHeroSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
-  };
-
-  const handleNextSlide = (e) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length);
-  };
-
   const featuredProducts = useMemo(() => {
     return products.filter(p => p.isFeatured).slice(0, 4);
   }, [products]);
@@ -96,13 +52,13 @@ export default function HomePage() {
       {/* 1. HERO SECTION */}
       <section className="relative bg-gradient-to-b from-emerald-950 via-[#07643D] to-[#043E26] text-white overflow-hidden py-12 md:py-20 border-b-4 border-[#D4AF37]">
         {/* Animated Background Wallpaper Layer with Smooth Horizontal Push */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-55">
           <img
             src="/images/hero/all-sweets.jpg"
-            alt="Sweets Wallpaper Texture"
-            className="w-full h-full object-cover animate-hero-bg-pan filter saturate-150 contrast-125"
+            alt="All Sweets Wallpaper Texture"
+            className="w-full h-full object-cover animate-hero-bg-pan filter saturate-150 contrast-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/95 via-[#07643D]/85 to-[#043E26]/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-[#07643D]/65 to-[#043E26]/75" />
         </div>
 
         {/* Ambient Gold & Emerald Glows */}
@@ -200,91 +156,28 @@ export default function HomePage() {
 
             </div>
 
-            {/* Right Side: Sweets & Bakery Showcase with Smooth Push & Slide */}
+            {/* Right Brand Badge / Visual Showcase */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-md sm:max-w-lg rounded-3xl p-2 bg-gradient-to-tr from-[#D4AF37] via-emerald-600 to-[#D4AF37] shadow-2xl group">
-                
-                {/* Main Card Viewport */}
-                <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden relative bg-[#043E26] border-2 border-white/80 shadow-inner">
-                  {/* Sliding Image with Continuous Horizontal Push */}
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full p-2 bg-gradient-to-tr from-[#D4AF37] via-emerald-600 to-[#D4AF37] shadow-2xl animate-in zoom-in-95 duration-500">
+                <div className="w-full h-full rounded-full overflow-hidden border-4 border-white/90 bg-[#07643D] flex items-center justify-center relative">
                   <img
-                    key={heroSlides[currentHeroSlide].id}
-                    src={heroSlides[currentHeroSlide].image}
-                    alt={heroSlides[currentHeroSlide].titleEn}
-                    className="w-full h-full object-cover animate-hero-pan transition-all duration-700 ease-out"
+                    src="/images/logo/logo.jpg"
+                    alt="Sawera Sweets & Bakers Official Badge"
+                    className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = "/images/products/gulab-jamun.svg";
+                      e.target.src = "/src/assets/logo.jpg";
                     }}
                   />
-
-                  {/* Gradient Vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
-
-                  {/* Top-Left Glowing Category Badge */}
-                  <div className="absolute top-3 left-3 bg-[#07643D]/90 backdrop-blur-md border border-[#D4AF37]/60 text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-lg flex items-center gap-1.5">
-                    <Sparkles className="w-3 h-3 text-[#D4AF37]" />
-                    <span className={isUrdu ? 'urdu-text' : ''}>
-                      {isUrdu ? heroSlides[currentHeroSlide].badgeUr : heroSlides[currentHeroSlide].badgeEn}
-                    </span>
-                  </div>
-
-                  {/* Top-Right Logo Seal */}
-                  <div className="absolute top-3 right-3 w-10 h-10 rounded-full border-2 border-[#D4AF37] overflow-hidden shadow-lg bg-[#07643D]">
-                    <img
-                      src="/images/logo/logo.jpg"
-                      alt="Sawera Logo Badge"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = "/src/assets/logo.jpg";
-                      }}
-                    />
-                  </div>
-
-                  {/* Bottom Text Description & Push Controls */}
-                  <div className="absolute bottom-3 left-3 right-3 text-white flex items-end justify-between gap-2">
-                    <div>
-                      <h4 className={`text-sm sm:text-base font-bold font-serif text-[#F4D375] drop-shadow ${isUrdu ? 'urdu-text' : ''}`}>
-                        {isUrdu ? heroSlides[currentHeroSlide].titleUr : heroSlides[currentHeroSlide].titleEn}
-                      </h4>
-                      <p className={`text-[10px] sm:text-[11px] text-emerald-100 font-medium line-clamp-1 drop-shadow ${isUrdu ? 'urdu-text' : ''}`}>
-                        {isUrdu ? heroSlides[currentHeroSlide].descUr : heroSlides[currentHeroSlide].descEn}
-                      </p>
-                    </div>
-
-                    {/* Navigation Buttons (Push Left / Right) */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
-                      <button
-                        onClick={handlePrevSlide}
-                        type="button"
-                        aria-label="Push Previous Slide"
-                        title="Previous Slide"
-                        className="w-7 h-7 rounded-full bg-black/40 hover:bg-[#07643D] text-white border border-white/40 flex items-center justify-center transition-colors backdrop-blur-xs cursor-pointer shadow-sm hover:scale-105"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={handleNextSlide}
-                        type="button"
-                        aria-label="Push Next Slide"
-                        title="Next Slide"
-                        className="w-7 h-7 rounded-full bg-black/40 hover:bg-[#07643D] text-white border border-white/40 flex items-center justify-center transition-colors backdrop-blur-xs cursor-pointer shadow-sm hover:scale-105"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
                 </div>
-
-                {/* Floating Bottom Quality Stamp */}
-                <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-white text-[#07643D] px-4 py-1.5 rounded-full border-2 border-[#D4AF37] shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+                
+                {/* Floating Tag */}
+                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white text-[#07643D] px-4 py-1.5 rounded-full border-2 border-[#D4AF37] shadow-lg flex items-center gap-1.5 whitespace-nowrap">
                   <Award className="w-4 h-4 text-[#D4AF37]" />
                   <span className="text-xs font-extrabold uppercase tracking-wider">
                     {isUrdu ? 'اعلیٰ ترین معیار کی ضمانت' : 'Premium Quality Guaranteed'}
                   </span>
                 </div>
-
               </div>
             </div>
 
