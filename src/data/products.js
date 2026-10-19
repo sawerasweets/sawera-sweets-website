@@ -372,6 +372,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 37
+  },
+  {
+    id: "prd-special-sohan-halwa",
+    name: "Special Desi Ghee Sohan Halwa",
+    urduName: "اسپیشل دیسی گھی سوہن حلوہ",
+    slug: "special-sohan-halwa",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "Authentic centuries-old heritage recipe prepared with sprouted wheat (samnak), slow-simmered rich buffalo milk, and 100% pure desi ghee. Glistening with aromatic ghee, grainy (danedar) texture, and lavishly garnished with crunchy toasted almonds. The undisputed pride of traditional Punjabi sweets.",
+    urduDescription: "انگوری (سمنک گندم)، گھنٹوں کڑھے ہوئے دودھ اور سو فیصد خالص دیسی گھی سے تیار کردہ دانے دار روایتی سوہن حلوہ۔ دیسی گھی کی خوشبو، قدرتی کیریمل مٹھاس اور کٹے باداموں کی بھرپور سجاوٹ۔ سویرا سویٹس کا سب سے خاص اور تاریخی تحفہ۔",
+    ingredients: "Sprouted Wheat (Samnak/Angoori), Fresh Buffalo Milk, Pure Desi Ghee, Sugar, Sliced California Almonds, Green Cardamom",
+    image: "/images/products/special-sohan-halwa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 145,
+    badge: "Pure Desi Ghee Danedar",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-sohan-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-sohan-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-sohan-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 42
   }
 ];
 
