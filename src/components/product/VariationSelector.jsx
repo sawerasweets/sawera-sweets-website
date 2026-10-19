@@ -46,7 +46,9 @@ export default function VariationSelector({
                     >
                       {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
                     </div>
-                    <span className="text-xs font-semibold text-gray-800">{v.label}</span>
+                    <span className="text-xs font-semibold text-gray-800">
+                      {isUrdu ? (v.urduLabel || v.label) : v.label}
+                    </span>
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-bold font-mono text-[#07643D]">
@@ -98,7 +100,7 @@ export default function VariationSelector({
           </div>
 
           <span className="text-xs text-gray-500 font-medium">
-            {selectedVariation ? selectedVariation.label : product?.unit || 'Unit'}
+            {selectedVariation ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label) : product?.unit || 'Unit'}
           </span>
         </div>
       </div>

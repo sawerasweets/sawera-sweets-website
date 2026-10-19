@@ -238,13 +238,15 @@ const defaultFaqs = [
   }
 ];
 
-// Clean product seed (starts empty until Muhammad Akash adds products)
+// Clean product seed
 const seedInitialProducts = () => {
   return PRODUCTS.map((prod) => ({
     ...prod,
-    stocks: {
-      "shop-1": 0
+    stocks: prod.stocks || {
+      "shop-1": 50
     },
+    stockStatus: prod.stockStatus || "in_stock",
+    inStock: prod.inStock !== false,
     lowStockThreshold: 10,
     unitType: prod.unit?.toLowerCase().includes("kg") ? "kg" : prod.unit?.toLowerCase().includes("liter") ? "liter" : "piece",
     allowsDecimalQuantity: Boolean(prod.unit?.toLowerCase().includes("kg") || prod.unit?.toLowerCase().includes("liter"))
@@ -301,6 +303,40 @@ class SaweraDB {
         if (!Array.isArray(currentBranches) || currentBranches.length !== 1 || currentBranches[0].id !== 'shop-1') {
           this.set('branches', defaultBranches);
         }
+      }
+
+      // Automatically sync and merge catalog products into local storage
+      try {
+        const currentProds = this.get('products') || [];
+        const catalogProds = seedInitialProducts();
+        let hasProdsUpdate = false;
+        const updatedProds = [...currentProds];
+
+        for (const cp of catalogProds) {
+          const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
+          if (foundIdx === -1) {
+            updatedProds.push(cp);
+            hasProdsUpdate = true;
+          } else if (updatedProds[foundIdx].image !== cp.image || !updatedProds[foundIdx].urduDescription) {
+            updatedProds[foundIdx] = {
+              ...cp,
+              ...updatedProds[foundIdx],
+              image: cp.image,
+              urduDescription: cp.urduDescription,
+              urduName: cp.urduName,
+              variations: cp.variations,
+              ingredients: cp.ingredients,
+              stocks: updatedProds[foundIdx].stocks || cp.stocks
+            };
+            hasProdsUpdate = true;
+          }
+        }
+
+        if (hasProdsUpdate || currentProds.length === 0) {
+          this.set('products', updatedProds.length > 0 ? updatedProds : catalogProds);
+        }
+      } catch (err) {
+        console.warn('Catalog merge error in init:', err);
       }
 
       // Safeguard: Ensure cached active user session reflects Muhammad Akash
@@ -487,7 +523,16 @@ class SaweraDB {
 
   // Product Operations
   getProducts() {
-    return this.get('products');
+    const prods = this.get('products');
+    const catalog = seedInitialProducts();
+    if (!Array.isArray(prods) || prods.length === 0) {
+      return catalog;
+    }
+    const missing = catalog.filter(c => !prods.some(p => p.id === c.id));
+    if (missing.length > 0) {
+      return [...prods, ...missing];
+    }
+    return prods;
   }
 
   getProductById(id) {

@@ -62,11 +62,15 @@ export default function ProductCard({ product }) {
 
         <div className="flex flex-col gap-1 items-end">
           <span className="bg-white/95 backdrop-blur-xs text-[#07643D] border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
-            {product.stockStatus === 'in_stock' ? 'In Stock' : 'Pre-Order'}
+            {product.inStock !== false && product.stockStatus !== 'out_of_stock'
+              ? (isUrdu ? 'دستیاب ہے' : 'In Stock')
+              : (isUrdu ? 'پری آرڈر' : 'Pre-Order')}
           </span>
-          <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase tracking-wider">
-            Demo Item
-          </span>
+          {product.isDemo && (
+            <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase tracking-wider">
+              {isUrdu ? 'ڈیمو آئٹم' : 'Demo Item'}
+            </span>
+          )}
         </div>
       </div>
 
@@ -112,7 +116,7 @@ export default function ProductCard({ product }) {
 
           {/* Packaging Unit / Subtitle */}
           <p className="text-xs text-gray-500 mt-1">
-            {isUrdu ? 'پیکنگ:' : 'Packaging:'} <span className="font-medium text-gray-700">{selectedVariation ? selectedVariation.label : product.unit}</span>
+            {isUrdu ? 'پیکنگ:' : 'Packaging:'} <span className="font-medium text-gray-700">{selectedVariation ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label) : product.unit}</span>
           </p>
 
           {/* Variation Selector (if available) */}
@@ -137,7 +141,7 @@ export default function ProductCard({ product }) {
                         : 'border-gray-200 text-gray-600 hover:border-gray-300 bg-white'
                     }`}
                   >
-                    {v.label}
+                    {isUrdu ? (v.urduLabel || v.label) : v.label}
                   </button>
                 ))}
               </div>

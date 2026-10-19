@@ -150,17 +150,17 @@ export default function ProductDetailPage() {
                   )}
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 tracking-tight">
-                  {product.name}
+                <h1 className={`text-2xl sm:text-3xl font-extrabold ${isUrdu ? 'urdu-text' : 'font-serif'} text-gray-900 tracking-tight`}>
+                  {isUrdu ? (product.urduName || product.name) : product.name}
                 </h1>
 
                 {/* Stock Status & Badges */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-[#07643D] bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>In Stock • Ready for Delivery</span>
+                    <span>{isUrdu ? 'دستیاب ہے • فوری ڈلیوری' : 'In Stock • Ready for Delivery'}</span>
                   </span>
-                  <span className="text-xs text-gray-500 font-mono">Unit: {product.unit}</span>
+                  <span className="text-xs text-gray-500 font-mono">{isUrdu ? 'پیکنگ:' : 'Unit:'} {product.unit}</span>
                 </div>
 
                 {/* Pricing Block */}
@@ -180,13 +180,17 @@ export default function ProductDetailPage() {
 
                 {/* Description */}
                 <div className="text-xs text-gray-600 leading-relaxed">
-                  <p>{product.description}</p>
+                  <p className={isUrdu ? 'urdu-text leading-relaxed text-sm' : ''}>
+                    {isUrdu ? (product.urduDescription || product.description) : product.description}
+                  </p>
                 </div>
 
                 {/* Ingredients / Highlights */}
                 {product.ingredients && (
                   <div className="text-xs p-3 rounded-xl bg-gray-50 border border-gray-200">
-                    <span className="font-bold text-gray-700 block mb-0.5">Ingredients &amp; Composition:</span>
+                    <span className="font-bold text-gray-700 block mb-0.5">
+                      {isUrdu ? 'اجزاء اور ترکیب:' : 'Ingredients & Composition:'}
+                    </span>
                     <span className="text-gray-600">{product.ingredients}</span>
                   </div>
                 )}
@@ -210,7 +214,7 @@ export default function ProductDetailPage() {
                     className="py-3 px-4 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/40 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Add to Cart ({quantity})</span>
+                    <span>{isUrdu ? `ٹوکری میں شامل کریں (${quantity})` : `Add to Cart (${quantity})`}</span>
                   </button>
 
                   <button
@@ -218,7 +222,7 @@ export default function ProductDetailPage() {
                     className="py-3 px-4 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
                   >
                     <Zap className="w-4 h-4 text-[#D4AF37]" />
-                    <span>Buy Now &amp; Checkout</span>
+                    <span>{isUrdu ? 'ابھی خریدیں اور کیش ادا کریں' : 'Buy Now & Checkout'}</span>
                   </button>
                 </div>
 
