@@ -319,6 +319,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 31
+  },
+  {
+    id: "prd-dry-fruit-halwa",
+    name: "Special Shahi Dry Fruit Halwa",
+    urduName: "اسپیشل شاہی ڈرائی فروٹ حلوہ",
+    slug: "dry-fruit-halwa",
+    category: "sweets",
+    subCategory: "Traditional Halwa",
+    description: "An opulent royal delicacy slowly simmered in 100% pure desi ghee, golden suji, milk, and saffron cardamom essence. Lavishly loaded with whole premium cashews (kaju), California almonds, roasted walnuts (akhrot), green pistachios, and sweet golden raisins. The ultimate nutritious and energy-packed traditional treat.",
+    urduDescription: "سو فیصد خالص دیسی گھی، سوجی اور دودھ سے تیار کردہ شاہی ڈرائی فروٹ حلوہ۔ کاجو، بادام، اخروٹ، پستے اور کشمش کے بھرپور اور وافر میوہ جات سے سجا مقوی اور لذیذ شاہکار۔ سردیوں اور پروقار دعوتوں کے لیے لاجواب سوغات۔",
+    ingredients: "Pure Desi Ghee, Fine Semolina (Suji), Fresh Milk, Sugar, Whole Cashews (Kaju), California Almonds (Badam), Walnuts (Akhrot), Pistachios (Pista), Golden Raisins (Kishmish), Green Cardamom",
+    image: "/images/products/dry-fruit-halwa.jpg",
+    price: 1400,
+    discountPrice: 1300,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 110,
+    badge: "5 Dry Fruits Loaded",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-dryfruit-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 700,
+        discountPrice: 650
+      },
+      {
+        id: "var-dryfruit-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1400,
+        discountPrice: 1300
+      },
+      {
+        id: "var-dryfruit-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2800,
+        discountPrice: 2600
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 37
   }
 ];
 
