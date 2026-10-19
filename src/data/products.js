@@ -213,6 +213,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 28
+  },
+  {
+    id: "prd-milky-patisa",
+    name: "Special Milky Patisa",
+    urduName: "اسپیشل ملکی پتیسہ (بادامی)",
+    slug: "milky-patisa",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "Delightfully creamy and rich milk-based flaky patisa prepared with pure condensed milk khoya, desi ghee, and fine flour, generously studded with premium sliced almonds. It offers a velvety soft, melt-in-the-mouth milky sweetness loved by all ages.",
+    urduDescription: "خالص بالائی والے دودھ کے کھوئے، دیسی گھی اور بادام کے لذیذ ٹکڑوں سے تیار کردہ نرم و ملائم ملکی پتیسہ۔ روایتی مٹھاس اور کریمی ذائقے کا ایک منفرد شاہکار، جو ہر عمر کے افراد کی اولین پسند ہے۔",
+    ingredients: "Pure Milk Khoya, Desi Ghee, Sugar, Refined Flour, Green Cardamom, Premium California Almonds (Badam)",
+    image: "/images/products/milky-patisa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 76,
+    badge: "Rich Milk & Almonds",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-milky-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-milky-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-milky-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 24
   }
 ];
 
