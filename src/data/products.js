@@ -266,6 +266,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 24
+  },
+  {
+    id: "prd-dilli-halwa",
+    name: "Special Dilli Halwa (Sohan Tikki)",
+    urduName: "اسپیشل دہلی حلوہ (سوھن ٹکی)",
+    slug: "dilli-halwa",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "A timeless royal recipe made with sprouted wheat (samnak), slow-caramelized milk, pure desi ghee, and fragrant cardamom. Formed into thick traditional round discs (tikkis) and crowned with fresh coconut slivers and crunchy almonds. Rich, chewy, and irresistibly wholesome.",
+    urduDescription: "انگوری (سمنک)، کڑھے ہوئے دودھ اور خالص دیسی گھی سے روایتی شاہی انداز میں تیار کردہ مشہور دہلی حلوہ ٹکی۔ تازہ گری (ناریل) اور کٹے بادام کے پروقار تاج کے ساتھ تیار، جو روایتی مٹھاس کا اعلیٰ ترین معیار پیش کرتا ہے۔",
+    ingredients: "Sprouted Wheat Germ (Samnak/Angoori), Fresh Milk, Pure Desi Ghee, Sugar, Sliced Coconut (Gari), Premium Almonds, Cardamom",
+    image: "/images/products/dilli-halwa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 88,
+    badge: "Royal Desi Ghee Tradition",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-dilli-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-dilli-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-dilli-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 31
   }
 ];
 
