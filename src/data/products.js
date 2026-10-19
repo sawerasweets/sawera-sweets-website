@@ -531,6 +531,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 29
+  },
+  {
+    id: "prd-shapper-milky-patisa",
+    name: "Special Shapper Milky Patisa (Round White Lachha)",
+    urduName: "اسپیشل شاپر ملکی پتیسہ (گول سفید لچھا)",
+    slug: "shapper-milky-patisa",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "Crafted with creamy condensed milk khoya, pure desi ghee, and fine flour, skillfully hand-spun into thick round discs of delicate white lachhedar threads. Wonderfully soft, silky, and melt-in-the-mouth, lavishly topped with roasted almonds and crushed pistachios.",
+    urduDescription: "خالص بالائی والے دودھ کے کھوئے اور دیسی گھی سے تیار کردہ سفید گول شاپر ملکی پتیسہ۔ روئی جیسے نرم و نازک لچھوں سے مزین، جس پر پستے اور بادام کا وافر چھڑکاؤ کیا گیا ہے۔ زبان پر رکھتے ہی گھل جانے والی لاجواب مٹھاس۔",
+    ingredients: "Pure Milk Khoya, Desi Ghee, Fine Wheat Flour, Sugar, Green Cardamom, Premium Sliced Almonds, Crushed Pistachios",
+    image: "/images/products/shapper-milky-patisa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 92,
+    badge: "Creamy White Lachha",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-shapperm-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-shapperm-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-shapperm-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 33
   }
 ];
 
