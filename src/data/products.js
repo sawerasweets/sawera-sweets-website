@@ -425,6 +425,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 42
+  },
+  {
+    id: "prd-badami-halwa",
+    name: "Special Desi Ghee Badami Halwa",
+    urduName: "اسپیشل دیسی گھی بادامی حلوہ",
+    slug: "badami-halwa",
+    category: "sweets",
+    subCategory: "Traditional Halwa",
+    description: "Traditional grainy golden halwa prepared with pure country desi ghee, slow-roasted fine semolina (suji), and rich creamy milk. Lavishly adorned with toasted sliced California almonds and aromatic cardamom. A warm, rich, and soul-satisfying royal dessert.",
+    urduDescription: "خالص دیسی گھی، سوجی کی سنہری بھنائی اور تازہ دودھ سے روایتی انداز میں تیار کردہ دانے دار بادامی حلوہ۔ کٹے ہوئے خستہ باداموں اور الائچی کے عطر سے سجا لاجواب تحفہ۔ منہ میں گھل جانے والا روایتی اور شاہی ذائقہ۔",
+    ingredients: "Pure Desi Ghee, Fine Semolina (Suji), Fresh Milk, Sugar, California Sliced Almonds (Badam), Green Cardamom",
+    image: "/images/products/badami-halwa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 98,
+    badge: "Pure Desi Ghee & Badam",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-badamih-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-badamih-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-badamih-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 35
   }
 ];
 
