@@ -214,7 +214,7 @@ export default function Footer() {
                 <MessageCircle className="w-4 h-4 text-[#D4AF37] flex-shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold block text-white">WhatsApp Orders:</span>
-                  <a href="https://wa.me/923471702710" target="_blank" rel="noreferrer" className="text-[11px] font-mono text-[#F4D375] font-bold block hover:underline">0347 1702710</a>
+                  <a href="https://wa.me/923227434080" target="_blank" rel="noreferrer" className="text-[11px] font-mono text-[#F4D375] font-bold block hover:underline">0322 7434080</a>
                 </div>
               </div>
             </div>

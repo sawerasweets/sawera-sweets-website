@@ -83,7 +83,7 @@ export default function ContactPage() {
                   Orders / Call: <a href="tel:03227434080" className="font-mono text-gray-800 font-bold hover:underline">0322 7434080</a>
                 </p>
                 <p>
-                  WhatsApp: <a href="https://wa.me/923471702710" target="_blank" rel="noreferrer" className="font-mono text-[#07643D] font-bold hover:underline">0347 1702710</a>
+                  WhatsApp: <a href="https://wa.me/923227434080" target="_blank" rel="noreferrer" className="font-mono text-[#07643D] font-bold hover:underline">0322 7434080</a>
                 </p>
                 <p>
                   Email: <a href="mailto:sawerasweets.pk@gmail.com" className="font-mono text-gray-700 hover:underline">sawerasweets.pk@gmail.com</a>

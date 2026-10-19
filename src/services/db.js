@@ -16,7 +16,7 @@ const defaultBranches = [
     address: "Gojra Road, Opposite DHQ Hospital, Jhang",
     addressUrdu: "گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ",
     city: "Jhang",
-    whatsapp: "0347 1702710",
+    whatsapp: "0322 7434080",
     phone: "0322 7434080",
     email: "sawerasweets.pk@gmail.com",
     timings: "5:30 AM - 12:00 AM (Midnight), Every Day",
@@ -77,7 +77,7 @@ const defaultSettings = {
   integrations: {
     whatsapp: {
       apiKey: "",
-      senderPhone: "0347 1702710",
+      senderPhone: "0322 7434080",
       autoNotifyOrder: true
     },
     smtp: {
@@ -94,7 +94,7 @@ const defaultUsers = [
     id: "usr-admin",
     name: "Muhammad Akash (Owner)",
     email: "admin@sawerasweets.pk",
-    phone: "0347 1702710",
+    phone: "0322 7434080",
     password: "admin123",
     role: "owner_admin",
     assignedBranch: "all",
@@ -106,7 +106,7 @@ const defaultUsers = [
     id: "usr-staff",
     name: "Shop 1 Lead Staff",
     email: "staff@sawerasweets.pk",
-    phone: "0347 1702710",
+    phone: "0322 7434080",
     password: "staff123",
     role: "staff",
     assignedBranch: "shop-1",
@@ -346,6 +346,25 @@ class SaweraDB {
           const parsed = JSON.parse(curUser);
           parsed.name = "Muhammad Akash (Owner)";
           localStorage.setItem('sawera_user', JSON.stringify(parsed));
+        }
+      } catch (e) {}
+
+      // Migrate any cached phone numbers in branches/settings to 0322 7434080
+      try {
+        const branches = this.get('branches');
+        if (Array.isArray(branches) && branches.some(b => b.whatsapp?.includes('0347') || b.phone?.includes('0347'))) {
+          const updatedBranches = branches.map(b => ({
+            ...b,
+            whatsapp: '0322 7434080',
+            phone: '0322 7434080'
+          }));
+          this.set('branches', updatedBranches);
+        }
+
+        const sets = this.get('settings');
+        if (sets?.integrations?.whatsapp?.senderPhone?.includes('0347')) {
+          sets.integrations.whatsapp.senderPhone = '0322 7434080';
+          this.set('settings', sets);
         }
       } catch (e) {}
 

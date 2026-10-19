@@ -171,7 +171,7 @@ export default function CategoryPage({ explicitCategorySlug }) {
                 </button>
               ) : (
                 <a
-                  href="https://wa.me/923471702710"
+                  href="https://wa.me/923227434080"
                   target="_blank"
                   rel="noreferrer"
                   className="px-4 py-2 bg-[#07643D] text-white rounded-xl text-xs font-semibold hover:bg-[#043E26] transition-colors"

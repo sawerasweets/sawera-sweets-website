@@ -101,7 +101,7 @@ export default function AboutPage() {
             Operating Hours: 5:30 AM to 12:00 AM (Midnight) Every Day
           </p>
           <p className="text-xs text-emerald-200">
-            Call: 0322 7434080 • WhatsApp: 0347 1702710
+            Call &amp; WhatsApp: 0322 7434080
           </p>
         </div>
 

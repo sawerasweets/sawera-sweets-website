@@ -277,13 +277,13 @@ export default function HomePage() {
 
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
-                href="https://wa.me/923471702710"
+                href="https://wa.me/923227434080"
                 target="_blank"
                 rel="noreferrer"
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors"
               >
                 <Phone className="w-4 h-4 text-[#D4AF37]" />
-                <span>WhatsApp Order (0347 1702710)</span>
+                <span>WhatsApp Order (0322 7434080)</span>
               </a>
 
               {isAdmin && (
@@ -492,7 +492,7 @@ export default function HomePage() {
                       {isUrdu ? 'براہِ راست آرڈرز اور واٹس ایپ:' : 'Direct Orders & WhatsApp:'}
                     </span>
                     <span className="font-mono text-gray-800 text-xs block mt-0.5">
-                      Call: <a href="tel:03227434080" className="font-bold hover:underline">0322 7434080</a> • WhatsApp: <a href="https://wa.me/923471702710" target="_blank" rel="noreferrer" className="text-[#07643D] font-bold hover:underline">0347 1702710</a>
+                      Call &amp; WhatsApp: <a href="https://wa.me/923227434080" target="_blank" rel="noreferrer" className="text-[#07643D] font-bold hover:underline">0322 7434080</a>
                     </span>
                   </div>
                 </div>
@@ -563,13 +563,13 @@ export default function HomePage() {
                 {isUrdu ? 'شادی بیاہ یا بڑی تقاریب کے آرڈرز درکار ہیں؟' : 'Need Custom Sweets or Bulk Orders?'}
               </h4>
               <p className="text-xs text-gray-500">
-                {isUrdu ? 'شادی کے ڈبوں، کیکس اور کیٹرنگ کے لیے 0322 7434080 یا واٹس ایپ 0347 1702710 پر رابطہ فرمائیں۔' : 'Call 0322 7434080 or WhatsApp 0347 1702710 for wedding boxes, celebration cakes, and event catering.'}
+                {isUrdu ? 'شادی کے ڈبوں، کیکس اور کیٹرنگ کے لیے 0322 7434080 پر رابطہ فرمائیں۔' : 'Call or WhatsApp 0322 7434080 for wedding boxes, celebration cakes, and event catering.'}
               </p>
             </div>
           </div>
 
           <a
-            href="https://wa.me/923471702710?text=Assalam-o-Alaikum%20Sawera%20Sweets,%20I%20want%20to%20inquire%20about%20an%20order."
+            href="https://wa.me/923227434080?text=Assalam-o-Alaikum%20Sawera%20Sweets,%20I%20want%20to%20inquire%20about%20an%20order."
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2.5 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-colors flex-shrink-0"

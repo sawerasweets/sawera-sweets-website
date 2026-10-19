@@ -89,12 +89,12 @@ export default function Header() {
             <div className="hidden lg:flex items-center gap-1">
               <span className="text-[#D4AF37] font-bold">WhatsApp:</span>
               <a 
-                href="https://wa.me/923471702710" 
+                href="https://wa.me/923227434080" 
                 target="_blank" 
                 rel="noreferrer"
                 className="font-mono text-white hover:underline"
               >
-                0347 1702710
+                0322 7434080
               </a>
             </div>
           </div>
@@ -428,7 +428,7 @@ export default function Header() {
 
           <div className="p-3 bg-[#FDFBF7] rounded-lg border border-[#D4AF37]/30 text-xs">
             <div className="font-bold text-[#07643D] mb-1">Orders &amp; Inquiry:</div>
-            <div className="font-mono text-gray-700">0322 7434080 • 0347 1702710 (WhatsApp)</div>
+            <div className="font-mono text-gray-700">0322 7434080 (Call &amp; WhatsApp)</div>
             <div className="text-[11px] text-gray-500 mt-1">Gojra Road, Opposite DHQ Hospital, Jhang</div>
           </div>
         </div>

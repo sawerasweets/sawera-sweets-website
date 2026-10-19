@@ -38,7 +38,7 @@ export default function MaintenancePage() {
 
         <div className="pt-4 border-t text-xs text-gray-500 space-y-2">
           <p className="font-semibold text-gray-700">For phone orders during maintenance:</p>
-          <p className="font-mono font-bold text-gray-900">Call: 0322 7434080 • WhatsApp: 0347 1702710</p>
+          <p className="font-mono font-bold text-gray-900">Call &amp; WhatsApp: 0322 7434080</p>
           <p className="text-[11px] text-gray-400">Shop 1, Gojra Road, Opposite DHQ Hospital, Jhang</p>
         </div>
 

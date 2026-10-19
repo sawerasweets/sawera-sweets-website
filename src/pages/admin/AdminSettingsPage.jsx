@@ -389,7 +389,7 @@ export default function AdminSettingsPage() {
                 }}
                 className="w-full p-2 border rounded-xl outline-none"
               />
-              <span className="text-[10px] text-gray-400 mt-1 block">Live WhatsApp: 0347 1702710</span>
+              <span className="text-[10px] text-gray-400 mt-1 block">Live WhatsApp: 0322 7434080</span>
             </div>
 
             <div>

@@ -60,7 +60,7 @@ export default function InvoiceModal({ order, isOpen, onClose }) {
                 <h1 className="text-xl font-bold font-serif text-[#07643D]">Sawera Sweets &amp; Bakers</h1>
                 <p className="text-xs text-amber-700 font-semibold urdu-text">سویرا سویٹس اینڈ بیکرز - ہر خوشی کیساتھ</p>
                 <p className="text-[11px] text-gray-500 mt-1">Gojra Road, Opposite DHQ Hospital, Jhang</p>
-                <p className="text-[11px] text-gray-500">Call: 0322 7434080 • WhatsApp: 0347 1702710</p>
+                <p className="text-[11px] text-gray-500">Call &amp; WhatsApp: 0322 7434080</p>
               </div>
             </div>
 

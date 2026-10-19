@@ -28,7 +28,7 @@ export default function OrderConfirmationPage() {
   const waText = encodeURIComponent(
     `Assalam o Alaikum Sawera Sweets & Bakers!\nI have placed order #${order.id} for Rs. ${order.total}.\nFulfillment: ${order.fulfillmentType === 'delivery' ? 'Home Delivery' : 'Pickup at ' + order.assignedBranchName}.\nPlease confirm preparation.`
   );
-  const waUrl = `https://wa.me/923471702710?text=${waText}`;
+  const waUrl = `https://wa.me/923227434080?text=${waText}`;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
@@ -93,7 +93,7 @@ export default function OrderConfirmationPage() {
             className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
-            <span>Confirm Order on WhatsApp (0347 1702710)</span>
+            <span>Confirm Order on WhatsApp (0322 7434080)</span>
           </a>
 
           <div className="grid grid-cols-2 gap-3">

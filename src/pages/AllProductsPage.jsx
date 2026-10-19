@@ -200,13 +200,13 @@ export default function AllProductsPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-2 pt-2">
                   <a
-                    href="https://wa.me/923471702710"
+                    href="https://wa.me/923227434080"
                     target="_blank"
                     rel="noreferrer"
                     className="px-5 py-2.5 bg-[#07643D] hover:bg-[#043E26] text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
                   >
                     <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>WhatsApp (0347 1702710)</span>
+                    <span>WhatsApp (0322 7434080)</span>
                   </a>
                   {isAdmin && (
                     <Link

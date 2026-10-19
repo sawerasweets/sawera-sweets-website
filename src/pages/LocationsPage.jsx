@@ -12,7 +12,7 @@ export default function LocationsPage() {
     nameUrdu: "سویرا سویٹس اینڈ بیکرز (مرکزی اسٹور)",
     address: "Gojra Road, Opposite DHQ Hospital, Jhang",
     addressUrdu: "گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ",
-    whatsapp: "0347 1702710",
+    whatsapp: "0322 7434080",
     phone: "0322 7434080",
     email: "sawerasweets.pk@gmail.com",
     timings: "5:30 AM - 12:00 AM (Midnight), Every Day",

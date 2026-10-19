@@ -15,8 +15,8 @@ export const STORE_CONFIG = {
   contact: {
     phone: "0322 7434080",
     phoneDisplay: "0322 7434080",
-    whatsapp: "0347 1702710",
-    whatsappDisplay: "0347 1702710",
+    whatsapp: "0322 7434080",
+    whatsappDisplay: "0322 7434080",
     email: "sawerasweets.pk@gmail.com",
     address: "Gojra Road, Opposite DHQ Hospital, Jhang",
     city: "Jhang",

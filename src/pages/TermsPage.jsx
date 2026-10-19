@@ -42,7 +42,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-gray-900">2. Defective or Damaged Items (Exchange Procedure)</h2>
           <p>
-            If any item arrives damaged or compromised during transit, please notify our customer helpline at <strong>0322 7434080</strong> or via WhatsApp at <strong>0347 1702710</strong> within 2 hours of receipt with a photo of the package. We will immediately arrange an exchange or fresh replacement batch from our nearest branch.
+            If any item arrives damaged or compromised during transit, please notify our customer helpline or WhatsApp at <strong>0322 7434080</strong> within 2 hours of receipt with a photo of the package. We will immediately arrange an exchange or fresh replacement batch from our nearest branch.
           </p>
         </section>
 
@@ -64,7 +64,7 @@ export default function TermsPage() {
           <h2 className="text-base font-bold text-gray-900">5. Contact Information</h2>
           <p>
             Shop 1 (Head Office): Gojra Road, Opposite DHQ Hospital, Jhang, Pakistan.<br />
-            Phone: <span className="font-mono font-bold text-[#07643D]">0322 7434080</span> • WhatsApp: <span className="font-mono font-bold text-[#07643D]">0347 1702710</span>
+            Phone &amp; WhatsApp: <span className="font-mono font-bold text-[#07643D]">0322 7434080</span>
           </p>
         </section>
 
