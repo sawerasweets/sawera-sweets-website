@@ -107,6 +107,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 21
+  },
+  {
+    id: "prd-special-coconut-halwa",
+    name: "Special Coconut Halwa",
+    urduName: "اسپیشل کوکونٹ حلوہ (ناریل حلوہ)",
+    slug: "special-coconut-halwa",
+    category: "sweets",
+    subCategory: "Traditional Halwa",
+    description: "Prepared with freshly grated premium coconut, rich desi ghee, full-cream milk, and fragrant cardamom, garnished generously with roasted pistachios and crunchy almond slivers. A heavenly, aromatic warm delight perfect for special celebrations.",
+    urduDescription: "تازہ پسے ہوئے ناریل، خالص دیسی گھی، بالائی والے دودھ اور سبز الائچی سے تیار کردہ دانے دار اسپیشل کوکونٹ حلوہ۔ بادام اور پستے کے لذیذ چھڑکاؤ کے ساتھ ہر خاص تقریب اور سردیوں کا شاہی تحفہ۔",
+    ingredients: "Fresh Grated Coconut, Pure Desi Ghee, Milk, Sugar, Green Cardamom, Almonds (Badam), Roasted Pistachios",
+    image: "/images/products/special-coconut-halwa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 58,
+    badge: "Pure Desi Ghee & Coconut",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-coconut-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-coconut-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-coconut-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 19
   }
 ];
 
