@@ -584,6 +584,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 33
+  },
+  {
+    id: "prd-special-badam-tafi",
+    name: "Special Badam Toffee (Sohan Toffee)",
+    urduName: "اسپیشل بادام ٹافی (سوہن حلوہ ٹافی)",
+    slug: "special-badam-tafi",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "Classic chewy and caramel-rich traditional Sohan Toffee prepared with slow-caramelized milk, pure desi ghee, and sprouted wheat. Each bite-sized bar is individually wrapped to lock in freshness and crowned with a whole roasted almond. The quintessential pocket-sized royal treat.",
+    urduDescription: "کڑھے ہوئے دودھ اور خالص دیسی گھی سے روایتی طریقے سے تیار کردہ لذیذ اور چبانے دار بادام ٹافی۔ ہر ٹکڑا تازگی کو برقرار رکھنے کے لیے انفرادی پیکنگ میں لپٹا ہوا ہے اور اس پر ثابت خستہ بادام سجایا گیا ہے۔ بچوں اور بڑوں کا پسندیدہ لذیذ تحفہ۔",
+    ingredients: "Fresh Milk Solids, Pure Desi Ghee, Sprouted Wheat (Samnak), Sugar, Whole California Almonds (Badam), Green Cardamom",
+    image: "/images/products/special-badam-tafi.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 105,
+    badge: "Individually Wrapped",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-tafi-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-tafi-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-tafi-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 38
   }
 ];
 
