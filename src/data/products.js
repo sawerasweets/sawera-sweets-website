@@ -478,6 +478,59 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 35
+  },
+  {
+    id: "prd-shapper-pista-patisa",
+    name: "Special Shapper Pista Patisa (Round Flaky Patisa)",
+    urduName: "اسپیشل شاپر پستہ پتیسہ (گول لچھے دار)",
+    slug: "shapper-pista-patisa",
+    category: "sweets",
+    subCategory: "Patisa & Sohan Halwa",
+    description: "Delightful round discs of hand-spun lachhedar flaky patisa infused with natural pistachio flavor and cardamom, prepared in pure desi ghee. Each round cake features cotton-soft crisp threads that melt effortlessly on the tongue, crowned with crunchy slivered almonds and roasted pistachios.",
+    urduDescription: "خالص دیسی گھی، پستے کی خوشبو اور لچھے دار روایتی کاریگری سے تیار کردہ گول شاپر پستہ پتیسہ۔ روئی کی طرح نرم، کرسپی اور منہ میں گھل جانے والی لذیذ تہیں، جن پر بادام اور پستے کی بھرپور سجاوٹ کی گئی ہے۔",
+    ingredients: "Pure Desi Ghee, Roasted Gram Flour, Fine Flour, Sugar, Natural Pistachio Essence, Green Cardamom, Sliced Almonds, Pistachios",
+    image: "/images/products/shapper-pista-patisa.jpg",
+    price: 1300,
+    discountPrice: 1200,
+    unit: "1 kg",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 89,
+    badge: "Pistachio Lachhadar",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 50
+    },
+    variations: [
+      {
+        id: "var-shapper-500g",
+        label: "500 Grams (آدھا کلو)",
+        urduLabel: "500 گرام (آدھا کلو)",
+        weight: "500g",
+        price: 650,
+        discountPrice: 600
+      },
+      {
+        id: "var-shapper-1kg",
+        label: "1 Kilogram (ایک کلو)",
+        urduLabel: "1 کلوگرام (ایک کلو)",
+        weight: "1kg",
+        price: 1300,
+        discountPrice: 1200
+      },
+      {
+        id: "var-shapper-2kg",
+        label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
+        urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
+        weight: "2kg",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 29
   }
 ];
 
