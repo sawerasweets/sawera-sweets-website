@@ -56,9 +56,37 @@ export default function CheckoutPage() {
   const handleProofUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        setError('Payment receipt image must be under 10MB.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (event) => {
-        setPaymentProofUrl(event.target.result);
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxDim = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+          setPaymentProofUrl(compressedDataUrl);
+        };
+        img.onerror = () => {
+          setPaymentProofUrl(event.target.result);
+        };
+        img.src = event.target.result;
       };
       reader.readAsDataURL(file);
     }
