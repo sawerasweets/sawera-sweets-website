@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "start": "node server.js",
+    "test": "node test_audit_suite.js",
     "lint": "oxlint",
     "preview": "vite preview"
   },

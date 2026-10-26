@@ -36,25 +36,30 @@ export default function ProductDetailPage() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
+  const [selectedVariation, setSelectedVariation] = useState(
+    product?.variations?.[0] || null
+  );
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
-    const syncData = () => {
-      setProduct(db.getProductById(id));
-      setReviews(db.get('reviews'));
-      setQuestions(db.get('questions'));
-    };
-    syncData();
+    const prod = db.getProductById(id);
+    setProduct(prod);
+    setReviews(db.get('reviews'));
+    setQuestions(db.get('questions'));
+    setSelectedVariation(prod?.variations?.[0] || null);
+    setQuantity(1);
+
     if (id) {
       db.addRecentlyViewed(id);
     }
-    const unsubscribe = db.subscribe(syncData);
+
+    const unsubscribe = db.subscribe(() => {
+      setProduct(db.getProductById(id));
+      setReviews(db.get('reviews'));
+      setQuestions(db.get('questions'));
+    });
     return unsubscribe;
   }, [id]);
-
-  const hasVariations = product?.variations && product.variations.length > 0;
-  const [selectedVariation, setSelectedVariation] = useState(
-    hasVariations ? product.variations[0] : null
-  );
-  const [quantity, setQuantity] = useState(1);
 
   if (!product) {
     return (

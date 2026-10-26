@@ -145,18 +145,26 @@ export default function AdminInventoryPage() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-3 border-t border-amber-200 mt-3">
-                  <button
-                    onClick={() => setRejectionModalId(req.id)}
-                    className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 font-bold text-xs"
-                  >
-                    Reject
-                  </button>
-                  <button
-                    onClick={() => handleApprove(req.id)}
-                    className="px-4 py-1.5 rounded-lg bg-[#07643D] text-white hover:bg-[#043E26] font-bold text-xs shadow-sm"
-                  >
-                    Approve Request
-                  </button>
+                  {isAdmin ? (
+                    <>
+                      <button
+                        onClick={() => setRejectionModalId(req.id)}
+                        className="px-3 py-1.5 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 font-bold text-xs"
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => handleApprove(req.id)}
+                        className="px-4 py-1.5 rounded-lg bg-[#07643D] text-white hover:bg-[#043E26] font-bold text-xs shadow-sm"
+                      >
+                        Approve Request
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-amber-800 font-semibold text-[11px] italic">
+                      Pending review by Owner (Muhammad Akash)
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -222,26 +230,30 @@ export default function AdminInventoryPage() {
                       {currentStock}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-1 justify-end">
-                        <button
-                          onClick={() => handleUpdateDirectStock(p.id, selectedBranch, currentStock - 5)}
-                          className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded font-bold"
-                        >
-                          -5
-                        </button>
-                        <input
-                          type="number"
-                          value={currentStock}
-                          onChange={(e) => handleUpdateDirectStock(p.id, selectedBranch, e.target.value)}
-                          className="w-16 text-center font-mono font-bold p-1 border rounded bg-white text-xs outline-none"
-                        />
-                        <button
-                          onClick={() => handleUpdateDirectStock(p.id, selectedBranch, currentStock + 5)}
-                          className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded font-bold"
-                        >
-                          +5
-                        </button>
-                      </div>
+                      {isAdmin ? (
+                        <div className="inline-flex items-center gap-1 justify-end">
+                          <button
+                            onClick={() => handleUpdateDirectStock(p.id, selectedBranch, currentStock - 5)}
+                            className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded font-bold"
+                          >
+                            -5
+                          </button>
+                          <input
+                            type="number"
+                            value={currentStock}
+                            onChange={(e) => handleUpdateDirectStock(p.id, selectedBranch, e.target.value)}
+                            className="w-16 text-center font-mono font-bold p-1 border rounded bg-white text-xs outline-none"
+                          />
+                          <button
+                            onClick={() => handleUpdateDirectStock(p.id, selectedBranch, currentStock + 5)}
+                            className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded font-bold"
+                          >
+                            +5
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-gray-400 italic">Submit Request Above</span>
+                      )}
                     </td>
                   </tr>
                 );

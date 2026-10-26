@@ -117,6 +117,14 @@ export default function InvoiceModal({ order, isOpen, onClose }) {
                       {item.urduName && (
                         <span className="block text-[11px] text-gray-500 urdu-text">{item.urduName}</span>
                       )}
+                      {item.isCustomBox && item.boxDetails?.items && (
+                        <div className="mt-1 text-[10px] text-gray-600 bg-emerald-50/70 p-1.5 rounded border border-emerald-100">
+                          <p className="font-semibold text-emerald-900">Assortment Manifest ({item.boxDetails.totalGrams}g):</p>
+                          <p className="text-neutral-700">{item.boxDetails.items.map(sub => `${sub.name} (${sub.grams}g)`).join(' • ')}</p>
+                          {item.boxDetails.ribbon && <p className="text-amber-800 font-semibold mt-0.5">🎀 Ribbon Seal: {item.boxDetails.ribbon}</p>}
+                          {item.boxDetails.giftMessage && <p className="italic text-neutral-600 mt-0.5">Note: "{item.boxDetails.giftMessage}"</p>}
+                        </div>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-center text-gray-600">{item.selectedVariation || item.unit}</td>
                     <td className="py-3 px-4 text-center font-bold">{item.quantity}</td>

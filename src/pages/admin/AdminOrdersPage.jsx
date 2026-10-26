@@ -339,6 +339,15 @@ export default function AdminOrdersPage() {
                     <span className="font-bold text-gray-800">{item.name}</span>
                     <span className="text-[10px] text-gray-500 ml-1">({item.selectedVariation || item.unit})</span>
                     <span className="font-bold text-[#07643D] ml-2">× {item.quantity}</span>
+                    {item.isCustomBox && item.boxDetails?.items && (
+                      <div className="mt-1 text-[11px] bg-emerald-50 p-2 rounded-lg border border-emerald-200 text-left">
+                        <span className="font-bold text-emerald-900 block">Box Assortment ({item.boxDetails.totalGrams}g):</span>
+                        <span className="text-gray-700">{item.boxDetails.items.map(s => `${s.name} (${s.grams}g)`).join(' • ')}</span>
+                        {item.boxDetails.ribbon && <span className="block text-amber-800 font-semibold mt-0.5">🎀 Ribbon: {item.boxDetails.ribbon}</span>}
+                        {item.boxDetails.recipientName && <span className="block text-gray-600">Card for: {item.boxDetails.recipientName}</span>}
+                        {item.boxDetails.giftMessage && <span className="block italic text-gray-600">"{item.boxDetails.giftMessage}"</span>}
+                      </div>
+                    )}
                   </div>
                   <span className="font-mono font-bold text-gray-900">
                     Rs. {(item.price * item.quantity).toLocaleString()}

@@ -14,6 +14,28 @@ export default function CustomerAddressesPage() {
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('Jhang');
 
+  if (!user) {
+    return (
+      <div className="min-h-[70vh] bg-[#FDFBF7] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white p-8 rounded-3xl border border-gray-200 text-center space-y-3 shadow-sm">
+          <div className="w-12 h-12 rounded-full bg-emerald-50 text-[#07643D] flex items-center justify-center mx-auto border border-emerald-100">
+            <MapPin className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900 font-serif">Customer Login Required</h2>
+          <p className="text-xs text-gray-500">
+            Please sign in to manage your saved delivery addresses.
+          </p>
+          <Link
+            to="/login"
+            className="inline-block mt-3 px-6 py-2.5 bg-[#07643D] text-white rounded-xl text-xs font-bold hover:bg-[#043E26] shadow-sm transition-colors"
+          >
+            Sign In to Manage Addresses
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const addresses = user?.addresses || [];
 
   const handleAddAddress = (e) => {

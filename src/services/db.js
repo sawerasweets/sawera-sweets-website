@@ -1,11 +1,11 @@
 // Relational Local Storage Database Engine for Sawera Sweets & Bakers
 // Manages reactive state across Customer, Staff, Rider, and Admin views with window custom events.
 
-import { CATEGORIES } from '../data/categories';
-import { PRODUCTS } from '../data/products';
-import { supabase, isSupabaseConfigured } from './supabase';
-import { DEFAULT_BOX_OPTIONS } from '../data/boxStudioConfig';
-import { DEFAULT_OCCASIONS } from '../data/occasionsConfig';
+import { CATEGORIES } from '../data/categories.js';
+import { PRODUCTS } from '../data/products.js';
+import { supabase, isSupabaseConfigured } from './supabase.js';
+import { DEFAULT_BOX_OPTIONS } from '../data/boxStudioConfig.js';
+import { DEFAULT_OCCASIONS } from '../data/occasionsConfig.js';
 
 const DB_VERSION = 'sawera_v3.0';
 const EVENT_NAME = 'sawera-db-change';

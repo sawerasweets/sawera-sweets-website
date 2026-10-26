@@ -116,7 +116,7 @@ export default function AdminProductsPage() {
       id: editingProduct?.id,
       price: Number(formData.price),
       discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
-      stocks: editingProduct?.stocks || { 'shop-1': 50, 'shop-2': 30, 'shop-3': 20, 'shop-4': 15 }
+      stocks: editingProduct?.stocks || { 'shop-1': 50 }
     };
 
     db.saveProduct(productPayload);

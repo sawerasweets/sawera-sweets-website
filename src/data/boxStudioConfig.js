@@ -73,9 +73,10 @@ export const DEFAULT_BOX_OPTIONS = [
 ];
 
 export const GIFT_RIBBON_OPTIONS = [
-  { id: "ribbon-gold", name: "Royal Gold Ribbon", urduName: "شاہی گولڈن ربن", fee: 0, color: "#D4AF37" },
-  { id: "ribbon-emerald", name: "Emerald Green Silk", urduName: "سبز ریشمی ربن", fee: 0, color: "#07643D" },
-  { id: "ribbon-crimson", name: "Festive Crimson Red", urduName: "سرخ فیسٹیو ربن", fee: 0, color: "#991B1B" }
+  { id: "ribbon-gold", name: "Royal Gold Ribbon", urduName: "شاہی گولڈن ربن", fee: 0, color: "#D4AF37", colorHex: "#D4AF37" },
+  { id: "ribbon-emerald", name: "Emerald Green Silk", urduName: "سبز ریشمی ربن", fee: 0, color: "#07643D", colorHex: "#07643D" },
+  { id: "ribbon-crimson", name: "Festive Crimson Red", urduName: "سرخ فیسٹیو ربن", fee: 0, color: "#991B1B", colorHex: "#991B1B" },
+  { id: "ribbon-none", name: "Classic (No Ribbon)", urduName: "سادہ (بغیر ربن)", fee: 0, color: "#E5E7EB", colorHex: "#E5E7EB" }
 ];
 
 export const GIFT_OCCASION_TEMPLATES = [

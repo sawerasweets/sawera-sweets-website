@@ -74,6 +74,25 @@ function ScrollToTop() {
   return null;
 }
 
+// Route Guard for Owner/Admin only pages
+function AdminOnlyRoute({ element }) {
+  const { isAdmin } = useAuth();
+  if (!isAdmin) {
+    return (
+      <div className="bg-white rounded-3xl p-8 border border-red-200 text-center max-w-md mx-auto my-12 space-y-3 shadow-sm">
+        <div className="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto border border-red-200 font-bold text-lg">
+          !
+        </div>
+        <h3 className="text-base font-bold text-gray-900">Owner Access Required</h3>
+        <p className="text-xs text-gray-500">
+          This management section is restricted to the store owner (Muhammad Akash). Staff accounts do not have authorization to view or modify store configurations, financial analytics, or personnel.
+        </p>
+      </div>
+    );
+  }
+  return element;
+}
+
 // Storefront Wrapper to conditionally display Header, Footer, and Floating Widgets
 function StorefrontLayout() {
   const location = useLocation();
@@ -89,19 +108,19 @@ function StorefrontLayout() {
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="inventory" element={<AdminInventoryPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />
-          <Route path="branches" element={<AdminBranchesPage />} />
+          <Route path="branches" element={<AdminOnlyRoute element={<AdminBranchesPage />} />} />
           <Route path="customers" element={<AdminCustomersPage />} />
-          <Route path="staff" element={<AdminStaffPage />} />
-          <Route path="riders" element={<AdminRidersPage />} />
+          <Route path="staff" element={<AdminOnlyRoute element={<AdminStaffPage />} />} />
+          <Route path="riders" element={<AdminOnlyRoute element={<AdminRidersPage />} />} />
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="questions" element={<AdminQuestionsPage />} />
           <Route path="tickets" element={<AdminTicketsPage />} />
           <Route path="chat" element={<AdminChatPage />} />
-          <Route path="analytics" element={<AdminAnalyticsPage />} />
-          <Route path="banners" element={<AdminBannersPage />} />
+          <Route path="analytics" element={<AdminOnlyRoute element={<AdminAnalyticsPage />} />} />
+          <Route path="banners" element={<AdminOnlyRoute element={<AdminBannersPage />} />} />
           <Route path="content" element={<AdminContentPage />} />
-          <Route path="logs" element={<AdminActivityLogPage />} />
-          <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="logs" element={<AdminOnlyRoute element={<AdminActivityLogPage />} />} />
+          <Route path="settings" element={<AdminOnlyRoute element={<AdminSettingsPage />} />} />
         </Route>
       </Routes>
     );

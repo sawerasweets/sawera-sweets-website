@@ -68,6 +68,7 @@ export default function MithaiBoxStudioPage() {
   }, [selectedItems]);
 
   const maxCapacity = activeBox ? activeBox.capacityGrams : 1000;
+  const isOverCapacity = totalGrams > maxCapacity;
   const capacityPercent = Math.min(100, Math.round((totalGrams / maxCapacity) * 100));
   const remainingGrams = Math.max(0, maxCapacity - totalGrams);
   const isFull = totalGrams >= maxCapacity;
@@ -154,7 +155,7 @@ export default function MithaiBoxStudioPage() {
 
   // Submit custom box to cart
   const handleAddToCart = () => {
-    if (!activeBox || selectedItems.length === 0) return;
+    if (!activeBox || selectedItems.length === 0 || isOverCapacity) return;
 
     const ribbonObj = GIFT_RIBBON_OPTIONS.find(r => r.id === selectedRibbonId);
 
@@ -540,7 +541,7 @@ export default function MithaiBoxStudioPage() {
                       >
                         <span 
                           className="w-4 h-4 rounded-full border border-neutral-400 shrink-0" 
-                          style={{ backgroundColor: ribbon.colorHex }}
+                          style={{ backgroundColor: ribbon.colorHex || ribbon.color }}
                         />
                         <span className="text-xs font-semibold text-neutral-800 leading-tight">
                           {isUrdu ? ribbon.urduName : ribbon.name}
@@ -730,11 +731,19 @@ export default function MithaiBoxStudioPage() {
                 </div>
 
                 {/* Add Custom Box To Cart Button */}
-                <div className="mt-6">
+                <div className="mt-6 space-y-3">
+                  {isOverCapacity && (
+                    <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                      {isUrdu 
+                        ? `کل وزن (${totalGrams} گرام) بکس کی گنجائش (${maxCapacity} گرام) سے زیادہ ہے۔ براہ کرم مقدار کم کریں یا بڑا بکس منتخب کریں۔`
+                        : `Total weight (${totalGrams}g) exceeds box limit (${maxCapacity}g). Please reduce portions or select a larger box.`}
+                    </div>
+                  )}
+
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    disabled={selectedItems.length === 0}
+                    disabled={selectedItems.length === 0 || isOverCapacity}
                     className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-800 to-emerald-900 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {addedSuccess ? (
