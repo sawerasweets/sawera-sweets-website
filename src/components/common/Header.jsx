@@ -27,7 +27,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import NotificationBell from '../customer/NotificationBell';
 
 export default function Header() {
-  const { totalItems, setIsCartOpen } = useCart();
+  const { totalItems, setIsCartOpen, wishlist } = useCart();
   const { searchQuery, setSearchQuery, categories } = useStore();
   const { user, logout, isAdmin, isStaff, isRider, isCustomer } = useAuth();
   const { t, isUrdu } = useLanguage();
@@ -291,6 +291,20 @@ export default function Header() {
               )}
             </div>
 
+            {/* Wishlist Link */}
+            <Link
+              to="/wishlist"
+              aria-label="View Wishlist"
+              className="relative p-2 rounded-full hover:bg-rose-50 text-neutral-600 hover:text-rose-600 transition-colors border border-gray-200"
+            >
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500" />
+              {wishlist?.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white font-bold text-[10px] flex items-center justify-center border border-white">
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
+
             {/* Cart Trigger Button */}
             <button
               onClick={() => setIsCartOpen(true)}
@@ -355,6 +369,15 @@ export default function Header() {
               {t('allProducts')}
             </Link>
 
+            <Link
+              to="/mithai-box-studio"
+              className="px-3 py-1 rounded-md text-xs font-bold bg-gradient-to-r from-amber-400 to-amber-300 text-emerald-950 hover:brightness-105 transition-all flex items-center gap-1.5 flex-shrink-0 shadow-sm border border-amber-200"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-900 fill-amber-400" />
+              <span>{isUrdu ? 'مٹھائی بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
+              <span className="text-[9px] bg-emerald-900 text-amber-200 px-1 py-0.2 rounded uppercase tracking-wider font-extrabold">NEW</span>
+            </Link>
+
             {categories?.map((cat) => (
               <Link
                 key={cat.id}
@@ -383,6 +406,30 @@ export default function Header() {
       {/* Mobile Sliding Navigation Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-6 space-y-3 animate-in fade-in slide-in-from-top-2">
+          {/* Mithai Box Studio Feature Pill */}
+          <Link
+            to="/mithai-box-studio"
+            onClick={() => setMobileMenuOpen(false)}
+            className="p-3 rounded-xl bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white flex items-center justify-between border border-amber-400/40 shadow-sm"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-amber-200 font-serif">
+                  {isUrdu ? 'سویرا مٹھائی بکس اسٹوڈیو' : 'Mithai Box Studio'}
+                </div>
+                <div className="text-[10px] text-emerald-200">
+                  {isUrdu ? 'اپنی مرضی کا شاہی بکس تیار کریں' : 'Custom Assortment Box'}
+                </div>
+              </div>
+            </div>
+            <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full">
+              NEW
+            </span>
+          </Link>
+
           <div className="text-xs font-bold text-gray-400 uppercase tracking-wider pt-2">
             {isUrdu ? 'کیٹیگریز' : 'Categories'}
           </div>

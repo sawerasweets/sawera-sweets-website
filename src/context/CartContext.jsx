@@ -15,6 +15,74 @@ export const CartProvider = ({ children }) => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sawera_wishlist');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('sawera_wishlist', JSON.stringify(wishlist));
+    } catch (e) {
+      console.error('Failed to save wishlist to storage', e);
+    }
+  }, [wishlist]);
+
+  const toggleWishlist = (productId) => {
+    setWishlist(prev => {
+      const exists = prev.includes(productId);
+      const updated = exists ? prev.filter(id => id !== productId) : [productId, ...prev];
+      showToast(exists ? 'Removed from Wishlist' : 'Added to Wishlist');
+      return updated;
+    });
+  };
+
+  const isInWishlist = (productId) => wishlist.includes(productId);
+
+  const addCustomBoxToCart = (boxData) => {
+    const cartItemId = `custom-box-${Date.now()}`;
+    const boxItem = {
+      cartItemId,
+      id: cartItemId,
+      isCustomBox: true,
+      name: `Custom Mithai Box (${boxData.boxOption.name})`,
+      urduName: `کسٹم مٹھائی بکس (${boxData.boxOption.urduName})`,
+      category: 'sweets',
+      price: boxData.totalPrice,
+      originalPrice: boxData.totalPrice,
+      unit: `${boxData.totalGrams}g Assortment`,
+      image: boxData.boxOption.image || '/images/hero/all-sweets.jpg',
+      quantity: 1,
+      boxDetails: {
+        boxId: boxData.boxOption.id,
+        boxName: boxData.boxOption.name,
+        boxUrduName: boxData.boxOption.urduName,
+        capacityGrams: boxData.boxOption.capacityGrams,
+        packagingFee: boxData.packagingFee,
+        totalGrams: boxData.totalGrams,
+        items: boxData.items.map(it => ({
+          productId: it.product.id,
+          name: it.product.name,
+          urduName: it.product.urduName,
+          grams: it.grams,
+          price: it.price,
+          image: it.product.image
+        })),
+        ribbon: boxData.ribbon || null,
+        giftMessage: boxData.giftMessage || '',
+        recipientName: boxData.recipientName || ''
+      }
+    };
+
+    setCart(prevCart => [boxItem, ...prevCart]);
+    showToast(`Added Custom Box "${boxData.boxOption.name}" to cart!`);
+    setIsCartOpen(true);
+    return cartItemId;
+  };
 
   useEffect(() => {
     try {
@@ -90,6 +158,7 @@ export const CartProvider = ({ children }) => {
       value={{
         cart,
         addToCart,
+        addCustomBoxToCart,
         updateQuantity,
         removeFromCart,
         clearCart,
@@ -97,7 +166,10 @@ export const CartProvider = ({ children }) => {
         subtotal,
         isCartOpen,
         setIsCartOpen,
-        toastMessage
+        toastMessage,
+        wishlist,
+        toggleWishlist,
+        isInWishlist
       }}
     >
       {children}

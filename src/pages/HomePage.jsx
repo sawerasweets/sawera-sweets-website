@@ -16,7 +16,10 @@ import {
   Zap,
   CheckCircle2,
   Heart,
-  PlusCircle
+  PlusCircle,
+  Box,
+  Gift,
+  Scale
 } from 'lucide-react';
 import { CATEGORIES } from '../data/categories';
 import { STORE_CONFIG } from '../data/storeConfig';
@@ -24,6 +27,7 @@ import { useStore } from '../context/StoreContext';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import ProductCard from '../components/product/ProductCard';
+import db from '../services/db';
 
 export default function HomePage() {
   const { products } = useStore();
@@ -45,6 +49,23 @@ export default function HomePage() {
   const marqueeCategories = useMemo(() => {
     return [...CATEGORIES, ...CATEGORIES, ...CATEGORIES, ...CATEGORIES];
   }, []);
+
+  const occasions = useMemo(() => {
+    return db.getOccasions().filter(o => o.isActive !== false);
+  }, []);
+
+  const [recentlyViewedIds, setRecentlyViewedIds] = useState([]);
+  useEffect(() => {
+    setRecentlyViewedIds(db.getRecentlyViewed());
+  }, []);
+
+  const recentlyViewedProducts = useMemo(() => {
+    if (!recentlyViewedIds || recentlyViewedIds.length === 0) return [];
+    return recentlyViewedIds
+      .map(id => products.find(p => p.id === id))
+      .filter(Boolean)
+      .slice(0, 4);
+  }, [recentlyViewedIds, products]);
 
   return (
     <div className="space-y-12 sm:space-y-16 pb-12">
@@ -252,6 +273,169 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* 2.5 SAWERA MITHAI BOX STUDIO (SIGNATURE FEATURE SHOWCASE) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white border-2 border-amber-400/40 shadow-2xl p-6 sm:p-10 lg:p-12">
+          {/* Background Ambient Motif */}
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#D4AF37_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Left Content */}
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                <Sparkles className="w-4 h-4 text-amber-300 fill-amber-400" />
+                <span>{isUrdu ? 'دستخطی سگنیچر فیچر • نیا' : 'Sawera Signature Feature • Live'}</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-serif font-bold text-amber-200 leading-tight">
+                {isUrdu ? 'سویرا مٹھائی بکس اسٹوڈیو' : 'Sawera Mithai Box Studio'}
+              </h2>
+
+              <p className="text-emerald-100 text-sm sm:text-base leading-relaxed max-w-xl">
+                {isUrdu
+                  ? 'اپنی مرضی کی روایتی مٹھائیاں خود منتخب کر کے شاہی پریزنٹیشن بکس تیار کریں۔ لائیو ویٹ کاؤنٹر، گولڈن ٹرے، ساٹن ربن اور ہاتھ سے تحریر کردہ تہنیتی کارڈ کے ساتھ۔'
+                  : 'Craft your custom luxury mithai box. Hand-pick sweet portions from our authentic daily-fresh catalog, monitor your box capacity in real time, and personalize with custom ribbon seals and greeting cards.'}
+              </p>
+
+              {/* 4 Feature Highlights */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div className="p-3 rounded-xl bg-emerald-900/60 border border-emerald-700/60 text-center">
+                  <Box className="w-5 h-5 text-amber-300 mx-auto mb-1.5" />
+                  <span className="text-[11px] font-bold text-white block">
+                    {isUrdu ? 'بکس کا سائز' : 'Box Sizes'}
+                  </span>
+                  <span className="text-[10px] text-emerald-300">500g, 1kg, 2kg</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-900/60 border border-emerald-700/60 text-center">
+                  <Scale className="w-5 h-5 text-amber-300 mx-auto mb-1.5" />
+                  <span className="text-[11px] font-bold text-white block">
+                    {isUrdu ? 'لائیو گنجائش' : 'Live Gauge'}
+                  </span>
+                  <span className="text-[10px] text-emerald-300">Auto Capacity</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-900/60 border border-emerald-700/60 text-center">
+                  <Gift className="w-5 h-5 text-amber-300 mx-auto mb-1.5" />
+                  <span className="text-[11px] font-bold text-white block">
+                    {isUrdu ? 'شاہی ساٹن ربن' : 'Royal Ribbon'}
+                  </span>
+                  <span className="text-[10px] text-emerald-300">Gold &amp; Emerald</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-900/60 border border-emerald-700/60 text-center">
+                  <Heart className="w-5 h-5 text-amber-300 mx-auto mb-1.5" />
+                  <span className="text-[11px] font-bold text-white block">
+                    {isUrdu ? 'تہنیتی کارڈ' : 'Gift Note'}
+                  </span>
+                  <span className="text-[10px] text-emerald-300">Custom Wishes</span>
+                </div>
+              </div>
+
+              {/* CTA Action */}
+              <div className="pt-3 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                <Link
+                  to="/mithai-box-studio"
+                  className="px-8 py-4 rounded-xl bg-gradient-to-r from-amber-400 to-amber-300 hover:from-amber-300 hover:to-amber-200 text-emerald-950 font-bold text-sm shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4 fill-emerald-950 text-emerald-950" />
+                  <span>{isUrdu ? 'اپنا مٹھائی بکس تیار کریں ←' : 'Start Designing Your Box →'}</span>
+                </Link>
+
+                <Link
+                  to="/category/sweets"
+                  className="px-6 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold text-sm flex items-center justify-center gap-2 transition"
+                >
+                  <span>{isUrdu ? 'تمام مٹھائیاں دیکھیں' : 'Browse All Sweets'}</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Right Preview Card */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-sm rounded-2xl overflow-hidden border-2 border-amber-400/50 shadow-2xl bg-emerald-900/80 p-3">
+                <div className="rounded-xl overflow-hidden aspect-[4/3] bg-neutral-900 relative">
+                  <img
+                    src="/images/hero/all-sweets.jpg"
+                    alt="Sawera Luxury Mithai Presentation Box"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 bg-amber-500 text-emerald-950 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow">
+                    {isUrdu ? 'دستخطی باکس' : 'Signature Tray'}
+                  </div>
+                </div>
+
+                <div className="p-3 text-center space-y-1">
+                  <p className="font-serif font-bold text-amber-200 text-base">
+                    {isUrdu ? 'رائل ایمرلڈ مٹھائی بکس' : 'Royal Emerald Presentation Box'}
+                  </p>
+                  <p className="text-[11px] text-emerald-200">
+                    {isUrdu ? 'خالص دیسی گھی مٹھائی • تازہ پیکنگ • محفوظ ترسیل' : 'Pure Desi Ghee • Freshly Packed • Express Nationwide Shipping'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2.6 OCCASION-BASED COLLECTIONS SECTION */}
+      {occasions.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-8">
+            <div>
+              <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
+                {isUrdu ? 'ہر خوشی کیساتھ' : 'Celebrations & Gifting'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+                {isUrdu ? 'تقاریب اور خاص مواقع کے مجموعے' : 'Occasion-Based Collections'}
+              </h2>
+            </div>
+
+            <Link
+              to="/mithai-box-studio"
+              className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
+            >
+              <span>{isUrdu ? 'کسٹم بکس بنائیں' : 'Create Custom Assortment'}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {occasions.map(occ => (
+              <Link
+                key={occ.id}
+                to="/mithai-box-studio"
+                className="group relative rounded-2xl overflow-hidden border border-neutral-200 bg-white shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1 p-5 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-100 text-amber-900">
+                      {isUrdu ? occ.urduBadge : occ.badge}
+                    </span>
+                    <Sparkles className="w-4 h-4 text-amber-500" />
+                  </div>
+
+                  <div>
+                    <h3 className="font-serif font-bold text-neutral-900 text-lg group-hover:text-emerald-800 transition-colors">
+                      {isUrdu ? occ.urduName : occ.name}
+                    </h3>
+                    <p className="text-xs text-neutral-500 mt-1 line-clamp-2">
+                      {isUrdu ? occ.urduSubtitle : occ.subtitle}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-neutral-100 flex items-center justify-between text-xs font-bold text-emerald-800">
+                  <span>{isUrdu ? 'آرڈر تیار کریں' : 'Build Box'}</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 3. PRODUCTS SECTION (OR CATALOG UPDATE NOTICE) */}
       {products.length === 0 ? (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -398,6 +582,28 @@ export default function HomePage() {
             </section>
           )}
         </>
+      )}
+
+      {/* 5.5 RECENTLY VIEWED PRODUCTS */}
+      {recentlyViewedProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
+            <div>
+              <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
+                {isUrdu ? 'آپ کی پسند' : 'Pick Up Where You Left Off'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+                {isUrdu ? 'حال ہی میں دیکھی گئی اشیاء' : 'Recently Viewed Products'}
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {recentlyViewedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* 6. WHY CHOOSE US (4 Pillars) */}

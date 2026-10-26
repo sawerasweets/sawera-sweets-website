@@ -6,26 +6,14 @@ import { useStore } from '../../context/StoreContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function CustomerWishlistPage() {
-  const { addToCart } = useCart();
+  const { addToCart, wishlist, toggleWishlist } = useCart();
   const { products } = useStore();
   const { isUrdu } = useLanguage();
-  const [wishlistIds, setWishlistIds] = useState(() => {
-    try {
-      const saved = localStorage.getItem('sawera_wishlist');
-      return saved ? JSON.parse(saved) : ['sw-001', 'bk-001'];
-    } catch (e) {
-      return ['sw-001'];
-    }
-  });
 
-  useEffect(() => {
-    localStorage.setItem('sawera_wishlist', JSON.stringify(wishlistIds));
-  }, [wishlistIds]);
-
-  const wishlistProducts = products.filter(p => wishlistIds.includes(p.id));
+  const wishlistProducts = products.filter(p => wishlist?.includes(p.id));
 
   const handleRemove = (id) => {
-    setWishlistIds(prev => prev.filter(item => item !== id));
+    toggleWishlist(id);
   };
 
   const handleAddToCart = (product) => {

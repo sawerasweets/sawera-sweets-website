@@ -106,7 +106,9 @@ export default function CheckoutPage() {
         price: item.price,
         quantity: item.quantity,
         unit: item.unit,
-        image: item.image
+        image: item.image,
+        isCustomBox: item.isCustomBox || false,
+        boxDetails: item.boxDetails || null
       })),
       fulfillmentType,
       deliveryArea,

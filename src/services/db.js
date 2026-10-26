@@ -4,6 +4,8 @@
 import { CATEGORIES } from '../data/categories';
 import { PRODUCTS } from '../data/products';
 import { supabase, isSupabaseConfigured } from './supabase';
+import { DEFAULT_BOX_OPTIONS } from '../data/boxStudioConfig';
+import { DEFAULT_OCCASIONS } from '../data/occasionsConfig';
 
 const DB_VERSION = 'sawera_v3.0';
 const EVENT_NAME = 'sawera-db-change';
@@ -368,6 +370,20 @@ class SaweraDB {
         }
       } catch (e) {}
 
+      // Additive safeguard: Ensure Box Studio Options and Occasions are initialized
+      try {
+        const currentBoxes = this.get('boxOptions');
+        if (!Array.isArray(currentBoxes) || currentBoxes.length === 0) {
+          this.set('boxOptions', DEFAULT_BOX_OPTIONS);
+        }
+        const currentOccasions = this.get('occasions');
+        if (!Array.isArray(currentOccasions) || currentOccasions.length === 0) {
+          this.set('occasions', DEFAULT_OCCASIONS);
+        }
+      } catch (e) {
+        console.warn('Box options init error:', e);
+      }
+
       // Supabase Cloud Sync & Realtime Subscription
       if (isSupabaseConfigured && supabase) {
         this.syncFromSupabase();
@@ -393,6 +409,8 @@ class SaweraDB {
     this.set('chats', defaultChats);
     this.set('banners', defaultBanners);
     this.set('faqs', defaultFaqs);
+    this.set('boxOptions', DEFAULT_BOX_OPTIONS);
+    this.set('occasions', DEFAULT_OCCASIONS);
     this.set('activityLogs', defaultActivityLogs);
     this.set('contactMessages', []);
     this.broadcast();
@@ -784,6 +802,113 @@ class SaweraDB {
     this.set('settings', merged);
     this.logActivity('Store Settings Updated', 'System configurations updated.');
     return merged;
+  }
+
+  // Mithai Box Studio & Packaging Options
+  getBoxOptions() {
+    const list = this.get('boxOptions');
+    return Array.isArray(list) && list.length > 0 ? list : DEFAULT_BOX_OPTIONS;
+  }
+
+  getBoxOptionById(id) {
+    return this.getBoxOptions().find(b => b.id === id) || null;
+  }
+
+  saveBoxOption(box) {
+    const boxes = this.getBoxOptions();
+    const idx = boxes.findIndex(b => b.id === box.id);
+    let updated;
+    if (idx >= 0) {
+      updated = [...boxes];
+      updated[idx] = { ...updated[idx], ...box };
+    } else {
+      updated = [box, ...boxes];
+    }
+    this.set('boxOptions', updated);
+    this.logActivity('Box Studio Updated', `Box configuration "${box.name}" updated.`);
+    return box;
+  }
+
+  deleteBoxOption(id) {
+    const boxes = this.getBoxOptions();
+    const updated = boxes.filter(b => b.id !== id);
+    this.set('boxOptions', updated);
+    this.logActivity('Box Option Removed', `Box configuration ID ${id} deleted.`);
+    return true;
+  }
+
+  // Occasion Collections
+  getOccasions() {
+    const list = this.get('occasions');
+    return Array.isArray(list) && list.length > 0 ? list : DEFAULT_OCCASIONS;
+  }
+
+  saveOccasion(occasion) {
+    const list = this.getOccasions();
+    const idx = list.findIndex(o => o.id === occasion.id);
+    let updated;
+    if (idx >= 0) {
+      updated = [...list];
+      updated[idx] = { ...updated[idx], ...occasion };
+    } else {
+      updated = [occasion, ...list];
+    }
+    this.set('occasions', updated);
+    return occasion;
+  }
+
+  // Wishlist
+  getWishlist() {
+    try {
+      const item = localStorage.getItem('sawera_wishlist');
+      return item ? JSON.parse(item) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  isInWishlist(productId) {
+    const list = this.getWishlist();
+    return list.includes(productId);
+  }
+
+  toggleWishlist(productId) {
+    let list = this.getWishlist();
+    const exists = list.includes(productId);
+    if (exists) {
+      list = list.filter(id => id !== productId);
+    } else {
+      list = [productId, ...list];
+    }
+    try {
+      localStorage.setItem('sawera_wishlist', JSON.stringify(list));
+      this.broadcast();
+    } catch (e) {
+      console.warn('Wishlist update error:', e);
+    }
+    return !exists;
+  }
+
+  // Recently Viewed Products
+  getRecentlyViewed() {
+    try {
+      const item = localStorage.getItem('sawera_recently_viewed');
+      return item ? JSON.parse(item) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  addRecentlyViewed(productId) {
+    if (!productId) return;
+    try {
+      let list = this.getRecentlyViewed();
+      list = [productId, ...list.filter(id => id !== productId)].slice(0, 10);
+      localStorage.setItem('sawera_recently_viewed', JSON.stringify(list));
+      this.broadcast();
+    } catch (e) {
+      console.warn('Recently viewed error:', e);
+    }
   }
 
   // Reset to Factory Default

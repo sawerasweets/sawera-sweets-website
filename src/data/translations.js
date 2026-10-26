@@ -97,7 +97,32 @@ export const TRANSLATIONS = {
     
     // Footers & Policies
     noReturnsPolicy: "Returns: No returns allowed. Exchange is allowed only if the product is defective or damaged upon delivery.",
-    copyright: "All rights reserved. Sawera Sweets & Bakers."
+    copyright: "All rights reserved. Sawera Sweets & Bakers.",
+
+    // Mithai Box Studio & Special Features
+    mithaiBoxStudio: "Mithai Box Studio",
+    mithaiBoxStudioTagline: "Craft Your Signature Assortment Box",
+    chooseBox: "Step 1: Choose Box Size",
+    selectSweets: "Step 2: Select Mithai Varieties",
+    reviewTray: "Step 3: Box Tray & Capacity",
+    livePriceTitle: "Step 4: Transparent Price Breakdown",
+    giftPresentation: "Step 5: Gift Message & Card",
+    addCustomBoxToCart: "Add Custom Box to Cart",
+    boxCapacity: "Box Capacity",
+    capacityRemaining: "Remaining Capacity",
+    boxFilled: "Box is Full",
+    trayEmpty: "Your sweet box is currently empty. Click on sweets below to add portions.",
+    customBoxAdded: "Custom Mithai Box added to cart!",
+    ribbonColor: "Gift Ribbon Seal",
+    greetingCard: "Complimentary Handwritten Greeting Card",
+    recipientName: "Recipient Name",
+    giftNotePlaceholder: "Write your heartfelt message here (e.g. Eid Mubarak, Shadi Mubarak, Best Wishes)...",
+    packagingCharge: "Packaging & Rigid Gift Box",
+    sweetsSubtotal: "Sweets Content Subtotal",
+    viewOccasions: "Explore Occasion Collections",
+    recentlyViewed: "Recently Viewed",
+    wishlistEmpty: "Your Wishlist is Empty",
+    startShopping: "Start Shopping"
   },
   
   ur: {
@@ -195,6 +220,31 @@ export const TRANSLATIONS = {
     
     // Footers & Policies
     noReturnsPolicy: "پالیسی: اشیاء کی واپسی نہیں ہوگی، صرف خرابی یا نقصان کی صورت میں تبادلہ ممکن ہے۔",
-    copyright: "جملہ حقوق محفوظ ہیں۔ سویرا سویٹس اینڈ بیکرز۔"
+    copyright: "جملہ حقوق محفوظ ہیں۔ سویرا سویٹس اینڈ بیکرز۔",
+
+    // Mithai Box Studio & Special Features
+    mithaiBoxStudio: "مٹھائی بکس اسٹوڈیو",
+    mithaiBoxStudioTagline: "اپنی مرضی کا شاہی مٹھائی بکس خود تیار کریں",
+    chooseBox: "مرحلہ ۱: بکس کا سائز منتخب کریں",
+    selectSweets: "مرحلہ ۲: مٹھائیاں منتخب کریں",
+    reviewTray: "مرحلہ ۳: بکس ٹرے اور گنجائش",
+    livePriceTitle: "مرحلہ ۴: شفاف قیمت کی تفصیل",
+    giftPresentation: "مرحلہ ۵: تحفہ کارڈ اور خصوصی پیغام",
+    addCustomBoxToCart: "کسٹم بکس کارٹ میں شامل کریں",
+    boxCapacity: "بکس کی گنجائش",
+    capacityRemaining: "باقی گنجائش",
+    boxFilled: "بکس مکمل بھر چکا ہے",
+    trayEmpty: "آپ کا بکس ابھی خالی ہے۔ نیچے سے مٹھائیاں منتخب کر کے شامل کریں۔",
+    customBoxAdded: "کسٹم مٹھائی بکس کارٹ میں شامل کر دیا گیا!",
+    ribbonColor: "شاہی ربن سیل",
+    greetingCard: "خوبصورت ہاتھ سے تحریر کردہ تہنیتی کارڈ",
+    recipientName: "وصول کنندہ کا نام",
+    giftNotePlaceholder: "اپنا نیک تمناؤں کا پیغام یہاں لکھیں (مثلاً عید مبارک، شادی مبارک، ڈھیروں دعائیں)...",
+    packagingCharge: "پیکنگ اور پریزنٹیشن بکس چارجز",
+    sweetsSubtotal: "مٹھائی کی کل قیمت",
+    viewOccasions: "تقاریب کے خصوصی پیکجز",
+    recentlyViewed: "حال ہی میں دیکھی گئی اشیاء",
+    wishlistEmpty: "آپ کی پسندیدہ فہرست خالی ہے",
+    startShopping: "خریداری شروع کریں"
   }
 };

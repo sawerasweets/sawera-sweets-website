@@ -79,6 +79,37 @@ export default function CartPage() {
                     </span>
                     <h3 className="text-sm font-bold text-gray-900 mt-1">{item.name}</h3>
                     <p className="text-xs text-gray-500">Unit: {item.unit}</p>
+
+                    {/* Custom Mithai Box Assortment Details */}
+                    {item.isCustomBox && item.boxDetails?.items && (
+                      <div className="mt-2 p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-200/80 text-xs space-y-1.5 max-w-sm">
+                        <div className="font-semibold text-emerald-950 flex items-center justify-between">
+                          <span>Box Manifest ({item.boxDetails.totalGrams}g):</span>
+                          {item.boxDetails.ribbon && (
+                            <span className="text-amber-800 text-[11px] font-bold">🎀 {item.boxDetails.ribbon}</span>
+                          )}
+                        </div>
+                        <ul className="space-y-1 text-neutral-700 text-[11px]">
+                          {item.boxDetails.items.map((sub, sIdx) => (
+                            <li key={sIdx} className="flex justify-between items-center bg-white/70 px-2 py-0.5 rounded">
+                              <span className="truncate pr-2 font-medium">• {sub.name}</span>
+                              <span className="shrink-0 text-emerald-800 font-bold">{sub.grams}g</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {item.boxDetails.recipientName && (
+                          <div className="text-[10px] text-neutral-600 pt-1 border-t border-emerald-200">
+                            Gift Card for: <span className="font-bold text-neutral-800">{item.boxDetails.recipientName}</span>
+                          </div>
+                        )}
+                        {item.boxDetails.giftMessage && (
+                          <div className="text-[10px] italic text-neutral-600 bg-white/60 p-1.5 rounded">
+                            "{item.boxDetails.giftMessage}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <p className="text-xs font-bold text-[#07643D] mt-1">
                       Rs. {item.price.toLocaleString()} each
                     </p>

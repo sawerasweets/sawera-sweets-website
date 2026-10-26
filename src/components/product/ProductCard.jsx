@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Eye, Star, Zap, Check } from 'lucide-react';
+import { ShoppingBag, Eye, Star, Zap, Check, Heart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function ProductCard({ product }) {
-  const { addToCart } = useCart();
+  const { addToCart, isInWishlist, toggleWishlist } = useCart();
   const { isUrdu } = useLanguage();
   const navigate = useNavigate();
+  const isWishlisted = isInWishlist(product.id);
+
+  const handleToggleWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(product.id);
+  };
 
   const hasVariations = product.variations && product.variations.length > 0;
   const [selectedVariation, setSelectedVariation] = useState(
@@ -75,27 +82,43 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Image Container */}
-      <Link 
-        to={`/product/${product.id}`}
-        className="relative block w-full pt-[90%] bg-gradient-to-br from-gray-50 to-[#FDFBF7] overflow-hidden"
-      >
-        <img
-          src={product.image}
-          alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "/images/products/gulab-jamun.svg";
-          }}
-        />
+      <div className="relative w-full pt-[90%] bg-gradient-to-br from-gray-50 to-[#FDFBF7] overflow-hidden">
+        <Link 
+          to={`/product/${product.id}`}
+          className="absolute inset-0 block w-full h-full"
+        >
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/images/products/gulab-jamun.svg";
+            }}
+          />
 
-        {/* Quick View Overlay on Hover */}
-        <div className="absolute inset-0 bg-[#07643D]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-          <span className="bg-white text-[#07643D] font-bold text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-            <Eye className="w-3.5 h-3.5" /> {isUrdu ? 'دیکھیں' : 'Quick View'}
-          </span>
-        </div>
-      </Link>
+          {/* Quick View Overlay on Hover */}
+          <div className="absolute inset-0 bg-[#07643D]/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+            <span className="bg-white text-[#07643D] font-bold text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+              <Eye className="w-3.5 h-3.5" /> {isUrdu ? 'دیکھیں' : 'Quick View'}
+            </span>
+          </div>
+        </Link>
+
+        {/* Wishlist Button */}
+        <button
+          type="button"
+          onClick={handleToggleWishlist}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          className={`absolute bottom-2.5 right-2.5 p-2 rounded-full z-10 transition-all shadow-md ${
+            isWishlisted 
+              ? 'bg-rose-50 text-rose-600 ring-1 ring-rose-200' 
+              : 'bg-white/90 text-neutral-400 hover:text-rose-500 hover:bg-white'
+          }`}
+        >
+          <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-rose-500 text-rose-500' : ''}`} />
+        </button>
+      </div>
 
       {/* Content */}
       <div className="p-4 flex-1 flex flex-col justify-between">

@@ -112,6 +112,31 @@ export default function CartDrawer() {
                       {item.unit}
                     </p>
 
+                    {/* Custom Mithai Box Assortment Manifest */}
+                    {item.isCustomBox && item.boxDetails?.items && (
+                      <div className="mt-1.5 p-2 rounded-lg bg-emerald-50/70 border border-emerald-100 text-[10px] space-y-1">
+                        <div className="font-semibold text-emerald-900 flex justify-between">
+                          <span>Box Content ({item.boxDetails.totalGrams}g):</span>
+                          {item.boxDetails.ribbon && (
+                            <span className="text-amber-800">🎀 {item.boxDetails.ribbon}</span>
+                          )}
+                        </div>
+                        <ul className="space-y-0.5 text-neutral-600 max-h-24 overflow-y-auto">
+                          {item.boxDetails.items.map((sub, sIdx) => (
+                            <li key={sIdx} className="flex justify-between">
+                              <span className="truncate pr-1">• {sub.name}</span>
+                              <span className="shrink-0 font-medium text-neutral-800">{sub.grams}g</span>
+                            </li>
+                          ))}
+                        </ul>
+                        {item.boxDetails.recipientName && (
+                          <div className="text-[9px] text-neutral-500 pt-0.5 border-t border-emerald-200/50">
+                            Card for: <span className="font-semibold text-neutral-700">{item.boxDetails.recipientName}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div className="flex justify-between items-center mt-2">
                       <span className="text-xs font-bold text-[#07643D]">
                         Rs. {(item.price * item.quantity).toLocaleString()}

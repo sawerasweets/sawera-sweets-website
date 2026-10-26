@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Save, AlertTriangle, RotateCcw, CheckCircle2, ShieldAlert, Lock, KeyRound } from 'lucide-react';
+import { Settings, Save, AlertTriangle, RotateCcw, CheckCircle2, ShieldAlert, Lock, KeyRound, Box, Sparkles, Plus, Trash2 } from 'lucide-react';
 import db from '../../services/db';
 import { useAuth } from '../../context/AuthContext';
 import { supabase, isSupabaseConfigured } from '../../services/supabase';
@@ -8,6 +8,7 @@ export default function AdminSettingsPage() {
   const { user, updateProfile } = useAuth();
   const [settings, setSettings] = useState(() => db.getSettings());
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [boxOptions, setBoxOptions] = useState(() => db.getBoxOptions());
 
   // Admin Password Change State
   const [currentPassword, setCurrentPassword] = useState('');
@@ -364,6 +365,102 @@ export default function AdminSettingsPage() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Sawera Mithai Box Studio Configurations */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b">
+            <div className="flex items-center gap-2">
+              <Box className="w-5 h-5 text-[#07643D]" />
+              <div>
+                <h2 className="text-sm font-bold text-gray-900">Sawera Mithai Box Studio Packaging Rules</h2>
+                <p className="text-[11px] text-gray-500">Configure customer box sizes, packaging charges, and availability in the custom box studio.</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full">
+              Signature Feature
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {boxOptions.map((box) => (
+              <div 
+                key={box.id} 
+                className={`p-4 rounded-2xl border transition-all ${
+                  box.isActive !== false ? 'bg-white border-neutral-200' : 'bg-neutral-50 border-dashed border-neutral-300 opacity-60'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={box.image} 
+                      alt={box.name} 
+                      className="w-12 h-12 rounded-lg object-cover border border-neutral-200" 
+                    />
+                    <div>
+                      <div className="font-bold text-neutral-900 text-sm flex items-center gap-2">
+                        <span>{box.name}</span>
+                        {box.badge && (
+                          <span className="text-[9px] bg-amber-500 text-white font-bold px-1.5 py-0.2 rounded">
+                            {box.badge}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-neutral-500">{box.urduName}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-600 mb-0.5">Capacity (Grams)</label>
+                      <input
+                        type="number"
+                        value={box.capacityGrams}
+                        onChange={(e) => {
+                          const updated = boxOptions.map(b => b.id === box.id ? { ...b, capacityGrams: Number(e.target.value) } : b);
+                          setBoxOptions(updated);
+                          db.set('boxOptions', updated);
+                        }}
+                        className="w-24 p-1.5 border rounded-lg font-mono text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-neutral-600 mb-0.5">Box Fee (Rs)</label>
+                      <input
+                        type="number"
+                        value={box.packagingFee}
+                        onChange={(e) => {
+                          const updated = boxOptions.map(b => b.id === box.id ? { ...b, packagingFee: Number(e.target.value) } : b);
+                          setBoxOptions(updated);
+                          db.set('boxOptions', updated);
+                        }}
+                        className="w-24 p-1.5 border rounded-lg font-mono text-xs"
+                      />
+                    </div>
+
+                    <div className="pt-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = boxOptions.map(b => b.id === box.id ? { ...b, isActive: b.isActive === false ? true : false } : b);
+                          setBoxOptions(updated);
+                          db.set('boxOptions', updated);
+                        }}
+                        className={`px-3 py-1.5 rounded-lg font-bold text-xs transition ${
+                          box.isActive !== false 
+                            ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' 
+                            : 'bg-neutral-200 text-neutral-700 hover:bg-neutral-300'
+                        }`}
+                      >
+                        {box.isActive !== false ? 'Enabled' : 'Disabled'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

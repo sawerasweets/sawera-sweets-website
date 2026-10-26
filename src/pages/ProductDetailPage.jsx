@@ -43,6 +43,9 @@ export default function ProductDetailPage() {
       setQuestions(db.get('questions'));
     };
     syncData();
+    if (id) {
+      db.addRecentlyViewed(id);
+    }
     const unsubscribe = db.subscribe(syncData);
     return unsubscribe;
   }, [id]);
