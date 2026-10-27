@@ -244,6 +244,7 @@ const defaultFaqs = [
 const seedInitialProducts = () => {
   return PRODUCTS.map((prod) => ({
     ...prod,
+    isActive: prod.isActive !== false,
     stocks: prod.stocks || {
       "shop-1": 50
     },
@@ -357,16 +358,19 @@ class SaweraDB {
         for (const cat of CATEGORIES) {
           const foundIdx = updatedCats.findIndex(c => c.id === cat.id || c.slug === cat.slug);
           if (foundIdx === -1) {
-            updatedCats.push(cat);
+            updatedCats.push({ ...cat, isActive: true });
             hasCatsUpdate = true;
-          } else if (cat.badge && updatedCats[foundIdx].badge !== cat.badge) {
-            updatedCats[foundIdx] = { ...updatedCats[foundIdx], ...cat };
-            hasCatsUpdate = true;
+          } else {
+            const existingIsActive = updatedCats[foundIdx].isActive !== undefined ? updatedCats[foundIdx].isActive : true;
+            if (updatedCats[foundIdx].isActive === undefined || (cat.badge && updatedCats[foundIdx].badge !== cat.badge)) {
+              updatedCats[foundIdx] = { ...cat, ...updatedCats[foundIdx], badge: cat.badge || updatedCats[foundIdx].badge, isActive: existingIsActive };
+              hasCatsUpdate = true;
+            }
           }
         }
 
         if (hasCatsUpdate || curCats.length === 0) {
-          this.set('categories', updatedCats.length > 0 ? updatedCats : CATEGORIES);
+          this.set('categories', updatedCats.length > 0 ? updatedCats : CATEGORIES.map(c => ({ ...c, isActive: true })));
         }
       } catch (err) {
         console.warn('Categories merge error in init:', err);
@@ -598,6 +602,50 @@ class SaweraDB {
     return true;
   }
 
+  // Category Operations
+  getCategories() {
+    const cats = this.get('categories');
+    if (!Array.isArray(cats) || cats.length === 0) {
+      return CATEGORIES.map(c => ({ ...c, isActive: true }));
+    }
+    return cats.map(c => ({ ...c, isActive: c.isActive !== false }));
+  }
+
+  toggleCategoryActive(slugOrId) {
+    const cats = this.getCategories();
+    let target = null;
+    const updated = cats.map(c => {
+      if (c.id === slugOrId || c.slug === slugOrId) {
+        const nextState = c.isActive === false ? true : false;
+        target = { ...c, isActive: nextState };
+        return target;
+      }
+      return c;
+    });
+
+    this.set('categories', updated);
+    if (target) {
+      this.logActivity('Category Status Changed', `Category "${target.name}" is now ${target.isActive ? 'Active (Live)' : 'Inactive (Off)'}.`);
+    }
+    this.broadcast();
+    return target;
+  }
+
+  saveCategory(catData) {
+    const cats = this.getCategories();
+    let updated;
+    const exists = cats.some(c => c.id === catData.id || c.slug === catData.slug);
+    if (exists) {
+      updated = cats.map(c => (c.id === catData.id || c.slug === catData.slug) ? { ...c, ...catData } : c);
+    } else {
+      updated = [...cats, { ...catData, id: catData.id || catData.slug, isActive: catData.isActive !== false }];
+    }
+    this.set('categories', updated);
+    this.logActivity('Category Saved', `Category "${catData.name}" was saved.`);
+    this.broadcast();
+    return true;
+  }
+
   // Product Operations
   getProducts() {
     const deletedIds = this.get('deleted_product_ids') || [];
@@ -681,6 +729,18 @@ class SaweraDB {
 
     this.broadcast();
     return true;
+  }
+
+  toggleProductActive(id) {
+    const products = this.getProducts();
+    const target = products.find(p => p.id === id);
+    if (!target) return false;
+    const nextState = target.isActive === false ? true : false;
+    const updated = { ...target, isActive: nextState };
+    this.saveProduct(updated);
+    this.logActivity('Product Status Changed', `Product "${target.name}" is now ${nextState ? 'Active (Live)' : 'Inactive (Off)'}.`);
+    this.broadcast();
+    return updated;
   }
 
   // Order Operations & Single-Branch Fulfillment

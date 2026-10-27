@@ -5,7 +5,7 @@ const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
   const [products, setProducts] = useState(() => db.getProducts());
-  const [categories, setCategories] = useState(() => db.get('categories'));
+  const [categories, setCategories] = useState(() => db.getCategories());
   const [branches, setBranches] = useState(() => db.getBranches());
   const [settings, setSettings] = useState(() => db.getSettings());
   const [activeBranchId, setActiveBranchId] = useState('shop-1');
@@ -17,7 +17,7 @@ export const StoreProvider = ({ children }) => {
   useEffect(() => {
     const syncWithDb = () => {
       setProducts(db.getProducts());
-      setCategories(db.get('categories'));
+      setCategories(db.getCategories());
       setBranches(db.getBranches());
       setSettings(db.getSettings());
     };

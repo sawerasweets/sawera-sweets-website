@@ -49,6 +49,7 @@ import RiderDashboard from './pages/rider/RiderDashboard';
 // Admin Panel Layout & Pages
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminProductsPage from './pages/admin/AdminProductsPage';
 import AdminInventoryPage from './pages/admin/AdminInventoryPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
@@ -106,6 +107,7 @@ function StorefrontLayout() {
       <Routes>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboardPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
           <Route path="products" element={<AdminProductsPage />} />
           <Route path="inventory" element={<AdminInventoryPage />} />
           <Route path="orders" element={<AdminOrdersPage />} />

@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
   const productQuestions = questions.filter(q => q.productId === product.id && q.status === 'published');
 
   const relatedProducts = db.getProducts()
-    .filter(p => p.category === product.category && p.id !== product.id)
+    .filter(p => p.category === product.category && p.id !== product.id && p.isActive !== false)
     .slice(0, 4);
 
   return (
@@ -216,23 +216,37 @@ export default function ProductDetailPage() {
 
               {/* Action Buttons */}
               <div className="space-y-3 pt-4 border-t border-gray-100">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <button
-                    onClick={handleAddToCart}
-                    className="py-3 px-4 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/40 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
-                  >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>{isUrdu ? `ٹوکری میں شامل کریں (${quantity})` : `Add to Cart (${quantity})`}</span>
-                  </button>
+                {product.isActive === false ? (
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center space-y-2">
+                    <p className="text-amber-800 font-semibold text-xs">
+                      {isUrdu ? 'یہ پراڈکٹ فی الوقت دستیاب نہیں ہے' : 'This product is currently offline / unavailable for orders.'}
+                    </p>
+                    <Link
+                      to="/products"
+                      className="inline-block px-4 py-2 bg-[#07643D] text-white rounded-lg text-xs font-bold hover:bg-[#043E26] transition-colors"
+                    >
+                      {isUrdu ? 'دیگر مٹھائیاں دیکھیں' : 'Browse Available Products'}
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button
+                      onClick={handleAddToCart}
+                      className="py-3 px-4 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/40 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>{isUrdu ? `ٹوکری میں شامل کریں (${quantity})` : `Add to Cart (${quantity})`}</span>
+                    </button>
 
-                  <button
-                    onClick={handleBuyNow}
-                    className="py-3 px-4 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
-                  >
-                    <Zap className="w-4 h-4 text-[#D4AF37]" />
-                    <span>{isUrdu ? 'ابھی خریدیں اور کیش ادا کریں' : 'Buy Now & Checkout'}</span>
-                  </button>
-                </div>
+                    <button
+                      onClick={handleBuyNow}
+                      className="py-3 px-4 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    >
+                      <Zap className="w-4 h-4 text-[#D4AF37]" />
+                      <span>{isUrdu ? 'ابھی خریدیں اور کیش ادا کریں' : 'Buy Now & Checkout'}</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* Trust mini-strip */}
                 <div className="grid grid-cols-3 gap-2 pt-2 text-[10px] text-gray-500 text-center">

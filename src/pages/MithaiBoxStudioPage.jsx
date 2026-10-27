@@ -54,7 +54,7 @@ export default function MithaiBoxStudioPage() {
 
     // Filter available sweets from products catalog
     const allProducts = db.getProducts();
-    const sweets = allProducts.filter(p => p.category === 'sweets' && p.inStock !== false);
+    const sweets = allProducts.filter(p => p.category === 'sweets' && p.inStock !== false && p.isActive !== false);
     setSweetsCatalog(sweets);
   }, []);
 

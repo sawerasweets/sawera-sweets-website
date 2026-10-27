@@ -202,6 +202,24 @@ assert(db.getBranches().length === 1, `DB initialized with single active branch 
 assert(db.getBoxOptions().length === 4, `DB initialized with 4 box options (Found: ${db.getBoxOptions().length})`);
 assert(db.getOccasions().length === 4, `DB initialized with 4 occasion collections (Found: ${db.getOccasions().length})`);
 
+// Test Category Operations & Active Toggles
+assert(db.getCategories().length === 7, `DB initialized with 7 categories (Found: ${db.getCategories().length})`);
+assert(db.getCategories().every(c => c.isActive === true), 'All categories initialized as Active (Live)');
+const trendingToggledOff = db.toggleCategoryActive('trending');
+assert(trendingToggledOff.isActive === false, 'Trending category toggled to Inactive (Off)');
+assert(db.getCategories().find(c => c.slug === 'trending').isActive === false, 'Category Inactive state persisted in DB');
+const trendingToggledOn = db.toggleCategoryActive('trending');
+assert(trendingToggledOn.isActive === true, 'Trending category toggled back to Active (Live)');
+
+// Test Product Active Toggle
+const p1 = db.getProducts()[0];
+assert(p1.isActive !== false, 'Products initialized as Active by default');
+const p1ToggledOff = db.toggleProductActive(p1.id);
+assert(p1ToggledOff.isActive === false, `Product ${p1.name} toggled to Inactive (Off)`);
+assert(db.getProductById(p1.id).isActive === false, 'Product Inactive state persisted in DB');
+const p1ToggledOn = db.toggleProductActive(p1.id);
+assert(p1ToggledOn.isActive === true, `Product ${p1.name} toggled back to Active (Live)`);
+
 // Test Wishlist operations
 assert(db.getWishlist().length === 0, 'Initial wishlist is empty');
 db.toggleWishlist('prd-special-roll-barfi');

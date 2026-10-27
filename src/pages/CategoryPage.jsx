@@ -10,12 +10,15 @@ export default function CategoryPage({ explicitCategorySlug }) {
   const params = useParams();
   const categorySlug = explicitCategorySlug || params.categorySlug || 'sweets';
   
-  const category = getCategoryBySlug(categorySlug) || CATEGORIES[0];
-  const { products } = useStore();
+  const { products, categories } = useStore();
   const { isAdmin } = useAuth();
 
+  const activeCategories = (categories || CATEGORIES).filter(c => c.isActive !== false);
+  const category = (categories || []).find(c => c.slug === categorySlug || c.id === categorySlug) || getCategoryBySlug(categorySlug) || CATEGORIES[0];
+  const isCategoryActive = category?.isActive !== false;
+
   const allCategoryProducts = useMemo(() => {
-    return products.filter(p => p.category === category.slug);
+    return products.filter(p => p.category === category.slug && p.isActive !== false);
   }, [products, category.slug]);
 
   const [selectedSubCategory, setSelectedSubCategory] = useState('all');
@@ -93,6 +96,26 @@ export default function CategoryPage({ explicitCategorySlug }) {
             </div>
           )}
         </div>
+
+        {/* Inactive Category Notice */}
+        {!isCategoryActive && (
+          <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-center space-y-2">
+            <span className="inline-block px-3 py-1 bg-amber-200 text-amber-900 rounded-full text-xs font-bold uppercase tracking-wider">
+              Category Temporarily Paused / فی الوقت معطل
+            </span>
+            <h3 className="text-base font-bold text-gray-900">
+              {category.name} is currently offline
+            </h3>
+            <p className="text-xs text-gray-600 max-w-lg mx-auto">
+              This department has been temporarily turned off by store management. Please explore our other authentic sweets and fresh bakery treats.
+            </p>
+            <div className="pt-2">
+              <Link to="/products" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#07643D] text-white rounded-xl text-xs font-semibold hover:bg-[#043E26] transition-colors">
+                Browse All Available Products →
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Subcategory Pills & Sort Bar */}
         <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
@@ -204,7 +227,7 @@ export default function CategoryPage({ explicitCategorySlug }) {
             <p className="text-xs text-gray-500">Discover all fresh food, sweets, and shop items</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.filter(c => c.slug !== category.slug).map(c => (
+            {activeCategories.filter(c => c.slug !== category.slug).map(c => (
               <Link
                 key={c.id}
                 to={`/category/${c.slug}`}

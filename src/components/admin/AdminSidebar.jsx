@@ -18,7 +18,8 @@ import {
   FileText, 
   Activity, 
   Settings, 
-  ExternalLink 
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -27,6 +28,7 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile }) {
 
   const links = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+    { to: '/admin/categories', label: 'Categories Management', icon: Layers, perm: 'view_products' },
     { to: '/admin/products', label: 'Products & Catalog', icon: ShoppingBag, perm: 'view_products' },
     { to: '/admin/inventory', label: 'Inventory & Approvals', icon: Boxes, perm: 'manage_stock' },
     { to: '/admin/orders', label: 'Orders & Fulfillment', icon: Receipt, perm: 'view_orders' },

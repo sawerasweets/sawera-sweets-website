@@ -18,6 +18,7 @@ import { CATEGORIES } from '../../data/categories';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState(() => db.getProducts());
+  const [categories, setCategories] = useState(() => db.getCategories());
   const [search, setSearch] = useState('');
   const [selectedCat, setSelectedCat] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +28,13 @@ export default function AdminProductsPage() {
 
   const syncProducts = () => {
     setProducts(db.getProducts());
+    setCategories(db.getCategories());
   };
 
   useEffect(() => {
     const unsubscribe = db.subscribe(() => {
       setProducts(db.getProducts());
+      setCategories(db.getCategories());
     });
     return unsubscribe;
   }, []);
@@ -54,6 +57,7 @@ export default function AdminProductsPage() {
     isFeatured: false,
     isBestSeller: false,
     isSpecialOffer: false,
+    isActive: true,
     variations: [
       { label: '500 Grams', price: 500, discountPrice: '' },
       { label: '1 Kilogram', price: 1000, discountPrice: 900 }
@@ -79,6 +83,7 @@ export default function AdminProductsPage() {
       isFeatured: false,
       isBestSeller: false,
       isSpecialOffer: false,
+      isActive: true,
       variations: [
         { label: '500 Grams', price: 500, discountPrice: '' },
         { label: '1 Kilogram Box', price: 1000, discountPrice: 900 }
@@ -106,9 +111,22 @@ export default function AdminProductsPage() {
       isFeatured: Boolean(prod.isFeatured),
       isBestSeller: Boolean(prod.isBestSeller),
       isSpecialOffer: Boolean(prod.isSpecialOffer),
+      isActive: prod.isActive !== false,
       variations: prod.variations ? [...prod.variations] : []
     });
     setIsModalOpen(true);
+  };
+
+  const handleToggleProductActive = (prod) => {
+    const updated = db.toggleProductActive(prod.id);
+    syncProducts();
+    const isNowActive = updated?.isActive !== false;
+    setNotification(
+      isNowActive
+        ? `Product "${prod.name}" is now Active (Live in store).`
+        : `Product "${prod.name}" is now Inactive (Hidden from store).`
+    );
+    setTimeout(() => setNotification(''), 3500);
   };
 
   const handleDeleteClick = (prod) => {
@@ -139,6 +157,7 @@ export default function AdminProductsPage() {
       id: editingProduct?.id,
       price: Number(formData.price),
       discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
+      isActive: formData.isActive !== false,
       stocks: editingProduct?.stocks || { 'shop-1': 50 }
     };
 
@@ -248,15 +267,15 @@ export default function AdminProductsPage() {
           >
             All ({products.length})
           </button>
-          {CATEGORIES.map(cat => (
+          {categories.map(cat => (
             <button
-              key={cat.id}
-              onClick={() => setSelectedCat(cat.id)}
+              key={cat.id || cat.slug}
+              onClick={() => setSelectedCat(cat.slug || cat.id)}
               className={`px-3 py-1.5 rounded-full font-bold uppercase tracking-wider text-[10px] whitespace-nowrap ${
-                selectedCat === cat.id ? 'bg-[#07643D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                (selectedCat === cat.id || selectedCat === cat.slug) ? 'bg-[#07643D] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              {cat.name}
+              {cat.name} ({products.filter(p => p.category === (cat.slug || cat.id)).length})
             </button>
           ))}
         </div>
@@ -285,6 +304,7 @@ export default function AdminProductsPage() {
                 <th className="py-3 px-4">Variations</th>
                 <th className="py-3 px-4 text-center">Shop 1 Stock</th>
                 <th className="py-3 px-4 text-center">Total Stock</th>
+                <th className="py-3 px-4 text-center">Status (On / Off)</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -292,16 +312,24 @@ export default function AdminProductsPage() {
               {filteredProducts.map((p) => {
                 const totalStock = Object.values(p.stocks || {}).reduce((a, b) => a + b, 0);
                 const isLow = totalStock <= (p.lowStockThreshold || 10);
+                const isActive = p.isActive !== false;
 
                 return (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={p.id} className={`transition-colors ${isActive ? 'hover:bg-gray-50' : 'bg-gray-50/70 opacity-75'}`}>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gray-50 border p-1 flex-shrink-0 flex items-center justify-center">
                           <img src={p.image} alt={p.name} className="max-h-full object-contain" />
                         </div>
                         <div>
-                          <p className="font-bold text-gray-900">{p.name}</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-bold text-gray-900">{p.name}</p>
+                            {!isActive && (
+                              <span className="text-[9px] bg-gray-200 text-gray-600 font-bold px-1.5 py-0.2 rounded-full uppercase">
+                                OFF
+                              </span>
+                            )}
+                          </div>
                           {p.urduName && (
                             <p className="text-[11px] text-amber-800 font-semibold urdu-text">{p.urduName}</p>
                           )}
@@ -347,6 +375,34 @@ export default function AdminProductsPage() {
                       }`}>
                         {totalStock} Units
                       </span>
+                    </td>
+
+                    {/* ACTIVE ON / OFF SWITCH */}
+                    <td className="py-3 px-4 text-center">
+                      <div className="flex flex-col items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleProductActive(p)}
+                          className={`relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                            isActive ? 'bg-[#07643D]' : 'bg-gray-300'
+                          }`}
+                          role="switch"
+                          aria-checked={isActive}
+                          title={isActive ? 'Click to Turn Off (Hide from store)' : 'Click to Turn On (Make live)'}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                              isActive ? 'translate-x-5' : 'translate-x-0'
+                            }`}
+                          />
+                        </button>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider ${
+                          isActive ? 'text-[#07643D]' : 'text-gray-400'
+                        }`}>
+                          {isActive ? 'Active' : 'Off'}
+                        </span>
+                      </div>
                     </td>
 
                     <td className="py-3 px-4 text-right">
@@ -421,8 +477,10 @@ export default function AdminProductsPage() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full p-2 border rounded-xl outline-none focus:border-[#07643D]"
                   >
-                    {CATEGORIES.map(c => (
-                      <option key={c.id} value={c.id}>{c.displayName}</option>
+                    {categories.map(c => (
+                      <option key={c.id || c.slug} value={c.slug || c.id}>
+                        {c.name} {c.urduName ? `(${c.urduName})` : ''}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -550,6 +608,30 @@ export default function AdminProductsPage() {
                   placeholder="Pure Khoya, Desi Ghee, Sugar..."
                   className="w-full p-2 border rounded-xl outline-none"
                 />
+              </div>
+
+              {/* Status Active Toggle in Form */}
+              <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-gray-800 block">Product Status</span>
+                  <span className="text-[11px] text-gray-400">Turn On to show on storefront, or Off to pause</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    formData.isActive ? 'bg-[#07643D]' : 'bg-gray-300'
+                  }`}
+                  role="switch"
+                  aria-checked={formData.isActive}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                      formData.isActive ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t">

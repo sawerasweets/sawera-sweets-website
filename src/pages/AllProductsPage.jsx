@@ -12,9 +12,12 @@ export default function AllProductsPage() {
   const searchFromUrl = searchParams.get('search') || '';
   const categoryFromUrl = searchParams.get('category') || 'all';
 
-  const { products } = useStore();
+  const { products, categories } = useStore();
   const { isAdmin } = useAuth();
   const { isUrdu } = useLanguage();
+
+  const activeCategories = useMemo(() => (categories || CATEGORIES).filter(c => c.isActive !== false), [categories]);
+  const activeProducts = useMemo(() => (products || []).filter(p => p.isActive !== false), [products]);
 
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl);
@@ -37,16 +40,22 @@ export default function AllProductsPage() {
 
   // Category counts
   const categoryCounts = useMemo(() => {
-    const counts = { all: products.length };
-    for (const p of products) {
+    const counts = { all: activeProducts.length };
+    for (const p of activeProducts) {
       const c = p.category?.toLowerCase() || 'other';
       counts[c] = (counts[c] || 0) + 1;
     }
     return counts;
-  }, [products]);
+  }, [activeProducts]);
 
   const filteredProducts = useMemo(() => {
-    return products.filter(p => {
+    const activeCatSlugs = new Set(activeCategories.map(c => c.slug?.toLowerCase()));
+
+    return activeProducts.filter(p => {
+      // Must belong to an active category
+      if (!activeCatSlugs.has(p.category?.toLowerCase())) {
+        return false;
+      }
       // Category filter
       if (selectedCategory !== 'all' && p.category?.toLowerCase() !== selectedCategory.toLowerCase()) {
         return false;
@@ -156,7 +165,7 @@ export default function AllProductsPage() {
             >
               {isUrdu ? 'تمام' : 'All'}
             </button>
-            {CATEGORIES.map((c) => (
+            {activeCategories.map((c) => (
               <button
                 key={c.id}
                 onClick={() => setSelectedCategory(c.slug)}
@@ -196,7 +205,7 @@ export default function AllProductsPage() {
                 >
                   All
                 </button>
-                {CATEGORIES.map(c => (
+                {activeCategories.map(c => (
                   <button
                     key={c.id}
                     type="button"

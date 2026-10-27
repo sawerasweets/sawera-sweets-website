@@ -31,6 +31,7 @@ import NotificationBell from '../customer/NotificationBell';
 export default function Header() {
   const { totalItems, setIsCartOpen, wishlist } = useCart();
   const { searchQuery, setSearchQuery, categories } = useStore();
+  const activeCategories = (categories || []).filter(c => c.isActive !== false);
   const { user, logout, isAdmin, isStaff, isRider, isCustomer } = useAuth();
   const { t, isUrdu } = useLanguage();
   const location = useLocation();
@@ -177,7 +178,7 @@ export default function Header() {
                   <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                     {isUrdu ? 'تمام کیٹیگریز' : 'All Categories'}
                   </div>
-                  {categories.map((c) => (
+                  {activeCategories.map((c) => (
                     <Link
                       key={c.id}
                       to={`/category/${c.slug}`}
@@ -449,7 +450,7 @@ export default function Header() {
               Categories
             </div>
             <div className="grid grid-cols-2 gap-1.5 text-xs">
-              {categories.map((c) => (
+              {activeCategories.map((c) => (
                 <Link
                   key={c.id}
                   to={`/category/${c.slug}`}

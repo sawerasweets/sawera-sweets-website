@@ -30,25 +30,28 @@ import ProductCard from '../components/product/ProductCard';
 import db from '../services/db';
 
 export default function HomePage() {
-  const { products } = useStore();
+  const { products, categories } = useStore();
   const { isAdmin } = useAuth();
   const { isUrdu, t } = useLanguage();
 
+  const activeProducts = useMemo(() => (products || []).filter(p => p.isActive !== false), [products]);
+  const activeCategories = useMemo(() => (categories || CATEGORIES).filter(c => c.isActive !== false), [categories]);
+
   const featuredProducts = useMemo(() => {
-    return products.filter(p => p.isFeatured).slice(0, 4);
-  }, [products]);
+    return activeProducts.filter(p => p.isFeatured).slice(0, 4);
+  }, [activeProducts]);
 
   const bestSellers = useMemo(() => {
-    return products.filter(p => p.salesCount > 0 || p.isBestSeller).slice(0, 4);
-  }, [products]);
+    return activeProducts.filter(p => p.salesCount > 0 || p.isBestSeller).slice(0, 4);
+  }, [activeProducts]);
 
   const specialOffers = useMemo(() => {
-    return products.filter(p => p.discountPrice && p.discountPrice < p.price).slice(0, 4);
-  }, [products]);
+    return activeProducts.filter(p => p.discountPrice && p.discountPrice < p.price).slice(0, 4);
+  }, [activeProducts]);
 
   const marqueeCategories = useMemo(() => {
-    return [...CATEGORIES, ...CATEGORIES, ...CATEGORIES, ...CATEGORIES];
-  }, []);
+    return [...activeCategories, ...activeCategories, ...activeCategories];
+  }, [activeCategories]);
 
   const occasions = useMemo(() => {
     return db.getOccasions().filter(o => o.isActive !== false);
@@ -62,10 +65,10 @@ export default function HomePage() {
   const recentlyViewedProducts = useMemo(() => {
     if (!recentlyViewedIds || recentlyViewedIds.length === 0) return [];
     return recentlyViewedIds
-      .map(id => products.find(p => p.id === id))
+      .map(id => activeProducts.find(p => p.id === id))
       .filter(Boolean)
       .slice(0, 4);
-  }, [recentlyViewedIds, products]);
+  }, [recentlyViewedIds, activeProducts]);
 
   // Full-width Hero Slider Slides (Mouth-watering photography matching Suleman Sweets standard)
   const heroSlides = useMemo(() => {
@@ -146,25 +149,28 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, [heroSlides.length]);
 
-  // Categorized product selections for shelves
+  // Categorized product selections for shelves (only from active products and active categories)
   const topSellingProducts = useMemo(() => {
-    const bSellers = products.filter(p => p.isBestSeller || p.salesCount > 0);
-    return (bSellers.length >= 6 ? bSellers : products).slice(0, 6);
-  }, [products]);
+    const bSellers = activeProducts.filter(p => p.isBestSeller || p.salesCount > 0);
+    return (bSellers.length >= 6 ? bSellers : activeProducts).slice(0, 6);
+  }, [activeProducts]);
 
   const halwaSweets = useMemo(() => {
-    const items = products.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Halwa') || p.name.includes('Halwa') || p.name.includes('Barfi')));
-    return (items.length > 0 ? items : products.filter(p => p.category === 'sweets')).slice(0, 6);
-  }, [products]);
+    if (!activeCategories.some(c => c.slug === 'sweets')) return [];
+    const items = activeProducts.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Halwa') || p.name.includes('Halwa') || p.name.includes('Barfi')));
+    return (items.length > 0 ? items : activeProducts.filter(p => p.category === 'sweets')).slice(0, 6);
+  }, [activeProducts, activeCategories]);
 
   const patisaSweets = useMemo(() => {
-    const items = products.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Patisa') || p.name.includes('Patisa') || p.name.includes('Tafi')));
-    return (items.length > 0 ? items : products.filter(p => p.category === 'sweets')).slice(0, 6);
-  }, [products]);
+    if (!activeCategories.some(c => c.slug === 'sweets')) return [];
+    const items = activeProducts.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Patisa') || p.name.includes('Patisa') || p.name.includes('Tafi')));
+    return (items.length > 0 ? items : activeProducts.filter(p => p.category === 'sweets')).slice(0, 6);
+  }, [activeProducts, activeCategories]);
 
   const trendingProducts = useMemo(() => {
-    return products.filter(p => p.category === 'trending').slice(0, 6);
-  }, [products]);
+    if (!activeCategories.some(c => c.slug === 'trending')) return [];
+    return activeProducts.filter(p => p.category === 'trending').slice(0, 6);
+  }, [activeProducts, activeCategories]);
 
   return (
     <div className="space-y-12 sm:space-y-16 pb-16 bg-white font-sans">
@@ -430,7 +436,7 @@ export default function HomePage() {
 
         {/* 2-Row Photographic Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-          {CATEGORIES.map((cat) => (
+          {activeCategories.map((cat) => (
             <Link
               key={cat.id}
               to={`/category/${cat.slug}`}
