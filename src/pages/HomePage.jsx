@@ -67,32 +67,102 @@ export default function HomePage() {
       .slice(0, 4);
   }, [recentlyViewedIds, products]);
 
+  // Featured Signature Sweets for the Hero Showcase Card
+  const heroShowcaseItems = useMemo(() => {
+    return [
+      {
+        id: "prd-special-roll-barfi",
+        name: "Special Roll Barfi",
+        urduName: "اسپیشل رول برفی",
+        tag: "100% Desi Ghee",
+        urduTag: "خالص دیسی گھی",
+        price: 1200,
+        regularPrice: 1300,
+        image: "/images/products/special-roll-barfi.jpg",
+        description: "Prepared with thick slow-simmered khoya, desi ghee & premium pistachios.",
+        urduDescription: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ شاہی رول برفی۔",
+        link: "/product/prd-special-roll-barfi"
+      },
+      {
+        id: "prd-special-badam-barfi",
+        name: "Special Badam Barfi",
+        urduName: "اسپیشل بادام برفی",
+        tag: "Signature Almonds",
+        urduTag: "شاہی بادام برفی",
+        price: 1200,
+        regularPrice: 1300,
+        image: "/images/products/special-badam-barfi.jpg",
+        description: "Pure slow-simmered khoya loaded inside and out with sliced California almonds.",
+        urduDescription: "خالص کڑھے ہوئے کھوئے اور بادام کے وافر مغز سے تیار کردہ مربع برفی۔",
+        link: "/product/prd-special-badam-barfi"
+      },
+      {
+        id: "prd-special-sohan-halwa",
+        name: "Special Sohan Halwa",
+        urduName: "اسپیشل سوہن حلوہ",
+        tag: "Heritage Recipe",
+        urduTag: "روایتی سوہن حلوہ",
+        price: 1200,
+        regularPrice: 1300,
+        image: "/images/products/special-sohan-halwa.jpg",
+        description: "Caramelized wheat sprout halwa slow-cooked with pure desi ghee & walnuts.",
+        urduDescription: "دیسی گھی اور سمنک سے روایتی کڑھائی میں پکا ہوا مشہور سوہن حلوہ۔",
+        link: "/product/prd-special-sohan-halwa"
+      },
+      {
+        id: "prd-viral-kunafa-chocolate",
+        name: "Dubai Viral Kunafa Bar",
+        urduName: "دبئی وائرل کنافہ بار",
+        tag: "🔥 Social Media Trend",
+        urduTag: "🔥 سوشل میڈیا ٹرینڈ",
+        price: 1250,
+        regularPrice: 1350,
+        image: "/images/categories/bakery.jpg",
+        description: "Crunchy toasted kunafa phyllo & velvety Turkish pistachio cream.",
+        urduDescription: "کرسپی کنافہ اور شاہی پستہ بٹر سے بھرپور وائرل چاکلیٹ بار۔",
+        link: "/product/prd-viral-kunafa-chocolate"
+      }
+    ];
+  }, []);
+
+  const [activeHeroIdx, setActiveHeroIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveHeroIdx(prev => (prev + 1) % heroShowcaseItems.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [heroShowcaseItems.length]);
+
   return (
     <div className="space-y-12 sm:space-y-16 pb-12">
 
-      {/* 1. HERO SECTION */}
-      <section className="relative bg-gradient-to-b from-emerald-950 via-[#07643D] to-[#043E26] text-white overflow-hidden py-12 md:py-20 border-b-4 border-[#D4AF37]">
-        {/* Animated Background Wallpaper Layer with Smooth Horizontal Push */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-55">
-          <img
-            src="/images/hero/all-sweets.jpg"
-            alt="All Sweets Wallpaper Texture"
-            className="w-full h-full object-cover animate-hero-bg-pan filter saturate-150 contrast-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/85 via-[#07643D]/65 to-[#043E26]/75" />
+      {/* 1. HERO SECTION (100% Solid & Full-Bleed Royal Islamic Emerald Background) */}
+      <section className="relative bg-gradient-to-br from-[#022112] via-[#064227] to-[#021A0F] text-white overflow-hidden py-10 md:py-16 border-b-4 border-[#D4AF37]">
+        
+        {/* Full-Bleed Royal Islamic Star Lattice Pattern (Seamless on 100% of screens, 0 blank gaps) */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.08]">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+              <pattern id="royal-lattice" width="48" height="48" patternUnits="userSpaceOnUse">
+                <path d="M24 0 L48 24 L24 48 L0 24 Z" fill="none" stroke="#D4AF37" strokeWidth="0.8"/>
+                <circle cx="24" cy="24" r="5" fill="none" stroke="#D4AF37" strokeWidth="0.6"/>
+                <circle cx="24" cy="24" r="1.5" fill="#D4AF37"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#royal-lattice)"/>
+          </svg>
         </div>
 
-        {/* Ambient Gold & Emerald Glows */}
-        <div className="absolute inset-0 opacity-15 pointer-events-none flex items-center justify-between">
-          <div className="w-96 h-96 rounded-full bg-[#D4AF37] blur-3xl transform -translate-x-1/2" />
-          <div className="w-96 h-96 rounded-full bg-emerald-400 blur-3xl transform translate-x-1/2" />
-        </div>
+        {/* Ambient Gold & Emerald Lighting */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#D4AF37]/15 blur-3xl pointer-events-none animate-glow-pulse" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-glow-pulse" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
             
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
               
               {/* Badge & motto */}
               <div className="inline-flex items-center gap-2 bg-emerald-900/80 border border-[#D4AF37]/50 px-3.5 py-1.5 rounded-full shadow-inner">
@@ -110,11 +180,11 @@ export default function HomePage() {
 
               {/* Main Headline */}
               {isUrdu ? (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold urdu-text tracking-tight leading-tight text-white">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold urdu-text tracking-tight leading-tight text-white drop-shadow-sm">
                   خالص روایتی <span className="text-[#F4D375]">مٹھائیاں</span>، بیکری اور ضروریاتِ زندگی
                 </h1>
               ) : (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight text-white">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight text-white drop-shadow-sm">
                   Fresh Traditional <span className="text-[#F4D375]">Sweets</span>, Bakery &amp; Daily Essentials
                 </h1>
               )}
@@ -122,11 +192,11 @@ export default function HomePage() {
               {/* Subtitle */}
               {isUrdu ? (
                 <p className="text-sm sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed urdu-text">
-                  خالص دیسی گھی سے بنے گلاب جامن، تازہ کیک، روزمرہ کریانہ، اور خوشبودار عطورات سیدھے آپ کے گھر تک۔
+                  جھنگ کی تیس سالہ بااعتماد روایت! خالص دیسی گھی اور کڑھے ہوئے کھوئے سے تیار کردہ مٹھائیاں، تازہ بیکری اور معیاری راشن، سیدھے آپ کے گھر تک۔
                 </p>
               ) : (
                 <p className="text-xs sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                  Indulge in melt-in-the-mouth Gulab Jamun made with pure desi ghee, fresh daily celebration cakes, kitchen grocery staples, and fine personal fragrances delivered to your doorstep.
+                  Handcrafted with pure desi ghee, slow-simmered khoya, and 30+ years of authentic recipes from Jhang. Safe, express delivery to your doorstep across Pakistan.
                 </p>
               )}
 
@@ -141,21 +211,21 @@ export default function HomePage() {
                 </Link>
 
                 <Link
-                  to="/category/bakery"
+                  to="/mithai-box-studio"
                   className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 backdrop-blur-xs transition-colors"
                 >
-                  <span>{isUrdu ? 'بیکری کا وزٹ کریں' : 'Explore Bakery'}</span>
-                  <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
+                  <Box className="w-4 h-4 text-[#D4AF37]" />
+                  <span>{isUrdu ? 'کسٹم بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
                 </Link>
 
                 <a
-                  href={`https://wa.me/?text=${encodeURIComponent("Assalam-o-Alaikum Sawera Sweets! I would like to place an order.")}`}
+                  href={`https://wa.me/923227434080?text=${encodeURIComponent("Assalam-o-Alaikum Sawera Sweets! I would like to place an order.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-5 py-3.5 rounded-xl bg-[#043E26] hover:bg-emerald-950 border border-emerald-600/50 text-emerald-100 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
                 >
                   <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
-                  <span>{isUrdu ? 'واٹس ایپ آرڈر' : 'WhatsApp Order'}</span>
+                  <span>{isUrdu ? 'واٹس ایپ آرڈر (0322 7434080)' : 'WhatsApp (0322 7434080)'}</span>
                 </a>
               </div>
 
@@ -170,35 +240,126 @@ export default function HomePage() {
                   <span>{isUrdu ? 'آج ہی تیار کردہ' : 'Baked & made today'}</span>
                 </div>
                 <div>
-                  <span className="font-bold text-white block">{isUrdu ? 'گھر پر فوری ترسیل' : 'Doorstep Delivery'}</span>
-                  <span>{isUrdu ? 'جھنگ اور گردونواح' : 'Fast local delivery'}</span>
+                  <span className="font-bold text-white block">{isUrdu ? 'پورے پاکستان میں ڈلیوری' : 'All Pakistan Delivery'}</span>
+                  <span>{isUrdu ? 'جھنگ اور تمام شہر' : 'Express door delivery'}</span>
                 </div>
               </div>
 
             </div>
 
-            {/* Right Brand Badge / Visual Showcase */}
+            {/* Right Brand & Signature Sweets Showcase Card */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full p-2 bg-gradient-to-tr from-[#D4AF37] via-emerald-600 to-[#D4AF37] shadow-2xl animate-in zoom-in-95 duration-500">
-                <div className="w-full h-full rounded-full overflow-hidden border-4 border-white/90 bg-[#07643D] flex items-center justify-center relative">
-                  <img
-                    src="/images/logo/logo.jpg"
-                    alt="Sawera Sweets & Bakers Official Badge"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/src/assets/logo.jpg";
-                    }}
-                  />
-                </div>
+              <div className="w-full max-w-md bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
                 
-                {/* Floating Tag */}
-                <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-white text-[#07643D] px-4 py-1.5 rounded-full border-2 border-[#D4AF37] shadow-lg flex items-center gap-1.5 whitespace-nowrap">
-                  <Award className="w-4 h-4 text-[#D4AF37]" />
-                  <span className="text-xs font-extrabold uppercase tracking-wider">
-                    {isUrdu ? 'اعلیٰ ترین معیار کی ضمانت' : 'Premium Quality Guaranteed'}
+                {/* Gold Top Header with Official Logo & Heritage */}
+                <div className="flex items-center justify-between pb-3 border-b border-white/15">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-[#D4AF37] to-amber-200 shadow-md shrink-0">
+                      <img
+                        src="/images/logo/logo.jpg"
+                        alt="Sawera Sweets"
+                        className="w-full h-full rounded-full object-cover"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/src/assets/logo.jpg";
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
+                        <span>{isUrdu ? 'سویرا سویٹس اینڈ بیکرز' : 'Sawera Sweets & Bakers'}</span>
+                        <span className="text-[10px] text-[#D4AF37] font-normal">Est. 1994</span>
+                      </h4>
+                      <p className="text-[10px] text-emerald-200 flex items-center gap-1">
+                        <MapPin className="w-2.5 h-2.5 text-[#D4AF37]" />
+                        <span>{isUrdu ? 'گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ' : 'Opp. DHQ Hospital, Jhang'}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#F4D375] font-mono">
+                    30+ Years
                   </span>
                 </div>
+
+                {/* Active Showcase Item (Mouth-watering authentic photography) */}
+                {(() => {
+                  const currentItem = heroShowcaseItems[activeHeroIdx] || heroShowcaseItems[0];
+                  return (
+                    <div className="pt-3 space-y-3">
+                      <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-inner group">
+                        <img
+                          src={currentItem.image}
+                          alt={currentItem.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Subtle bottom shadow gradient for text contrast */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                        
+                        {/* Top Badge */}
+                        <div className="absolute top-2.5 left-2.5">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#07643D] text-emerald-100 border border-emerald-400/30 shadow-md">
+                            {isUrdu ? currentItem.urduTag : currentItem.tag}
+                          </span>
+                        </div>
+
+                        {/* Price Pill */}
+                        <div className="absolute top-2.5 right-2.5 bg-black/70 backdrop-blur-xs px-2.5 py-1 rounded-full border border-[#D4AF37]/60 font-mono text-xs font-bold text-amber-300">
+                          Rs. {currentItem.price.toLocaleString()}
+                          {currentItem.regularPrice && (
+                            <span className="text-[9px] line-through text-gray-400 ml-1">
+                              {currentItem.regularPrice}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Bottom Information */}
+                        <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-end justify-between">
+                          <div className="pr-2">
+                            <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-md">
+                              {isUrdu ? currentItem.urduName : currentItem.name}
+                            </h3>
+                            <p className="text-[11px] text-emerald-100/90 line-clamp-1 drop-shadow-xs">
+                              {isUrdu ? currentItem.urduDescription : currentItem.description}
+                            </p>
+                          </div>
+                          <Link
+                            to={currentItem.link}
+                            className="px-3 py-1.5 rounded-xl bg-[#D4AF37] hover:bg-[#F4D375] text-[#07643D] font-extrabold text-[11px] shrink-0 shadow-md transition-transform hover:scale-105"
+                          >
+                            {isUrdu ? 'آرڈر کریں' : 'Order Now'}
+                          </Link>
+                        </div>
+                      </div>
+
+                      {/* Thumbnails Navigator to Switch Featured Sweets */}
+                      <div className="grid grid-cols-4 gap-1.5 pt-1">
+                        {heroShowcaseItems.map((item, idx) => (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => setActiveHeroIdx(idx)}
+                            className={`p-1 rounded-xl border transition-all text-left flex flex-col items-center gap-1 cursor-pointer ${
+                              activeHeroIdx === idx
+                                ? 'border-[#D4AF37] bg-white/20 ring-1 ring-[#D4AF37]'
+                                : 'border-white/10 bg-white/5 hover:bg-white/10 opacity-70 hover:opacity-100'
+                            }`}
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-10 object-cover rounded-lg"
+                            />
+                            <span className="text-[9px] font-semibold text-white truncate max-w-full text-center">
+                              {isUrdu ? item.urduName.split(' ')[0] : item.name.split(' ')[0]}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+
+                    </div>
+                  );
+                })()}
+
               </div>
             </div>
 

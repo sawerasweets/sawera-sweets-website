@@ -72,39 +72,20 @@
   animation-play-state: paused;
 }
 
-/* Hero Sweets Showcase Push & Pan Animations (Right to Left & Left to Right) */
-@keyframes hero-push-pan {
-  0% {
-    transform: scale(1.12) translate3d(0%, 0, 0);
+/* Gentle Centered Luxury Ambience (No Blank Edges or Horizontal Translation) */
+@keyframes luxury-glow-pulse {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(1);
   }
   50% {
-    transform: scale(1.12) translate3d(-14%, 0, 0);
-  }
-  100% {
-    transform: scale(1.12) translate3d(0%, 0, 0);
+    opacity: 0.25;
+    transform: scale(1.05);
   }
 }
 
-.animate-hero-pan {
-  animation: hero-push-pan 14s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes hero-bg-pan {
-  0% {
-    transform: scale(1.15) translate3d(0%, 0, 0);
-  }
-  50% {
-    transform: scale(1.15) translate3d(-15%, 0, 0);
-  }
-  100% {
-    transform: scale(1.15) translate3d(0%, 0, 0);
-  }
-}
-
-.animate-hero-bg-pan {
-  animation: hero-bg-pan 18s ease-in-out infinite;
-  will-change: transform;
+.animate-glow-pulse {
+  animation: luxury-glow-pulse 8s ease-in-out infinite;
 }
 
 
