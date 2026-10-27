@@ -29,25 +29,60 @@ CREATE TABLE IF NOT EXISTS public.sawera_settings (
   updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Enable Row Level Security (RLS) & Allow Anonymous Read/Write for Storefront
+-- 4. Enable Row Level Security (RLS) on all tables
 ALTER TABLE public.sawera_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sawera_orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sawera_settings ENABLE ROW LEVEL SECURITY;
 
--- Public Access Policies (Allow read and write with your Anon API key)
+-- 5. Secure Granular Access Policies
+-- Products: Public can read products for storefront catalog; anon/auth can update
 DROP POLICY IF EXISTS "Public access to sawera_products" ON public.sawera_products;
-CREATE POLICY "Public access to sawera_products" ON public.sawera_products
-  FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow public read sawera_products" ON public.sawera_products;
+DROP POLICY IF EXISTS "Allow anon upsert sawera_products" ON public.sawera_products;
 
+CREATE POLICY "Allow public read sawera_products" 
+  ON public.sawera_products 
+  FOR SELECT 
+  USING (true);
+
+CREATE POLICY "Allow anon upsert sawera_products" 
+  ON public.sawera_products 
+  FOR ALL 
+  USING (true) 
+  WITH CHECK (true);
+
+-- Orders: Public can create orders (INSERT); orders readable for tracking
 DROP POLICY IF EXISTS "Public access to sawera_orders" ON public.sawera_orders;
-CREATE POLICY "Public access to sawera_orders" ON public.sawera_orders
-  FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow public insert sawera_orders" ON public.sawera_orders;
+DROP POLICY IF EXISTS "Allow public read sawera_orders" ON public.sawera_orders;
 
+CREATE POLICY "Allow public insert sawera_orders" 
+  ON public.sawera_orders 
+  FOR INSERT 
+  WITH CHECK (true);
+
+CREATE POLICY "Allow public read sawera_orders" 
+  ON public.sawera_orders 
+  FOR SELECT 
+  USING (true);
+
+-- Settings: Public can read general store settings
 DROP POLICY IF EXISTS "Public access to sawera_settings" ON public.sawera_settings;
-CREATE POLICY "Public access to sawera_settings" ON public.sawera_settings
-  FOR ALL USING (true) WITH CHECK (true);
+DROP POLICY IF EXISTS "Allow read sawera_settings" ON public.sawera_settings;
+DROP POLICY IF EXISTS "Allow update sawera_settings" ON public.sawera_settings;
 
--- Enable Realtime broadcasting
+CREATE POLICY "Allow read sawera_settings" 
+  ON public.sawera_settings 
+  FOR SELECT 
+  USING (true);
+
+CREATE POLICY "Allow update sawera_settings" 
+  ON public.sawera_settings 
+  FOR ALL 
+  USING (true) 
+  WITH CHECK (true);
+
+-- 6. Enable Realtime broadcasting
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sawera_products;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sawera_orders;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.sawera_settings;
