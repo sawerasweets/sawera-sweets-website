@@ -67,374 +67,499 @@ export default function HomePage() {
       .slice(0, 4);
   }, [recentlyViewedIds, products]);
 
-  // Featured Signature Sweets for the Hero Showcase Card
-  const heroShowcaseItems = useMemo(() => {
+  // Full-width Hero Slider Slides (Mouth-watering photography matching Suleman Sweets standard)
+  const heroSlides = useMemo(() => {
     return [
       {
-        id: "prd-special-roll-barfi",
-        name: "Special Roll Barfi",
-        urduName: "اسپیشل رول برفی",
-        tag: "100% Desi Ghee",
-        urduTag: "خالص دیسی گھی",
-        price: 1200,
-        regularPrice: 1300,
-        image: "/images/products/special-roll-barfi.jpg",
-        description: "Prepared with thick slow-simmered khoya, desi ghee & premium pistachios.",
-        urduDescription: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ شاہی رول برفی۔",
-        link: "/product/prd-special-roll-barfi"
+        id: "slide-sweets",
+        tag: "100% Pure Desi Ghee",
+        urduTag: "سو فیصد خالص دیسی گھی",
+        title: "Traditional Sweets & Royal Mithai",
+        urduTitle: "خالص روایتی مٹھائیاں و شاہی مٹھائی",
+        subtitle: "Prepared fresh daily with slow-simmered buffalo milk khoya, fragrant desi ghee, and 30+ years of heritage.",
+        urduSubtitle: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ مٹھائیاں، جھنگ کا سب سے بااعتماد نام۔",
+        image: "/images/hero/all-sweets.jpg",
+        link: "/category/sweets",
+        buttonText: "Order Fresh Mithai",
+        urduButtonText: "مٹھائی آرڈر کریں",
+        badge: "Heritage 1994"
       },
       {
-        id: "prd-special-badam-barfi",
-        name: "Special Badam Barfi",
-        urduName: "اسپیشل بادام برفی",
-        tag: "Signature Almonds",
-        urduTag: "شاہی بادام برفی",
-        price: 1200,
-        regularPrice: 1300,
-        image: "/images/products/special-badam-barfi.jpg",
-        description: "Pure slow-simmered khoya loaded inside and out with sliced California almonds.",
-        urduDescription: "خالص کڑھے ہوئے کھوئے اور بادام کے وافر مغز سے تیار کردہ مربع برفی۔",
-        link: "/product/prd-special-badam-barfi"
+        id: "slide-sohan-halwa",
+        tag: "Crunch & Heritage",
+        urduTag: "شاہی سوہن حلوہ",
+        title: "Special Desi Ghee Sohan Halwa",
+        urduTitle: "اسپیشل دیسی گھی سوہن حلوہ و بادامی حلوہ",
+        subtitle: "Caramelized sprouted wheat slow-cooked with pure desi ghee and lavishly crowned with roasted almonds and walnuts.",
+        urduSubtitle: "سمنک اور دیسی گھی سے روایتی کڑھائی میں پکا ہوا مشہور سوہن حلوہ، بادام اور اخروٹ سے بھرپور۔",
+        image: "/images/categories/sweets.jpg",
+        link: "/category/sweets",
+        buttonText: "Explore Halwajaat",
+        urduButtonText: "حلوہ جات دیکھیں",
+        badge: "Signature"
       },
       {
-        id: "prd-special-sohan-halwa",
-        name: "Special Sohan Halwa",
-        urduName: "اسپیشل سوہن حلوہ",
-        tag: "Heritage Recipe",
-        urduTag: "روایتی سوہن حلوہ",
-        price: 1200,
-        regularPrice: 1300,
-        image: "/images/products/special-sohan-halwa.jpg",
-        description: "Caramelized wheat sprout halwa slow-cooked with pure desi ghee & walnuts.",
-        urduDescription: "دیسی گھی اور سمنک سے روایتی کڑھائی میں پکا ہوا مشہور سوہن حلوہ۔",
-        link: "/product/prd-special-sohan-halwa"
+        id: "slide-bakery",
+        tag: "Oven-Fresh Daily",
+        urduTag: "تازہ اوون بیکری",
+        title: "Fresh Artisan Cakes & Bakery Treats",
+        urduTitle: "تازہ بیکری کیکس، کوکیز اور خستہ پیٹیز",
+        subtitle: "Oven-fresh celebration cakes, melt-in-mouth cookies, crispy patties, and breakfast rusks baked every morning.",
+        urduSubtitle: "روزانہ صبح تازہ تیار کردہ کریمی کیکس، بسکٹس، پیٹیز اور خستہ رسک۔ بہترین خاندانی ناشتہ۔",
+        image: "/images/hero/bakery-sweets.jpg",
+        link: "/category/bakery",
+        buttonText: "Explore Bakery",
+        urduButtonText: "بیکری وزٹ کریں",
+        badge: "Baked Today"
       },
       {
-        id: "prd-viral-kunafa-chocolate",
-        name: "Dubai Viral Kunafa Bar",
-        urduName: "دبئی وائرل کنافہ بار",
-        tag: "🔥 Social Media Trend",
-        urduTag: "🔥 سوشل میڈیا ٹرینڈ",
-        price: 1250,
-        regularPrice: 1350,
+        id: "slide-trending",
+        tag: "🔥 Viral Sensation",
+        urduTag: "🔥 سوشل میڈیا وائرل",
+        title: "Dubai Viral Pistachio Kunafa Bar",
+        urduTitle: "دبئی وائرل کنافہ پستہ چاکلیٹ اور ٹرینڈنگ اشیاء",
+        subtitle: "The worldwide internet sensation! Crunchy golden kunafa phyllo and rich pistachio butter inside Belgian milk chocolate.",
+        urduSubtitle: "انسٹاگرام اور ٹک ٹاک کا سب سے مشہور وائرل ٹرینڈ! خستہ کنافہ اور شاہی پستہ بٹر سے بھرپور وائرل چاکلیٹ۔",
         image: "/images/categories/bakery.jpg",
-        description: "Crunchy toasted kunafa phyllo & velvety Turkish pistachio cream.",
-        urduDescription: "کرسپی کنافہ اور شاہی پستہ بٹر سے بھرپور وائرل چاکلیٹ بار۔",
-        link: "/product/prd-viral-kunafa-chocolate"
+        link: "/category/trending",
+        buttonText: "Shop Trending Items",
+        urduButtonText: "ٹرینڈنگ اشیاء خریدیں",
+        badge: "Viral Hit"
       }
     ];
   }, []);
 
-  const [activeHeroIdx, setActiveHeroIdx] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveHeroIdx(prev => (prev + 1) % heroShowcaseItems.length);
-    }, 4500);
+      nextSlide();
+    }, 5500);
     return () => clearInterval(timer);
-  }, [heroShowcaseItems.length]);
+  }, [heroSlides.length]);
+
+  // Categorized product selections for shelves
+  const topSellingProducts = useMemo(() => {
+    const bSellers = products.filter(p => p.isBestSeller || p.salesCount > 0);
+    return (bSellers.length >= 6 ? bSellers : products).slice(0, 6);
+  }, [products]);
+
+  const halwaSweets = useMemo(() => {
+    const items = products.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Halwa') || p.name.includes('Halwa') || p.name.includes('Barfi')));
+    return (items.length > 0 ? items : products.filter(p => p.category === 'sweets')).slice(0, 6);
+  }, [products]);
+
+  const patisaSweets = useMemo(() => {
+    const items = products.filter(p => p.category === 'sweets' && (p.subCategory?.includes('Patisa') || p.name.includes('Patisa') || p.name.includes('Tafi')));
+    return (items.length > 0 ? items : products.filter(p => p.category === 'sweets')).slice(0, 6);
+  }, [products]);
+
+  const trendingProducts = useMemo(() => {
+    return products.filter(p => p.category === 'trending').slice(0, 6);
+  }, [products]);
 
   return (
-    <div className="space-y-12 sm:space-y-16 pb-12">
+    <div className="space-y-12 sm:space-y-16 pb-16 bg-[#FAF8F5]">
 
-      {/* 1. HERO SECTION (100% Solid & Full-Bleed Royal Islamic Emerald Background) */}
-      <section className="relative bg-gradient-to-br from-[#022112] via-[#064227] to-[#021A0F] text-white overflow-hidden py-10 md:py-16 border-b-4 border-[#D4AF37]">
-        
-        {/* Full-Bleed Royal Islamic Star Lattice Pattern (Seamless on 100% of screens, 0 blank gaps) */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.08]">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <defs>
-              <pattern id="royal-lattice" width="48" height="48" patternUnits="userSpaceOnUse">
-                <path d="M24 0 L48 24 L24 48 L0 24 Z" fill="none" stroke="#D4AF37" strokeWidth="0.8"/>
-                <circle cx="24" cy="24" r="5" fill="none" stroke="#D4AF37" strokeWidth="0.6"/>
-                <circle cx="24" cy="24" r="1.5" fill="#D4AF37"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#royal-lattice)"/>
-          </svg>
-        </div>
+      {/* 1. FULL-WIDTH EDGE-TO-EDGE HERO SLIDER (Suleman Sweets Standard) */}
+      <section className="relative w-full overflow-hidden bg-black border-b-4 border-[#D4AF37]">
+        <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[540px]">
+          {heroSlides.map((slide, idx) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
+                currentSlide === idx ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
+              }`}
+            >
+              {/* Full-bleed Natural Photo without heavy green tint */}
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover object-center"
+              />
 
-        {/* Ambient Gold & Emerald Lighting */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[#D4AF37]/15 blur-3xl pointer-events-none animate-glow-pulse" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none animate-glow-pulse" />
+              {/* Natural Left Vignette for Razor-Sharp Typography Contrast */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-            
-            {/* Left Content Column */}
-            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
-              
-              {/* Badge & motto */}
-              <div className="inline-flex items-center gap-2 bg-emerald-900/80 border border-[#D4AF37]/50 px-3.5 py-1.5 rounded-full shadow-inner">
-                <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
-                {isUrdu ? (
-                  <span className="text-[#D4AF37] font-bold urdu-text text-sm">
-                    {STORE_CONFIG.mottoUrdu} • خالص اور تازہ
-                  </span>
-                ) : (
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Authentic Taste &amp; Freshness • With Every Joy
-                  </span>
-                )}
-              </div>
-
-              {/* Main Headline */}
-              {isUrdu ? (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold urdu-text tracking-tight leading-tight text-white drop-shadow-sm">
-                  خالص روایتی <span className="text-[#F4D375]">مٹھائیاں</span>، بیکری اور ضروریاتِ زندگی
-                </h1>
-              ) : (
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight leading-tight text-white drop-shadow-sm">
-                  Fresh Traditional <span className="text-[#F4D375]">Sweets</span>, Bakery &amp; Daily Essentials
-                </h1>
-              )}
-
-              {/* Subtitle */}
-              {isUrdu ? (
-                <p className="text-sm sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed urdu-text">
-                  جھنگ کی تیس سالہ بااعتماد روایت! خالص دیسی گھی اور کڑھے ہوئے کھوئے سے تیار کردہ مٹھائیاں، تازہ بیکری اور معیاری راشن، سیدھے آپ کے گھر تک۔
-                </p>
-              ) : (
-                <p className="text-xs sm:text-base text-emerald-100 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                  Handcrafted with pure desi ghee, slow-simmered khoya, and 30+ years of authentic recipes from Jhang. Safe, express delivery to your doorstep across Pakistan.
-                </p>
-              )}
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start pt-2">
-                <Link
-                  to="/category/sweets"
-                  className="px-6 py-3.5 rounded-xl bg-[#D4AF37] hover:bg-[#F4D375] text-[#07643D] font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-transform hover:-translate-y-0.5"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>{isUrdu ? 'مٹھائی آرڈر کریں' : 'Order Fresh Mithai'}</span>
-                </Link>
-
-                <Link
-                  to="/mithai-box-studio"
-                  className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 backdrop-blur-xs transition-colors"
-                >
-                  <Box className="w-4 h-4 text-[#D4AF37]" />
-                  <span>{isUrdu ? 'کسٹم بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
-                </Link>
-
-                <a
-                  href={`https://wa.me/923227434080?text=${encodeURIComponent("Assalam-o-Alaikum Sawera Sweets! I would like to place an order.")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-5 py-3.5 rounded-xl bg-[#043E26] hover:bg-emerald-950 border border-emerald-600/50 text-emerald-100 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
-                >
-                  <MessageSquare className="w-4 h-4 text-[#D4AF37]" />
-                  <span>{isUrdu ? 'واٹس ایپ آرڈر (0322 7434080)' : 'WhatsApp (0322 7434080)'}</span>
-                </a>
-              </div>
-
-              {/* Mini Guarantees */}
-              <div className="pt-4 border-t border-emerald-800/80 grid grid-cols-3 gap-2 text-center lg:text-left text-[11px] text-emerald-200">
-                <div>
-                  <span className="font-bold text-white block">{isUrdu ? '۱۰۰٪ خالص دیسی گھی' : '100% Desi Ghee'}</span>
-                  <span>{isUrdu ? 'معیاری اجزاء' : 'Pure ingredients'}</span>
-                </div>
-                <div>
-                  <span className="font-bold text-white block">{isUrdu ? 'روزانہ تازہ تیاری' : 'Daily Fresh Batches'}</span>
-                  <span>{isUrdu ? 'آج ہی تیار کردہ' : 'Baked & made today'}</span>
-                </div>
-                <div>
-                  <span className="font-bold text-white block">{isUrdu ? 'پورے پاکستان میں ڈلیوری' : 'All Pakistan Delivery'}</span>
-                  <span>{isUrdu ? 'جھنگ اور تمام شہر' : 'Express door delivery'}</span>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Brand & Signature Sweets Showcase Card */}
-            <div className="lg:col-span-5 flex justify-center">
-              <div className="w-full max-w-md bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-[#D4AF37]/40 shadow-2xl relative overflow-hidden">
-                
-                {/* Gold Top Header with Official Logo & Heritage */}
-                <div className="flex items-center justify-between pb-3 border-b border-white/15">
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full p-0.5 bg-gradient-to-tr from-[#D4AF37] to-amber-200 shadow-md shrink-0">
-                      <img
-                        src="/images/logo/logo.jpg"
-                        alt="Sawera Sweets"
-                        className="w-full h-full rounded-full object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/src/assets/logo.jpg";
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5">
-                        <span>{isUrdu ? 'سویرا سویٹس اینڈ بیکرز' : 'Sawera Sweets & Bakers'}</span>
-                        <span className="text-[10px] text-[#D4AF37] font-normal">Est. 1994</span>
-                      </h4>
-                      <p className="text-[10px] text-emerald-200 flex items-center gap-1">
-                        <MapPin className="w-2.5 h-2.5 text-[#D4AF37]" />
-                        <span>{isUrdu ? 'گوجرہ روڈ، بالمقابل ڈی ایچ کیو ہسپتال، جھنگ' : 'Opp. DHQ Hospital, Jhang'}</span>
-                      </p>
-                    </div>
+              {/* Slide Content */}
+              <div className="max-w-7xl mx-auto h-full px-6 sm:px-10 lg:px-12 flex items-center relative z-20">
+                <div className="max-w-2xl space-y-4 text-left">
+                  
+                  {/* Tag Pill */}
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37] text-neutral-950 font-extrabold text-xs uppercase tracking-wider shadow-lg">
+                    <span>{isUrdu ? slide.urduTag : slide.tag}</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-950" />
+                    <span className="text-[10px] opacity-90">{slide.badge}</span>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4AF37]/20 border border-[#D4AF37]/50 text-[#F4D375] font-mono">
-                    30+ Years
-                  </span>
+
+                  {/* Title */}
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-white leading-tight drop-shadow-md">
+                    {isUrdu ? slide.urduTitle : slide.title}
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p className="text-xs sm:text-base text-gray-200 leading-relaxed font-light drop-shadow-xs max-w-xl">
+                    {isUrdu ? slide.urduSubtitle : slide.subtitle}
+                  </p>
+
+                  {/* Action Buttons */}
+                  <div className="pt-2 flex flex-wrap gap-3">
+                    <Link
+                      to={slide.link}
+                      className="px-6 py-3.5 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-transform hover:-translate-y-0.5 border border-emerald-400/40"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                      <span>{isUrdu ? slide.urduButtonText : slide.buttonText}</span>
+                    </Link>
+
+                    <Link
+                      to="/mithai-box-studio"
+                      className="px-5 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors"
+                    >
+                      <Box className="w-4 h-4 text-[#D4AF37]" />
+                      <span>{isUrdu ? 'کسٹم بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
+                    </Link>
+
+                    <a
+                      href={`https://wa.me/923227434080?text=${encodeURIComponent(`Assalam o Alaikum Sawera Sweets!\nI am interested in: ${slide.title}.\nPlease share details.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-5 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-colors"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      <span>{isUrdu ? 'واٹس ایپ (0322 7434080)' : 'WhatsApp (0322 7434080)'}</span>
+                    </a>
+                  </div>
+
                 </div>
-
-                {/* Active Showcase Item (Mouth-watering authentic photography) */}
-                {(() => {
-                  const currentItem = heroShowcaseItems[activeHeroIdx] || heroShowcaseItems[0];
-                  return (
-                    <div className="pt-3 space-y-3">
-                      <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-[#D4AF37]/30 shadow-inner group">
-                        <img
-                          src={currentItem.image}
-                          alt={currentItem.name}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        {/* Subtle bottom shadow gradient for text contrast */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                        
-                        {/* Top Badge */}
-                        <div className="absolute top-2.5 left-2.5">
-                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#07643D] text-emerald-100 border border-emerald-400/30 shadow-md">
-                            {isUrdu ? currentItem.urduTag : currentItem.tag}
-                          </span>
-                        </div>
-
-                        {/* Price Pill */}
-                        <div className="absolute top-2.5 right-2.5 bg-black/70 backdrop-blur-xs px-2.5 py-1 rounded-full border border-[#D4AF37]/60 font-mono text-xs font-bold text-amber-300">
-                          Rs. {currentItem.price.toLocaleString()}
-                          {currentItem.regularPrice && (
-                            <span className="text-[9px] line-through text-gray-400 ml-1">
-                              {currentItem.regularPrice}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Bottom Information */}
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-end justify-between">
-                          <div className="pr-2">
-                            <h3 className="font-bold text-sm sm:text-base text-white drop-shadow-md">
-                              {isUrdu ? currentItem.urduName : currentItem.name}
-                            </h3>
-                            <p className="text-[11px] text-emerald-100/90 line-clamp-1 drop-shadow-xs">
-                              {isUrdu ? currentItem.urduDescription : currentItem.description}
-                            </p>
-                          </div>
-                          <Link
-                            to={currentItem.link}
-                            className="px-3 py-1.5 rounded-xl bg-[#D4AF37] hover:bg-[#F4D375] text-[#07643D] font-extrabold text-[11px] shrink-0 shadow-md transition-transform hover:scale-105"
-                          >
-                            {isUrdu ? 'آرڈر کریں' : 'Order Now'}
-                          </Link>
-                        </div>
-                      </div>
-
-                      {/* Thumbnails Navigator to Switch Featured Sweets */}
-                      <div className="grid grid-cols-4 gap-1.5 pt-1">
-                        {heroShowcaseItems.map((item, idx) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setActiveHeroIdx(idx)}
-                            className={`p-1 rounded-xl border transition-all text-left flex flex-col items-center gap-1 cursor-pointer ${
-                              activeHeroIdx === idx
-                                ? 'border-[#D4AF37] bg-white/20 ring-1 ring-[#D4AF37]'
-                                : 'border-white/10 bg-white/5 hover:bg-white/10 opacity-70 hover:opacity-100'
-                            }`}
-                          >
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-full h-10 object-cover rounded-lg"
-                            />
-                            <span className="text-[9px] font-semibold text-white truncate max-w-full text-center">
-                              {isUrdu ? item.urduName.split(' ')[0] : item.name.split(' ')[0]}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                    </div>
-                  );
-                })()}
-
               </div>
             </div>
+          ))}
 
+          {/* Left Arrow Button */}
+          <button
+            type="button"
+            onClick={prevSlide}
+            aria-label="Previous Slide"
+            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md border border-white/20 flex items-center justify-center z-30 transition-all cursor-pointer shadow-lg hover:scale-105"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          {/* Right Arrow Button */}
+          <button
+            type="button"
+            onClick={nextSlide}
+            aria-label="Next Slide"
+            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/40 hover:bg-black/75 text-white backdrop-blur-md border border-white/20 flex items-center justify-center z-30 transition-all cursor-pointer shadow-lg hover:scale-105"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          {/* Bottom Pagination Dots */}
+          <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-30">
+            {heroSlides.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Go to slide ${idx + 1}`}
+                className={`transition-all rounded-full cursor-pointer ${
+                  currentSlide === idx
+                    ? 'w-8 h-2.5 bg-[#D4AF37] shadow-md'
+                    : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
+                }`}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 2. FEATURED CATEGORIES SECTION */}
+      {/* 2. BRAND TITLE & 4 VALUE PROPOSITION CARDS (Image 2 from Suleman Sweets) */}
+      <section className="bg-white border-y border-amber-200/60 py-8 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Centered Brand Title */}
+          <div className="text-center mb-6">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#07643D] font-serif">
+              {isUrdu 
+                ? 'سویرا سویٹس اینڈ بیکرز — خالص روایتی مٹھائیاں، کیکس اور بیکری' 
+                : 'Sawera Sweets & Bakers — Fresh Pakistani Mithai, Cakes & Bakery'}
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-xl mx-auto">
+              {isUrdu 
+                ? 'جھنگ کی تیس سالہ بااعتماد روایت، خالص دیسی گھی کے اجزاء اور ملک گیر محفوظ ترسیل' 
+                : 'Over 30 years of sweet heritage in Jhang, handcrafted daily with pure ingredients'}
+            </p>
+          </div>
+
+          {/* 4 Cards Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
+            {/* 1. Fast Delivery */}
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100 shadow-xs">
+                <Truck className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs sm:text-sm text-gray-900">
+                  {isUrdu ? 'تیز ترین ترسیل' : 'Fast Delivery'}
+                </h4>
+                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
+                  {isUrdu ? 'جھنگ میں ہوم ڈلیوری اور پاکستان بھر میں کورئیر' : 'Same-day in Jhang & express nationwide'}
+                </p>
+              </div>
+            </div>
+
+            {/* 2. 100% Desi Ghee & Halal */}
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200 shadow-xs">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs sm:text-sm text-gray-900">
+                  {isUrdu ? '۱۰۰٪ خالص دیسی گھی' : '100% Desi Ghee'}
+                </h4>
+                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
+                  {isUrdu ? 'سو فیصد خالص کڑھے ہوئے کھوئے کی تیاری' : 'Pure milk solids & certified halal'}
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Loyalty Rewards */}
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100 shadow-xs">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs sm:text-sm text-gray-900">
+                  {isUrdu ? 'لوئلٹی ریوارڈ پوائنٹس' : 'Loyalty Rewards'}
+                </h4>
+                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
+                  {isUrdu ? 'ہر آرڈر پر پوائنٹس اور ڈسکاؤنٹ حاصل کریں' : 'Earn reward points on every order'}
+                </p>
+              </div>
+            </div>
+
+            {/* 4. Premium Packing */}
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-teal-50 text-[#07643D] flex items-center justify-center shrink-0 border border-teal-100 shadow-xs">
+                <Gift className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-xs sm:text-sm text-gray-900">
+                  {isUrdu ? 'شاہی گفٹ پیکنگ' : 'Premium Packing'}
+                </h4>
+                <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
+                  {isUrdu ? 'ساٹن ربن اور کسٹم مٹھائی بکس اسٹوڈیو' : 'Luxury boxes & satin ribbon presentation'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. HOT & TOP SELLING SECTION (Image 2 from Suleman Sweets) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
-                {isUrdu ? 'ہمارے شعبہ جات' : 'Curated Departments'}
+              <span className="w-2 h-2 rounded-full bg-rose-600 animate-pulse" />
+              <span className="text-xs uppercase font-bold tracking-widest text-rose-700">
+                {isUrdu ? 'سب سے زیادہ پسندیدہ' : 'Hot & Top Selling'}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-              {isUrdu ? 'کیٹیگری منتخب کریں' : 'Shop by Category'}
+              {isUrdu ? 'سب سے زیادہ فروخت ہونے والی اشیاء' : 'Hot & Top Selling'}
             </h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {isUrdu ? 'وہ مٹھائیاں جو گاہک اس وقت سب سے زیادہ آرڈر کر رہے ہیں' : 'The sweets everyone is ordering right now'}
+            </p>
           </div>
 
           <Link
             to="/products"
             className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
           >
-            <span>{isUrdu ? 'تمام شعبہ جات دیکھیں' : 'View All Departments'}</span>
+            <span>{isUrdu ? 'سب دیکھیں' : 'View All'}</span>
             <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Infinite Auto-Scrolling Categories Marquee */}
-        <div className="relative w-full overflow-hidden py-3" dir="ltr">
-          {/* Left Disappearing Edge Mask */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-r from-[#FDFBF7] via-[#FDFBF7]/90 to-transparent z-10" />
-
-          {/* Right Emerging Edge Mask */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 sm:w-24 bg-gradient-to-l from-[#FDFBF7] via-[#FDFBF7]/90 to-transparent z-10" />
-
-          {/* Scrolling Track with Enlarged Category Cards */}
-          <div className="animate-marquee-infinite flex gap-5 sm:gap-6 w-max py-2">
-            {marqueeCategories.map((cat, idx) => (
-              <Link
-                key={`${cat.id}-${idx}`}
-                to={`/category/${cat.slug}`}
-                className="group w-56 sm:w-64 shrink-0 flex-shrink-0 bg-white rounded-3xl border border-gray-200 hover:border-[#D4AF37] p-5 sm:p-6 text-center flex flex-col items-center justify-between shadow-xs hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer"
-              >
-                {/* Enlarged Category Photo Circle */}
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden mb-4 border-3 border-emerald-100 group-hover:border-[#D4AF37] shadow-md group-hover:shadow-xl transition-all duration-300 relative bg-emerald-50 flex-shrink-0">
-                  <img
-                    src={cat.image || `/images/categories/${cat.id}.jpg`}
-                    alt={cat.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/images/products/gulab-jamun.svg";
-                    }}
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <h3 className={`text-sm sm:text-base font-bold text-gray-900 group-hover:text-[#07643D] transition-colors leading-snug ${isUrdu ? 'urdu-text text-base sm:text-lg' : ''}`}>
-                    {isUrdu ? (cat.urduName || cat.name) : cat.name}
-                  </h3>
-                </div>
-
-                <span className="mt-3.5 text-[11px] sm:text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80">
-                  {cat.badge}
-                </span>
-              </Link>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          {topSellingProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
 
-      {/* 2.5 SAWERA MITHAI BOX STUDIO (SIGNATURE FEATURE SHOWCASE) */}
+      {/* 4. SHOP BY CATEGORY GRID (Image 3 from Suleman Sweets) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
+                {isUrdu ? 'ہمارے شعبہ جات' : 'Departments'}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+              {isUrdu ? 'کیٹیگری کے لحاظ سے خریداری کریں' : 'Shop by Category'}
+            </h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {isUrdu ? 'ہماری تمام کیٹیگریز اور پروڈکٹس کو دیکھیں' : 'Explore our wide range of authentic products'}
+            </p>
+          </div>
+
+          <Link
+            to="/products"
+            className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
+          >
+            <span>{isUrdu ? 'تمام شعبہ جات دیکھیں' : 'View All'}</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        {/* 2-Row Photographic Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+          {CATEGORIES.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/category/${cat.slug}`}
+              className="group relative rounded-2xl overflow-hidden aspect-[16/10] bg-neutral-900 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200/80 hover:border-[#D4AF37]"
+            >
+              <img
+                src={cat.image || `/images/categories/${cat.id}.jpg`}
+                alt={cat.name}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/images/products/gulab-jamun.svg";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent transition-opacity" />
+              
+              <div className="absolute top-3 right-3">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20">
+                  {cat.badge || 'Store'}
+                </span>
+              </div>
+
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <h3 className={`font-serif font-bold text-sm sm:text-base group-hover:text-[#F4D375] transition-colors ${isUrdu ? 'urdu-text text-base sm:text-lg' : ''}`}>
+                  {isUrdu ? (cat.urduName || cat.name) : cat.name}
+                </h3>
+                <span className="text-[11px] text-gray-300 block opacity-90">
+                  {isUrdu ? 'دیکھنے کے لیے کلک کریں ←' : 'Browse Items →'}
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 5. CATEGORY SHELF: HALWAJAAT & TRADITIONAL SWEETS (Image 3 & 4 from Suleman Sweets) */}
+      {halwaSweets.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
+            <div>
+              <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
+                {isUrdu ? 'روایتی حلوہ جات و برفی' : 'Heritage Confectionery'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+                {isUrdu ? 'حلوہ جات و اسپیشل برفی' : 'Halwajaat & Traditional Sweets'}
+              </h2>
+            </div>
+
+            <Link
+              to="/category/sweets"
+              className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
+            >
+              <span>{isUrdu ? 'سب حلوہ جات دیکھیں' : 'View All'}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+            {halwaSweets.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 6. CATEGORY SHELF: PATISA & SOHAN HALWA (Image 3 from Suleman Sweets) */}
+      {patisaSweets.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
+            <div>
+              <span className="text-xs uppercase font-bold tracking-widest text-[#D4AF37]">
+                {isUrdu ? 'خستہ مٹھاس' : 'Flaky & Crispy Delights'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+                {isUrdu ? 'پتیسہ و سوہن حلوہ' : 'Patisa & Sohan Halwa'}
+              </h2>
+            </div>
+
+            <Link
+              to="/category/sweets"
+              className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
+            >
+              <span>{isUrdu ? 'سب پتیسہ دیکھیں' : 'View All'}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+            {patisaSweets.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 7. CATEGORY SHELF: SOCIAL MEDIA TRENDING ITEMS (New Category Shelf) */}
+      {trendingProducts.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
+            <div>
+              <span className="text-xs uppercase font-bold tracking-widest text-rose-700">
+                {isUrdu ? '🔥 وائرل اشیاء' : '🔥 Social Media Viral'}
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
+                {isUrdu ? 'سوشل میڈیا ٹرینڈنگ آئٹمز' : 'Social Media Trending Items'}
+              </h2>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {isUrdu ? 'کوکیز، چاکلیٹ، امپورٹڈ بسکٹس اور وائرل اسنیکس' : 'Viral cookies, chocolates, chips and daily new arrivals'}
+              </p>
+            </div>
+
+            <Link
+              to="/category/trending"
+              className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
+            >
+              <span>{isUrdu ? 'تمام ٹرینڈنگ اشیاء' : 'View All'}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {trendingProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 8. SAWERA MITHAI BOX STUDIO (SIGNATURE LUXURY FEATURE) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 text-white border-2 border-amber-400/40 shadow-2xl p-6 sm:p-10 lg:p-12">
           {/* Background Ambient Motif */}
@@ -540,7 +665,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 2.6 OCCASION-BASED COLLECTIONS SECTION */}
+      {/* 9. OCCASION-BASED COLLECTIONS SECTION */}
       {occasions.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-8">
@@ -597,152 +722,40 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 3. PRODUCTS SECTION (OR CATALOG UPDATE NOTICE) */}
-      {products.length === 0 ? (
+      {/* 10. SPECIAL OFFERS SECTION */}
+      {specialOffers.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-3xl border-2 border-emerald-100 p-8 sm:p-12 text-center max-w-2xl mx-auto shadow-sm space-y-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#07643D] flex items-center justify-center mx-auto border border-[#D4AF37]/40 shadow-inner">
-              <Sparkles className="w-8 h-8 text-[#D4AF37]" />
-            </div>
-            
-            <div className="space-y-1">
-              <span className="text-[11px] uppercase font-bold tracking-widest text-[#07643D] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                {isUrdu ? 'تازہ مینو تیاری میں ہے' : 'Fresh Inventory in Progress'}
-              </span>
-              <h3 className={`text-xl sm:text-2xl font-extrabold font-serif text-gray-900 pt-2 ${isUrdu ? 'urdu-text' : ''}`}>
-                {isUrdu ? 'اسٹور کیٹیلاگ اپڈیٹ ہو رہا ہے' : 'Store Catalog Being Freshly Updated'}
-              </h3>
-            </div>
+          <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#043E26] via-[#07643D] to-[#0A4D3C] text-white shadow-xl border-2 border-[#D4AF37]/50 mb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2 text-center md:text-left">
+                <span className="bg-[#D4AF37] text-[#07643D] font-extrabold text-[10px] sm:text-xs px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+                  {isUrdu ? 'محدود مدت کی آفرز' : 'Limited Time Deals'}
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-white">
+                  {isUrdu ? 'خصوصی جشن اور خوشیوں کی آفرز' : 'Special Festive & Celebration Offers'}
+                </h2>
+                <p className="text-xs sm:text-sm text-emerald-100 max-w-lg">
+                  {isUrdu 
+                    ? 'روایتی مٹھائی کے ڈبوں، فیملی پیکس اور پریمیم کریانے پر خصوصی رعایت۔'
+                    : 'Exclusive bundle discounts on traditional sweet boxes, family packs, and premium groceries.'}
+                </p>
+              </div>
 
-            <p className={`text-xs sm:text-sm text-gray-600 max-w-md mx-auto leading-relaxed ${isUrdu ? 'urdu-text' : ''}`}>
-              {isUrdu 
-                ? 'ہم نئی تازہ مٹھائیاں، بیکری اور راشن آئٹمز آن لائن کیٹیلاگ میں شامل کر رہے ہیں۔ آپ فون یا واٹس ایپ پر براہِ راست آرڈر کر سکتے ہیں۔'
-                : 'We are currently loading fresh batches of traditional sweets, bakery goods, and groceries into our online catalog. You can order directly by phone or WhatsApp in the meantime.'}
-            </p>
-
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a
-                href="https://wa.me/923227434080"
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors"
+              <Link
+                to="/products"
+                className="px-6 py-3 rounded-xl bg-white hover:bg-[#FDFBF7] text-[#07643D] font-extrabold text-xs shadow-md transition-colors flex-shrink-0"
               >
-                <Phone className="w-4 h-4 text-[#D4AF37]" />
-                <span>WhatsApp Order (0322 7434080)</span>
-              </a>
-
-              {isAdmin && (
-                <Link
-                  to="/admin/products"
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#D4AF37] hover:bg-[#F4D375] text-[#07643D] font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-colors"
-                >
-                  <PlusCircle className="w-4 h-4" />
-                  <span>+ Add Products (Admin)</span>
-                </Link>
-              )}
+                {isUrdu ? 'تمام ڈیلز دیکھیں ←' : 'Browse All Deals →'}
+              </Link>
             </div>
           </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {specialOffers.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </section>
-      ) : (
-        <>
-          {/* Featured Products */}
-          {(featuredProducts.length > 0 || products.length > 0) && (
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
-                <div>
-                  <span className="text-xs uppercase font-bold tracking-widest text-[#07643D]">
-                    {isUrdu ? 'محبت سے تیار کردہ' : 'Handcrafted With Love'}
-                  </span>
-                  <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-                    {isUrdu ? 'خاص منتخب مصنوعات' : (featuredProducts.length > 0 ? "Featured Selections" : "Fresh Daily Selections")}
-                  </h2>
-                </div>
-
-                <Link
-                  to="/products"
-                  className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
-                >
-                  <span>{isUrdu ? 'مزید دیکھیں' : 'See more items'}</span>
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                {(featuredProducts.length > 0 ? featuredProducts : products.slice(0, 4)).map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Best-Selling Products */}
-          {bestSellers.length > 0 && (
-            <section className="bg-white py-12 border-y border-gray-200">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2 mb-6">
-                  <div>
-                    <span className="text-xs uppercase font-bold tracking-widest text-[#D4AF37]">
-                      {isUrdu ? 'گاہکوں کی پسندیدہ' : 'Customer Favorites'}
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-gray-900 mt-1">
-                      {isUrdu ? 'سب سے زیادہ فروخت ہونے والی اشیاء' : 'Best-Selling Products'}
-                    </h2>
-                  </div>
-
-                  <Link
-                    to="/products"
-                    className="text-xs font-bold text-[#07643D] hover:underline flex items-center gap-1"
-                  >
-                    <span>{isUrdu ? 'تمام مصنوعات دیکھیں' : 'Explore all items'}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {bestSellers.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* Special Offers Section */}
-          {specialOffers.length > 0 && (
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#043E26] via-[#07643D] to-[#0A4D3C] text-white shadow-xl border-2 border-[#D4AF37]/50 mb-8">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="space-y-2 text-center md:text-left">
-                    <span className="bg-[#D4AF37] text-[#07643D] font-extrabold text-[10px] sm:text-xs px-3 py-1 rounded-full uppercase tracking-wider inline-block">
-                      {isUrdu ? 'محدود مدت کی آفرز' : 'Limited Time Deals'}
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl font-extrabold font-serif text-white">
-                      {isUrdu ? 'خصوصی جشن اور خوشیوں کی آفرز' : 'Special Festive & Celebration Offers'}
-                    </h2>
-                    <p className="text-xs sm:text-sm text-emerald-100 max-w-lg">
-                      {isUrdu 
-                        ? 'روایتی مٹھائی کے ڈبوں، فیملی پیکس اور پریمیم کریانے پر خصوصی رعایت۔'
-                        : 'Exclusive bundle discounts on traditional sweet boxes, family packs, and premium groceries.'}
-                    </p>
-                  </div>
-
-                  <Link
-                    to="/products"
-                    className="px-6 py-3 rounded-xl bg-white hover:bg-[#FDFBF7] text-[#07643D] font-extrabold text-xs shadow-md transition-colors flex-shrink-0"
-                  >
-                    {isUrdu ? 'تمام ڈیلز دیکھیں ←' : 'Browse All Deals →'}
-                  </Link>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                {specialOffers.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            </section>
-          )}
-        </>
       )}
 
       {/* 5.5 RECENTLY VIEWED PRODUCTS */}

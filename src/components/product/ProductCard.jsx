@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Eye, Star, Zap, Check, Heart } from 'lucide-react';
+import { ShoppingBag, Eye, Star, Zap, Check, Heart, MessageSquare } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -188,25 +188,40 @@ export default function ProductCard({ product }) {
             <span className="text-[10px] text-gray-400 font-medium">PKR</span>
           </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={handleAddToCart}
-              className="w-full py-2 px-2 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/30 font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group/btn"
-              title="Add to Shopping Cart"
-            >
-              <ShoppingBag className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
-              <span>{isUrdu ? 'شامل کریں' : 'Add'}</span>
-            </button>
+          {/* Action Buttons: Add to Cart, Instant Checkout, WhatsApp */}
+          <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                onClick={handleAddToCart}
+                className="w-full py-2 px-1 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/30 font-bold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer group/btn"
+                title="Add to Shopping Cart"
+              >
+                <ShoppingBag className="w-3.5 h-3.5 group-hover/btn:scale-110 transition-transform" />
+                <span>{isUrdu ? 'شامل کریں' : 'Add to Cart'}</span>
+              </button>
 
-            <button
-              onClick={handleBuyNow}
-              className="w-full py-2 px-2 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-sm hover:shadow transition-all cursor-pointer"
-              title="Buy Now and Proceed to Checkout"
+              <button
+                onClick={handleBuyNow}
+                className="w-full py-2 px-1 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-1 shadow-xs hover:shadow transition-all cursor-pointer"
+                title="Buy Now and Proceed to Checkout"
+              >
+                <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>{isUrdu ? 'فوری خریدیں' : 'Checkout'}</span>
+              </button>
+            </div>
+
+            <a
+              href={`https://wa.me/923227434080?text=${encodeURIComponent(
+                `Assalam o Alaikum Sawera Sweets!\nI want to order: ${product.name} (${selectedVariation?.label || product.unit || '1 kg'})\nPrice: Rs. ${currentPrice}\nPlease confirm delivery.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="w-full py-1.5 px-2 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
             >
-              <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>{isUrdu ? 'ابھی خریدیں' : 'Buy Now'}</span>
-            </button>
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>{isUrdu ? 'واٹس ایپ آرڈر' : 'WhatsApp'}</span>
+            </a>
           </div>
         </div>
 
