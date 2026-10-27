@@ -39,6 +39,23 @@ export default function AdminProductsPage() {
     return unsubscribe;
   }, []);
 
+  const getDefaultUnitForCategory = (cat) => {
+    if (cat === 'cosmetics' || cat === 'perfumes') return '1 Bottle';
+    if (cat === 'trending') return '1 Piece';
+    if (cat === 'beverages') return '1 Bottle';
+    if (cat === 'bakery' || cat === 'grocery') return '1 Pack';
+    return 'per 1 kg';
+  };
+
+  const getDefaultImageForCategory = (cat) => {
+    if (cat === 'cosmetics' || cat === 'perfumes') return '/images/categories/cosmetics.jpg';
+    if (cat === 'trending') return '/images/categories/trending.jpg';
+    if (cat === 'beverages') return '/images/categories/beverages.jpg';
+    if (cat === 'bakery') return '/images/categories/bakery.jpg';
+    if (cat === 'grocery') return '/images/categories/grocery.jpg';
+    return '/images/products/gulab-jamun.svg';
+  };
+
   // Form State
   const [formData, setFormData] = useState({
     name: '',
@@ -53,43 +70,56 @@ export default function AdminProductsPage() {
     image: '/images/products/gulab-jamun.svg',
     description: '',
     ingredients: '',
-    badge: 'Fresh Batch',
+    badge: 'Fresh Stock',
     isFeatured: false,
     isBestSeller: false,
     isSpecialOffer: false,
     isActive: true,
-    variations: [
-      { label: '500 Grams', price: 500, discountPrice: '' },
-      { label: '1 Kilogram', price: 1000, discountPrice: 900 }
-    ]
+    variations: []
   });
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
+    const initialCategory = selectedCat !== 'all' ? selectedCat : 'sweets';
+    const defaultUnit = getDefaultUnitForCategory(initialCategory);
+    const defaultImage = getDefaultImageForCategory(initialCategory);
+
     setFormData({
       name: '',
       urduName: '',
-      category: 'sweets',
+      category: initialCategory,
       subCategory: '',
       price: '',
       discountPrice: '',
-      unit: 'per 1 kg',
-      unitType: 'kg',
-      allowsDecimalQuantity: true,
-      image: '/images/products/gulab-jamun.svg',
+      unit: defaultUnit,
+      unitType: initialCategory === 'sweets' ? 'kg' : 'piece',
+      allowsDecimalQuantity: initialCategory === 'sweets',
+      image: defaultImage,
       description: '',
       ingredients: '',
-      badge: 'Fresh Batch',
+      badge: 'Fresh Stock',
       isFeatured: false,
       isBestSeller: false,
       isSpecialOffer: false,
       isActive: true,
-      variations: [
-        { label: '500 Grams', price: 500, discountPrice: '' },
-        { label: '1 Kilogram Box', price: 1000, discountPrice: 900 }
-      ]
+      variations: [] // Clean empty variations: Single item / piece by default
     });
     setIsModalOpen(true);
+  };
+
+  const handleCategoryChange = (newCat) => {
+    const isDefaultOrSweetUnit = !formData.name || formData.unit === 'per 1 kg' || formData.unit === '1 Piece' || formData.unit === '1 Bottle' || formData.unit === '1 Pack';
+    const newUnit = isDefaultOrSweetUnit ? getDefaultUnitForCategory(newCat) : formData.unit;
+    const newImg = getDefaultImageForCategory(newCat);
+
+    setFormData(prev => ({
+      ...prev,
+      category: newCat,
+      unit: newUnit,
+      image: prev.image.includes('/images/categories/') || prev.image.includes('/images/products/gulab-jamun.svg') ? newImg : prev.image,
+      unitType: newCat === 'sweets' ? 'kg' : 'piece',
+      allowsDecimalQuantity: newCat === 'sweets'
+    }));
   };
 
   const handleOpenEdit = (prod) => {
@@ -101,10 +131,10 @@ export default function AdminProductsPage() {
       subCategory: prod.subCategory || '',
       price: prod.price || '',
       discountPrice: prod.discountPrice || '',
-      unit: prod.unit || 'per 1 kg',
-      unitType: prod.unitType || 'kg',
+      unit: prod.unit || getDefaultUnitForCategory(prod.category),
+      unitType: prod.unitType || (prod.category === 'sweets' ? 'kg' : 'piece'),
       allowsDecimalQuantity: Boolean(prod.allowsDecimalQuantity),
-      image: prod.image || '/images/products/gulab-jamun.svg',
+      image: prod.image || getDefaultImageForCategory(prod.category),
       description: prod.description || '',
       ingredients: prod.ingredients || '',
       badge: prod.badge || '',
@@ -152,18 +182,31 @@ export default function AdminProductsPage() {
 
   const handleSaveProduct = (e) => {
     e.preventDefault();
+
+    // Clean up variations: remove any empty labels
+    const cleanedVariations = (formData.variations || [])
+      .filter(v => v.label && v.label.trim())
+      .map(v => ({
+        label: v.label.trim(),
+        price: Number(v.price) || Number(formData.price) || 0,
+        discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null
+      }));
+
     const productPayload = {
       ...formData,
       id: editingProduct?.id,
       price: Number(formData.price),
       discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
       isActive: formData.isActive !== false,
+      variations: cleanedVariations,
       stocks: editingProduct?.stocks || { 'shop-1': 50 }
     };
 
     db.saveProduct(productPayload);
     syncProducts();
     setIsModalOpen(false);
+    setNotification(`Product "${productPayload.name}" saved successfully.`);
+    setTimeout(() => setNotification(''), 3500);
   };
 
   const handleExportCSV = () => {
@@ -184,11 +227,71 @@ export default function AdminProductsPage() {
     exportToCSV(exportData, `sawera-products-${new Date().toISOString().slice(0, 10)}.csv`);
   };
 
-  // Add variation row
+  // Variation helpers & presets
   const addVariationRow = () => {
+    const isPerfume = formData.category === 'cosmetics' || formData.category === 'perfumes';
+    const isTrending = formData.category === 'trending';
+    const defaultLabel = isPerfume ? '1 Bottle (50ml)' : isTrending ? '1 Piece' : '500 Grams';
+
     setFormData(prev => ({
       ...prev,
-      variations: [...prev.variations, { label: 'New Size / Weight', price: '', discountPrice: '' }]
+      variations: [
+        ...prev.variations, 
+        { 
+          label: defaultLabel, 
+          price: prev.price ? Number(prev.price) : '', 
+          discountPrice: prev.discountPrice ? Number(prev.discountPrice) : '' 
+        }
+      ]
+    }));
+  };
+
+  const addPieceBoxPresets = () => {
+    const basePrice = Number(formData.price) || 100;
+    const baseDiscount = formData.discountPrice ? Number(formData.discountPrice) : '';
+    setFormData(prev => ({
+      ...prev,
+      unit: '1 Piece',
+      unitType: 'piece',
+      variations: [
+        { label: '1 Piece', price: basePrice, discountPrice: baseDiscount },
+        { label: 'Full Box (ڈبہ)', price: basePrice * 12, discountPrice: baseDiscount ? baseDiscount * 12 : '' }
+      ]
+    }));
+  };
+
+  const addPerfumePresets = () => {
+    const basePrice = Number(formData.price) || 1500;
+    const baseDiscount = formData.discountPrice ? Number(formData.discountPrice) : '';
+    setFormData(prev => ({
+      ...prev,
+      unit: '1 Bottle',
+      unitType: 'piece',
+      variations: [
+        { label: '50ml Bottle', price: basePrice, discountPrice: baseDiscount },
+        { label: '100ml Bottle', price: Math.round(basePrice * 1.8), discountPrice: baseDiscount ? Math.round(baseDiscount * 1.8) : '' }
+      ]
+    }));
+  };
+
+  const addSweetsWeightPresets = () => {
+    const basePrice = Number(formData.price) || 1000;
+    const baseDiscount = formData.discountPrice ? Number(formData.discountPrice) : '';
+    setFormData(prev => ({
+      ...prev,
+      unit: 'per 1 kg',
+      unitType: 'kg',
+      variations: [
+        { label: '500 Grams', price: Math.round(basePrice * 0.5), discountPrice: baseDiscount ? Math.round(baseDiscount * 0.5) : '' },
+        { label: '1 Kilogram Box', price: basePrice, discountPrice: baseDiscount }
+      ]
+    }));
+  };
+
+  const clearAllVariations = () => {
+    setFormData(prev => ({
+      ...prev,
+      variations: []
     }));
   };
 
@@ -474,7 +577,7 @@ export default function AdminProductsPage() {
                   <label className="block font-bold text-gray-700 mb-1">Store Category (کیٹیگری)</label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
                     className="w-full p-2 border rounded-xl outline-none focus:border-[#07643D]"
                   >
                     {categories.map(c => (
@@ -490,91 +593,180 @@ export default function AdminProductsPage() {
                     type="text"
                     value={formData.subCategory}
                     onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
-                    placeholder="e.g. Barfi & Peda"
+                    placeholder={
+                      formData.category === 'trending' ? 'e.g. Chocolates, Biscuits, Chips' :
+                      formData.category === 'cosmetics' || formData.category === 'perfumes' ? 'e.g. Men Perfumes, Attar, Skincare' :
+                      formData.category === 'beverages' ? 'e.g. Juices, Cold Drinks' :
+                      'e.g. Barfi & Peda'
+                    }
                     className="w-full p-2 border rounded-xl outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Unit Label</label>
+                  <label className="block font-bold text-gray-700 mb-1">Unit / Packaging (پیکنگ)</label>
                   <input
                     type="text"
+                    required
                     value={formData.unit}
                     onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
-                    placeholder="e.g. per 1 kg / 2 Pound"
-                    className="w-full p-2 border rounded-xl outline-none"
+                    placeholder="e.g. 1 Piece, 1 Bottle, Full Box, per 1 kg..."
+                    className="w-full p-2 border rounded-xl outline-none focus:border-[#07643D]"
                   />
+                  {/* Quick Unit Selection Pills */}
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {['1 Piece', '1 Bottle', 'Full Box', '1 Pack', 'per 1 kg', '500g', '1 Dozen'].map((u) => (
+                      <button
+                        key={u}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, unit: u })}
+                        className={`text-[10px] px-2 py-0.5 rounded-md border font-medium transition-colors cursor-pointer ${
+                          formData.unit === u
+                            ? 'bg-[#07643D] text-white border-[#07643D]'
+                            : 'bg-white text-gray-600 border-gray-200 hover:bg-emerald-50 hover:text-[#07643D]'
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Regular Price (PKR)</label>
+                  <label className="block font-bold text-gray-700 mb-1">Regular Price (PKR) *</label>
                   <input
                     type="number"
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="1200"
-                    className="w-full p-2 border rounded-xl outline-none font-mono"
+                    placeholder="e.g. 1200"
+                    className="w-full p-2 border rounded-xl outline-none font-mono focus:border-[#07643D]"
                   />
+                  <span className="text-[10px] text-gray-400 mt-0.5 block">Price for single item ({formData.unit || 'Piece'})</span>
                 </div>
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Discount Price (PKR)</label>
+                  <label className="block font-bold text-gray-700 mb-1">Discount / Sale Price (PKR)</label>
                   <input
                     type="number"
                     value={formData.discountPrice}
                     onChange={(e) => setFormData({ ...formData, discountPrice: e.target.value })}
-                    placeholder="Optional sale price"
-                    className="w-full p-2 border rounded-xl outline-none font-mono"
+                    placeholder="Optional promo price"
+                    className="w-full p-2 border rounded-xl outline-none font-mono focus:border-[#07643D]"
                   />
+                  <span className="text-[10px] text-gray-400 mt-0.5 block">Agar sale ya discount lagana ho</span>
                 </div>
               </div>
 
-              {/* Variations Builder */}
-              <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/50 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-gray-800">Weights &amp; Variations (250g, 500g, 1kg, 2kg)</span>
+              {/* Variations & Sizes Builder (Optional) */}
+              <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/70 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span className="font-bold text-gray-800 text-xs block">
+                      Sizes, Packs &amp; Variations (اختیاری - سائز و مختلف آپشنز)
+                    </span>
+                    <span className="text-[10px] text-gray-500">
+                      Agar 1 Piece vs Full Box, ya 50ml vs 100ml, ya 500g vs 1kg offer karna ho to add karein. Warna isko khali chhor dein.
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {formData.variations.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={clearAllVariations}
+                        className="text-red-600 font-semibold text-[11px] hover:underline cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={addVariationRow}
+                      className="text-[#07643D] font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      + Add Option Row
+                    </button>
+                  </div>
+                </div>
+
+                {/* Quick Presets for fast 1-click addition */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-200/60">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-1">
+                    Quick Presets:
+                  </span>
                   <button
                     type="button"
-                    onClick={addVariationRow}
-                    className="text-[#07643D] font-bold text-xs hover:underline flex items-center gap-1"
+                    onClick={addPieceBoxPresets}
+                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
+                    title="Add 1 Piece & Full Box options"
                   >
-                    + Add Size Option
+                    + 1 Piece &amp; Full Box (ڈبہ)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={addPerfumePresets}
+                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
+                    title="Add 50ml & 100ml options"
+                  >
+                    + 50ml &amp; 100ml Bottle
+                  </button>
+                  <button
+                    type="button"
+                    onClick={addSweetsWeightPresets}
+                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
+                    title="Add 500g & 1kg sweet weights"
+                  >
+                    + 500g &amp; 1kg Box
                   </button>
                 </div>
 
-                {formData.variations.map((v, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={v.label}
-                      onChange={(e) => updateVariation(i, 'label', e.target.value)}
-                      placeholder="e.g. 500 Grams"
-                      className="flex-1 p-1.5 border rounded-lg bg-white"
-                    />
-                    <input
-                      type="number"
-                      value={v.price}
-                      onChange={(e) => updateVariation(i, 'price', Number(e.target.value))}
-                      placeholder="Price"
-                      className="w-24 p-1.5 border rounded-lg bg-white font-mono"
-                    />
-                    <input
-                      type="number"
-                      value={v.discountPrice || ''}
-                      onChange={(e) => updateVariation(i, 'discountPrice', e.target.value ? Number(e.target.value) : '')}
-                      placeholder="Sale Price"
-                      className="w-24 p-1.5 border rounded-lg bg-white font-mono"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeVariation(i)}
-                      className="p-1.5 text-gray-400 hover:text-red-600"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                {formData.variations.length === 0 ? (
+                  <div className="p-3.5 bg-white rounded-xl border border-dashed border-gray-300 text-center space-y-1">
+                    <p className="text-gray-700 text-xs font-semibold">
+                      ✓ Single Price Item (کوئی اضافی سائز نہیں)
+                    </p>
+                    <p className="text-gray-400 text-[11px]">
+                      Ye product upar di gayi <strong>Regular Price {formData.price ? `(Rs. ${Number(formData.price).toLocaleString()})` : ''}</strong> par <strong>{formData.unit || 'Single Piece'}</strong> ke hisaab se sell hoga. Agar alag alag pack size nahi hain to yahan kuch add karne ki zaroorat nahi hai.
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-2">
+                    {formData.variations.map((v, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={v.label}
+                          onChange={(e) => updateVariation(i, 'label', e.target.value)}
+                          placeholder="Option Name (e.g. 1 Piece, Full Box, 50ml, 500g)"
+                          className="flex-1 p-2 border rounded-lg bg-white text-xs outline-none focus:border-[#07643D]"
+                        />
+                        <input
+                          type="number"
+                          value={v.price}
+                          onChange={(e) => updateVariation(i, 'price', e.target.value ? Number(e.target.value) : '')}
+                          placeholder="Price (PKR)"
+                          className="w-28 p-2 border rounded-lg bg-white font-mono text-xs outline-none focus:border-[#07643D]"
+                        />
+                        <input
+                          type="number"
+                          value={v.discountPrice ?? ''}
+                          onChange={(e) => updateVariation(i, 'discountPrice', e.target.value ? Number(e.target.value) : '')}
+                          placeholder="Sale Price (Opt)"
+                          className="w-28 p-2 border rounded-lg bg-white font-mono text-xs outline-none focus:border-[#07643D]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeVariation(i)}
+                          className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                          title="Remove this option"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>

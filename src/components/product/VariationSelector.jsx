@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Scale } from 'lucide-react';
+import { Check, Scale, Package } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function VariationSelector({
@@ -12,6 +12,7 @@ export default function VariationSelector({
   const { isUrdu } = useLanguage();
   const variations = product?.variations || [];
   const allowsDecimal = product?.allowsDecimalQuantity || product?.unit?.toLowerCase().includes('kg');
+  const isWeightBased = variations.some(v => v.label?.toLowerCase().includes('kg') || v.label?.toLowerCase().includes('gram'));
 
   return (
     <div className="space-y-4">
@@ -19,8 +20,12 @@ export default function VariationSelector({
       {variations.length > 0 && (
         <div>
           <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-            <Scale className="w-3.5 h-3.5 text-[#07643D]" />
-            <span>{isUrdu ? 'وزن اور پیکنگ کا انتخاب کریں' : 'Select Packaging / Weight:'}</span>
+            {isWeightBased ? (
+              <Scale className="w-3.5 h-3.5 text-[#07643D]" />
+            ) : (
+              <Package className="w-3.5 h-3.5 text-[#07643D]" />
+            )}
+            <span>{isUrdu ? (isWeightBased ? 'وزن یا پیکنگ منتخب کریں:' : 'سائز یا آپشن منتخب کریں:') : (isWeightBased ? 'Select Weight / Packaging:' : 'Select Size / Option:')}</span>
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {variations.map((v, idx) => {
