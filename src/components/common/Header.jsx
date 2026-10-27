@@ -17,7 +17,11 @@ import {
   Bike,
   Heart,
   HelpCircle,
-  ChevronDown
+  ChevronDown,
+  Tag,
+  Gift,
+  Building2,
+  Store
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useStore } from '../../context/StoreContext';
@@ -59,40 +63,31 @@ export default function Header() {
       {/* Top Notification / Announcement Bar */}
       <div className="bg-[#07643D] text-white text-xs py-1.5 px-4 border-b border-[#043E26]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-xs">
             <span className="bg-[#D4AF37] text-[#07643D] font-bold text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider">
-              {isUrdu ? 'سرکاری اسٹور' : 'Official Store'}
+              {isUrdu ? 'سرکاری اسٹور' : 'Official Helpline'}
             </span>
-            <span className="text-emerald-100 hidden sm:inline">
-              {isUrdu ? 'خالص دیسی گھی اور تازہ بیکری' : 'Pure Desi Ghee Sweets & Fresh Daily Bakery'}
+            <span className="text-emerald-100 flex items-center gap-1 font-medium">
+              <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>UAN / Helpline: <a href="tel:03227434080" className="font-mono text-white font-bold hover:underline">0322 7434080</a> | Call us anytime</span>
             </span>
-            {isUrdu ? (
-              <span className="text-[#F4D375] font-semibold urdu-text text-sm">
-                ہر خوشی کیساتھ
-              </span>
-            ) : (
-              <span className="text-[#F4D375] font-semibold text-xs tracking-wide">
-                • With Every Joy
-              </span>
-            )}
+            <span className="text-[#F4D375] font-semibold hidden md:inline">
+              • Delivering across 240+ cities in Pakistan
+            </span>
           </div>
 
           <div className="flex items-center gap-4 text-emerald-100 text-xs">
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>5:30 AM - 12:00 AM (Midnight)</span>
+              <span>5:30 AM - Midnight</span>
             </div>
-            <div className="hidden md:flex items-center gap-1">
-              <Phone className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span>Orders: <a href="tel:03227434080" className="font-mono text-white hover:underline">0322 7434080</a></span>
-            </div>
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="flex items-center gap-1">
               <span className="text-[#D4AF37] font-bold">WhatsApp:</span>
               <a 
                 href="https://wa.me/923227434080" 
                 target="_blank" 
                 rel="noreferrer"
-                className="font-mono text-white hover:underline"
+                className="font-mono text-white font-bold hover:underline"
               >
                 0322 7434080
               </a>
@@ -357,13 +352,20 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Category Navigation Bar (Desktop) */}
+      {/* Category Navigation Bar (Desktop - Suleman Sweets Benchmark) */}
       <nav className="hidden md:block bg-[#07643D] text-white border-t border-[#043E26]">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs">
           <div className="flex items-center overflow-x-auto scrollbar-none py-1.5 gap-1 lg:gap-2">
             <Link
+              to="/"
+              className="px-2.5 py-1 rounded-md text-xs font-bold text-white hover:bg-[#043E26] transition-colors flex-shrink-0"
+            >
+              {isUrdu ? 'ہوم' : 'Home'}
+            </Link>
+
+            <Link
               to="/products"
-              className="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-[#D4AF37] text-[#07643D] hover:bg-[#F4D375] transition-colors flex items-center gap-1.5 flex-shrink-0"
+              className="px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-[#D4AF37] text-[#07643D] hover:bg-[#F4D375] transition-colors flex items-center gap-1.5 flex-shrink-0 shadow-2xs"
             >
               <Sparkles className="w-3 h-3" />
               {t('allProducts')}
@@ -373,16 +375,41 @@ export default function Header() {
               to="/mithai-box-studio"
               className="px-3 py-1 rounded-md text-xs font-bold bg-gradient-to-r from-amber-400 to-amber-300 text-emerald-950 hover:brightness-105 transition-all flex items-center gap-1.5 flex-shrink-0 shadow-sm border border-amber-200"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-900 fill-amber-400" />
+              <Gift className="w-3.5 h-3.5 text-emerald-900 fill-amber-400" />
               <span>{isUrdu ? 'مٹھائی بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
               <span className="text-[9px] bg-emerald-900 text-amber-200 px-1 py-0.2 rounded uppercase tracking-wider font-extrabold">NEW</span>
+            </Link>
+
+            <Link
+              to="/deals"
+              className="px-2.5 py-1 rounded-md text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center gap-1 flex-shrink-0 shadow-xs"
+            >
+              <Tag className="w-3 h-3 text-amber-300" />
+              <span>{isUrdu ? 'ڈیلز اور آفرز' : 'Hot Deals'}</span>
+              <span className="text-[9px] bg-amber-400 text-red-950 px-1 py-0.2 rounded font-extrabold">HOT</span>
+            </Link>
+
+            <Link
+              to="/outlets"
+              className="px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-100 hover:text-white hover:bg-[#043E26] transition-colors whitespace-nowrap flex items-center gap-1 flex-shrink-0"
+            >
+              <Store className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{isUrdu ? 'ہماری برانچز' : 'Our Outlets'}</span>
+            </Link>
+
+            <Link
+              to="/track-order"
+              className="px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-100 hover:text-white hover:bg-[#043E26] transition-colors whitespace-nowrap flex items-center gap-1 flex-shrink-0"
+            >
+              <Package className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{isUrdu ? 'آرڈر ٹریکنگ' : 'Track Order'}</span>
             </Link>
 
             {categories?.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/category/${cat.slug}`}
-                className="px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-100 hover:text-white hover:bg-[#043E26] transition-colors whitespace-nowrap"
+                className="px-2.5 py-1 rounded-md text-xs font-semibold text-emerald-100 hover:text-white hover:bg-[#043E26] transition-colors whitespace-nowrap flex-shrink-0"
               >
                 {isUrdu && cat.urduName ? cat.urduName : cat.name}
               </Link>
@@ -391,10 +418,6 @@ export default function Header() {
 
           <div className="flex items-center gap-3 text-emerald-200 text-xs flex-shrink-0">
             <Link to="/about" className="hover:text-white transition-colors">{t('aboutUs')}</Link>
-            <span className="text-emerald-500">•</span>
-            <Link to="/locations" className="hover:text-white transition-colors">{t('ourLocations')}</Link>
-            <span className="text-emerald-500">•</span>
-            <Link to="/track-order" className="hover:text-white transition-colors">{t('trackOrder')}</Link>
             <span className="text-emerald-500">•</span>
             <Link to="/faq" className="hover:text-white transition-colors">{t('faq')}</Link>
             <span className="text-emerald-500">•</span>
@@ -414,7 +437,7 @@ export default function Header() {
           >
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
-                <Sparkles className="w-4 h-4" />
+                <Gift className="w-4 h-4" />
               </div>
               <div>
                 <div className="text-xs font-bold text-amber-200 font-serif">
@@ -427,6 +450,21 @@ export default function Header() {
             </div>
             <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-400 text-emerald-950 px-2 py-0.5 rounded-full">
               NEW
+            </span>
+          </Link>
+
+          {/* Hot Deals & Offers Pill */}
+          <Link
+            to="/deals"
+            onClick={() => setMobileMenuOpen(false)}
+            className="p-2.5 rounded-xl bg-red-50 text-red-700 flex items-center justify-between border border-red-200 font-bold text-xs"
+          >
+            <div className="flex items-center gap-2">
+              <Tag className="w-4 h-4 text-red-600" />
+              <span>{isUrdu ? 'ہاٹ ڈیلز اور اسپیشل آفرز' : 'Hot Deals & Offers'}</span>
+            </div>
+            <span className="text-[9px] bg-red-600 text-white px-2 py-0.5 rounded-full uppercase">
+              Save Up to 25%
             </span>
           </Link>
 
@@ -456,14 +494,22 @@ export default function Header() {
           </div>
 
           <div className="border-t border-gray-100 pt-3 text-xs space-y-2 text-gray-600">
+            <Link to="/outlets" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between py-1 font-medium hover:text-[#07643D]">
+              <span className="flex items-center gap-2">
+                <Store className="w-3.5 h-3.5 text-[#07643D]" />
+                {isUrdu ? 'ہماری برانچز' : 'Our Outlets & Hubs'}
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+            </Link>
+            <Link to="/track-order" onClick={() => setMobileMenuOpen(false)} className="flex items-center justify-between py-1 font-medium hover:text-[#07643D]">
+              <span className="flex items-center gap-2">
+                <Package className="w-3.5 h-3.5 text-[#07643D]" />
+                {t('trackOrder')}
+              </span>
+              <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+            </Link>
             <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block py-1 font-medium hover:text-[#07643D]">
               {t('aboutUs')}
-            </Link>
-            <Link to="/locations" onClick={() => setMobileMenuOpen(false)} className="block py-1 font-medium hover:text-[#07643D]">
-              {t('ourLocations')}
-            </Link>
-            <Link to="/track-order" onClick={() => setMobileMenuOpen(false)} className="block py-1 font-medium hover:text-[#07643D]">
-              {t('trackOrder')}
             </Link>
             <Link to="/faq" onClick={() => setMobileMenuOpen(false)} className="block py-1 font-medium hover:text-[#07643D]">
               {t('faq')}

@@ -22,6 +22,7 @@ import CategoryPage from './pages/CategoryPage';
 import AllProductsPage from './pages/AllProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import MithaiBoxStudioPage from './pages/MithaiBoxStudioPage';
+import DealsPage from './pages/DealsPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
@@ -155,12 +156,16 @@ function StorefrontLayout() {
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/mithai-box-studio" element={<MithaiBoxStudioPage />} />
           <Route path="/box-builder" element={<MithaiBoxStudioPage />} />
+          <Route path="/deals" element={<DealsPage />} />
+          <Route path="/offers" element={<DealsPage />} />
           <Route path="/wishlist" element={<CustomerWishlistPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
           <Route path="/track-order" element={<OrderTrackingPage />} />
           <Route path="/locations" element={<LocationsPage />} />
+          <Route path="/outlets" element={<LocationsPage />} />
+          <Route path="/branches" element={<LocationsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/faq" element={<FAQPage />} />
