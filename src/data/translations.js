@@ -15,6 +15,8 @@ export const TRANSLATIONS = {
     // Navigation
     home: "Home",
     allProducts: "All Products",
+    trending: "Trending Items",
+    trendingItems: "Social Media Trending Items",
     sweets: "Sweets",
     bakery: "Fresh Bakery",
     grocery: "Kiryana & Grocery",
@@ -138,6 +140,8 @@ export const TRANSLATIONS = {
     // Navigation
     home: "ہوم",
     allProducts: "تمام پروڈکٹس",
+    trending: "سوشل میڈیا ٹرینڈنگ",
+    trendingItems: "سوشل میڈیا ٹرینڈنگ اشیاء",
     sweets: "مٹھائی",
     bakery: "تازہ بیکری",
     grocery: "کریانہ و راشن",

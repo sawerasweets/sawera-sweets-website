@@ -3,6 +3,19 @@
 
 export const CATEGORIES = [
   {
+    id: "trending",
+    slug: "trending",
+    name: "Trending Items",
+    displayName: "Social Media Trending Items",
+    urduName: "سوشل میڈیا ٹرینڈنگ",
+    description: "Daily viral social media trends, imported chocolates, premium stuffed cookies, crispy Lays chips, and new daily arrivals.",
+    image: "/images/hero/bakery-sweets.jpg",
+    icon: "Flame",
+    badge: "🔥 Viral & Trending",
+    color: "#E11D48",
+    featuredSubcategories: ["Trending Cookies & Biscuits", "Viral Chocolates", "Crispy Lays & Chips", "Imported Candies & Treats", "Daily New Arrivals"]
+  },
+  {
     id: "sweets",
     slug: "sweets",
     name: "Sweets",

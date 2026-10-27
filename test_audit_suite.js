@@ -28,7 +28,9 @@ console.log('\n==================================================');
 console.log('1. CATALOG DATA & ASSET INTEGRITY');
 console.log('==================================================');
 
-assert(PRODUCTS.length === 12, `Catalog has exactly 12 authentic sweets (Found: ${PRODUCTS.length})`);
+const sweetProducts = PRODUCTS.filter(p => p.category === 'sweets');
+assert(sweetProducts.length === 12, `Catalog preserves all 12 authentic sweets (Found: ${sweetProducts.length})`);
+assert(PRODUCTS.length === 16, `Catalog has 16 products including trending items (Found: ${PRODUCTS.length})`);
 
 // Check every product has required fields and valid image file on disk
 let allImagesExist = true;
@@ -40,7 +42,7 @@ for (const p of PRODUCTS) {
     allImagesExist = false;
     console.error(`Missing image for ${p.id}: ./public${p.image}`);
   }
-  if (!p.price || p.price < 500 || (p.discountPrice && p.discountPrice >= p.price)) {
+  if (!p.price || p.price <= 0 || (p.discountPrice && p.discountPrice >= p.price)) {
     allPricesValid = false;
     console.error(`Invalid pricing for ${p.id}: regular=${p.price}, discount=${p.discountPrice}`);
   }
@@ -50,15 +52,16 @@ for (const p of PRODUCTS) {
   }
 }
 
-assert(allImagesExist, 'All 12 product image files exist on disk in ./public/images/products/');
+assert(allImagesExist, 'All product image files exist on disk in ./public');
 assert(allPricesValid, 'All products have valid realistic pricing with discounted promo price < regular price');
 assert(allHaveUrdu, 'All products contain authentic Urdu names and descriptions');
 
 console.log('\n==================================================');
-console.log('2. BUSINESS IDENTITY & 6 OFFICIAL CATEGORIES');
+console.log('2. BUSINESS IDENTITY & 7 STORE CATEGORIES (TRENDING + 6 CORE)');
 console.log('==================================================');
 
 const expectedCategories = [
+  'trending',
   'sweets',
   'bakery',
   'grocery',
@@ -67,7 +70,7 @@ const expectedCategories = [
   'beverages'
 ];
 
-assert(CATEGORIES.length === 6, `Strictly 6 categories maintained (Found: ${CATEGORIES.length})`);
+assert(CATEGORIES.length === 7, `All 7 store categories maintained including trending items (Found: ${CATEGORIES.length})`);
 const categorySlugs = CATEGORIES.map(c => c.slug);
 const allCategoriesMatch = expectedCategories.every(slug => categorySlugs.includes(slug));
 assert(allCategoriesMatch, `Official categories exactly match [${expectedCategories.join(', ')}]`);
@@ -189,7 +192,8 @@ global.CustomEvent = class {
 const { default: db } = await import('./src/services/db.js');
 
 // Test DB initialization
-assert(db.getProducts().length === 12, `DB initialized with 12 real catalog products (Found: ${db.getProducts().length})`);
+assert(db.getProducts().length === 16, `DB initialized with 16 catalog products (Found: ${db.getProducts().length})`);
+assert(db.getProducts().filter(p => p.category === 'sweets').length === 12, `DB maintains all 12 authentic sweets (Found: ${db.getProducts().filter(p => p.category === 'sweets').length})`);
 assert(db.getBranches().length === 1, `DB initialized with single active branch Shop 1 (Found: ${db.getBranches().length})`);
 assert(db.getBoxOptions().length === 4, `DB initialized with 4 box options (Found: ${db.getBoxOptions().length})`);
 assert(db.getOccasions().length === 4, `DB initialized with 4 occasion collections (Found: ${db.getOccasions().length})`);

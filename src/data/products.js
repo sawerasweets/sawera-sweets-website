@@ -637,6 +637,186 @@ export const PRODUCTS = [
     ],
     rating: 5.0,
     reviewCount: 38
+  },
+  {
+    id: "prd-viral-kunafa-chocolate",
+    name: "Dubai Viral Pistachio Kunafa Chocolate Bar",
+    urduName: "دبئی وائرل کنافہ پستہ چاکلیٹ بار",
+    slug: "dubai-viral-kunafa-chocolate-bar",
+    category: "trending",
+    subCategory: "Viral Chocolates",
+    description: "The worldwide social media viral sensation! Decadent premium milk chocolate bar generously stuffed with crunchy golden-toasted crispy kunafa phyllo and rich, velvety Turkish pistachio butter. Daily fresh stock that sells out fast.",
+    urduDescription: "انسٹاگرام اور ٹک ٹاک کا سب سے مشہور وائرل ٹرینڈ! خستہ سنہری کنافہ اور شاہی پستہ کریم کی بھرپور فلنگ کے ساتھ تیار کردہ لذیذ ملکی چاکلیٹ بار۔",
+    ingredients: "Premium Milk Chocolate, Crispy Toasted Kunafa (Kataifi), Turkish Pistachio Paste, Tahini Cream, Butter",
+    image: "/images/categories/bakery.jpg",
+    price: 1350,
+    discountPrice: 1250,
+    unit: "1 Bar (200g)",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: false,
+    salesCount: 142,
+    badge: "🔥 Viral Trend",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 45
+    },
+    variations: [
+      {
+        id: "var-kunafa-single",
+        label: "Single Bar (200g)",
+        urduLabel: "ایک بار (200 گرام)",
+        weight: "200g",
+        price: 1350,
+        discountPrice: 1250
+      },
+      {
+        id: "var-kunafa-duo",
+        label: "Twin Pack (2 x 200g)",
+        urduLabel: "دو عدد فیملی پیک (400 گرام)",
+        weight: "400g",
+        price: 2600,
+        discountPrice: 2400
+      }
+    ],
+    rating: 5.0,
+    reviewCount: 28
+  },
+  {
+    id: "prd-lotus-biscoff-cookies",
+    name: "Viral Lotus Biscoff Stuffed Chunky Cookies",
+    urduName: "وائرل لوٹس بسکوف اسٹفڈ چنکی کوکیز",
+    slug: "viral-lotus-biscoff-stuffed-chunky-cookies",
+    category: "trending",
+    subCategory: "Trending Cookies & Biscuits",
+    description: "Thick, soft-baked New York style gourmet cookies stuffed with a molten center of authentic Lotus Biscoff spread and crowned with crunchy caramelized Biscoff biscuit crumbs. Heated for 10 seconds for the ultimate gooey molten bite.",
+    urduDescription: "سوشل میڈیا پر بیحد مقبول نرم اور خستہ چنکی کوکیز جن کے اندر اصلی لوٹس بسکوف کا پگھلتا ہوا فج بھرا ہوا ہے۔ چائے اور کافی کے ساتھ لاجواب ذائقہ۔",
+    ingredients: "Brown Sugar, Creamery Butter, Flour, Lotus Biscoff Spread, Lotus Biscoff Crumbles, Belgian White Chocolate Chunks",
+    image: "/images/hero/bakery-sweets.jpg",
+    price: 380,
+    discountPrice: 350,
+    unit: "Box of 2",
+    isFeatured: true,
+    isBestSeller: true,
+    isSpecialOffer: true,
+    salesCount: 96,
+    badge: "🔥 Hot Cookie Trend",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 35
+    },
+    variations: [
+      {
+        id: "var-lotus-2pc",
+        label: "Box of 2 Big Cookies",
+        urduLabel: "دو بڑے کوکیز کا بکس",
+        weight: "2 pcs",
+        price: 380,
+        discountPrice: 350
+      },
+      {
+        id: "var-lotus-4pc",
+        label: "Box of 4 Big Cookies",
+        urduLabel: "چار کوکیز کا فیملی بکس",
+        weight: "4 pcs",
+        price: 750,
+        discountPrice: 680
+      }
+    ],
+    rating: 4.9,
+    reviewCount: 19
+  },
+  {
+    id: "prd-gourmet-paprika-lays",
+    name: "Trending Gourmet Wavy Paprika Lays",
+    urduName: "گورمے ویوی پیپریکا لیرز چپس",
+    slug: "trending-gourmet-wavy-paprika-lays",
+    category: "trending",
+    subCategory: "Crispy Lays & Chips",
+    description: "Extra-crispy crinkle-cut golden potato chips coated with smoky Spanish paprika, aromatic herbs, and a savory kick. The trending social media snack sensation for movie nights and evening cravings.",
+    urduDescription: "سوشل میڈیا اور یوتھ میں بیحد وائرل کرسپی آلو چپس، جس پر لذیذ سموکی پیپریکا اور مسالاجات کی خوشبودار کوٹنگ کی گئی ہے۔ بے حد خستہ اور چٹپٹا ذائقہ۔",
+    ingredients: "Fresh Farm Selected Potatoes, Sunflower Oil, Smoked Sweet Paprika, Sea Salt, Natural Spices",
+    image: "/images/categories/grocery.jpg",
+    price: 150,
+    discountPrice: 140,
+    unit: "Family Pack (65g)",
+    isFeatured: false,
+    isBestSeller: true,
+    isSpecialOffer: false,
+    salesCount: 210,
+    badge: "🔥 Viral Snack",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 80
+    },
+    variations: [
+      {
+        id: "var-lays-single",
+        label: "Single Pack (65g)",
+        urduLabel: "ایک پیک (65 گرام)",
+        weight: "65g",
+        price: 150,
+        discountPrice: 140
+      },
+      {
+        id: "var-lays-bundle3",
+        label: "Party Bundle (3 Packs)",
+        urduLabel: "پارٹی بنڈل (3 پیک)",
+        weight: "195g",
+        price: 430,
+        discountPrice: 390
+      }
+    ],
+    rating: 4.8,
+    reviewCount: 34
+  },
+  {
+    id: "prd-belgian-hazelnut-biscuits",
+    name: "Imported Belgian Choco Hazelnut Crispy Biscuits",
+    urduName: "امپورٹڈ بیلجیئن ہیزل نٹ چاکلیٹ بسکٹ",
+    slug: "imported-belgian-choco-hazelnut-crispy-biscuits",
+    category: "trending",
+    subCategory: "Trending Cookies & Biscuits",
+    description: "Premium imported European wafer biscuits layered with velvety roasted hazelnut praline cream and enrobed in glossy Belgian milk chocolate. Arrived fresh in this week's trending shipment.",
+    urduDescription: "یورپی معیار کا خستہ بسکٹ جس کے اندر بھنے ہوئے ہیزل نٹ کی کریمی پرت اور اوپر لذیذ بیلجیئن چاکلیٹ کا غلاف ہے۔ ہر عمر کا پسندیدہ وائرل کرسپی بسکٹ۔",
+    ingredients: "Wheat Flour, Roasted Hazelnut Paste (22%), Cocoa Butter, Whole Milk Powder, Unsweetened Belgian Chocolate, Sugar",
+    image: "/images/products/biscuits.svg",
+    price: 480,
+    discountPrice: 440,
+    unit: "Pack (150g)",
+    isFeatured: true,
+    isBestSeller: false,
+    isSpecialOffer: true,
+    salesCount: 78,
+    badge: "🔥 Daily New Arrival",
+    stockStatus: "in_stock",
+    inStock: true,
+    stocks: {
+      "shop-1": 40
+    },
+    variations: [
+      {
+        id: "var-belgian-single",
+        label: "Single Box (150g)",
+        urduLabel: "ایک ڈبہ (150 گرام)",
+        weight: "150g",
+        price: 480,
+        discountPrice: 440
+      },
+      {
+        id: "var-belgian-duo",
+        label: "Twin Treat (2 x 150g)",
+        urduLabel: "دو ڈبے (300 گرام)",
+        weight: "300g",
+        price: 940,
+        discountPrice: 850
+      }
+    ],
+    rating: 4.9,
+    reviewCount: 15
   }
 ];
 

@@ -143,6 +143,8 @@ function StorefrontLayout() {
           {/* Public Store Pages */}
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categorySlug" element={<CategoryPage />} />
+          <Route path="/trending" element={<CategoryPage explicitCategorySlug="trending" />} />
+          <Route path="/trending-items" element={<CategoryPage explicitCategorySlug="trending" />} />
           <Route path="/sweets" element={<CategoryPage explicitCategorySlug="sweets" />} />
           <Route path="/bakery" element={<CategoryPage explicitCategorySlug="bakery" />} />
           <Route path="/grocery" element={<CategoryPage explicitCategorySlug="grocery" />} />

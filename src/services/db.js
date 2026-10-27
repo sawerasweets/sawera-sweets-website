@@ -341,6 +341,30 @@ class SaweraDB {
         console.warn('Catalog merge error in init:', err);
       }
 
+      // Automatically sync and merge categories into local storage
+      try {
+        const curCats = this.get('categories') || [];
+        let hasCatsUpdate = false;
+        const updatedCats = [...curCats];
+
+        for (const cat of CATEGORIES) {
+          const foundIdx = updatedCats.findIndex(c => c.id === cat.id || c.slug === cat.slug);
+          if (foundIdx === -1) {
+            updatedCats.push(cat);
+            hasCatsUpdate = true;
+          } else if (cat.badge && updatedCats[foundIdx].badge !== cat.badge) {
+            updatedCats[foundIdx] = { ...updatedCats[foundIdx], ...cat };
+            hasCatsUpdate = true;
+          }
+        }
+
+        if (hasCatsUpdate || curCats.length === 0) {
+          this.set('categories', updatedCats.length > 0 ? updatedCats : CATEGORIES);
+        }
+      } catch (err) {
+        console.warn('Categories merge error in init:', err);
+      }
+
       // Safeguard: Ensure cached active user session reflects Muhammad Akash
       try {
         const curUser = localStorage.getItem('sawera_user');

@@ -379,7 +379,7 @@ export default function AdminProductsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Category (Strict 6)</label>
+                  <label className="block font-bold text-gray-700 mb-1">Store Category (کیٹیگری)</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
