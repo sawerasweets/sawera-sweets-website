@@ -167,7 +167,7 @@ export default function HomePage() {
   }, [products]);
 
   return (
-    <div className="space-y-12 sm:space-y-16 pb-16 bg-[#FAF8F5]">
+    <div className="space-y-12 sm:space-y-16 pb-16 bg-white font-sans">
 
       {/* 1. FULL-WIDTH EDGE-TO-EDGE HERO SLIDER (Suleman Sweets Standard) */}
       <section className="relative w-full overflow-hidden bg-black border-b-4 border-[#D4AF37]">
@@ -285,7 +285,7 @@ export default function HomePage() {
       </section>
 
       {/* 2. BRAND TITLE & 4 VALUE PROPOSITION CARDS (Image 2 from Suleman Sweets) */}
-      <section className="bg-white border-y border-amber-200/60 py-8 shadow-xs">
+      <section className="bg-white border-y border-gray-100 py-8 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Centered Brand Title */}
@@ -302,11 +302,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* 4 Cards Grid */}
+          {/* 4 Cards Grid - Crisp White & Emerald Green */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-5">
             {/* 1. Fast Delivery */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100 shadow-xs">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-[#07643D] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100">
                 <Truck className="w-5 h-5" />
               </div>
               <div>
@@ -320,8 +320,8 @@ export default function HomePage() {
             </div>
 
             {/* 2. 100% Desi Ghee & Halal */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
-              <div className="w-11 h-11 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 border border-amber-200 shadow-xs">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-[#07643D] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
@@ -335,8 +335,8 @@ export default function HomePage() {
             </div>
 
             {/* 3. Loyalty Rewards */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
-              <div className="w-11 h-11 rounded-2xl bg-rose-50 text-rose-700 flex items-center justify-center shrink-0 border border-rose-100 shadow-xs">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-[#07643D] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100">
                 <Award className="w-5 h-5" />
               </div>
               <div>
@@ -350,8 +350,8 @@ export default function HomePage() {
             </div>
 
             {/* 4. Premium Packing */}
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-[#FAF8F5] border border-amber-100 hover:border-[#D4AF37] transition-all shadow-2xs">
-              <div className="w-11 h-11 rounded-2xl bg-teal-50 text-[#07643D] flex items-center justify-center shrink-0 border border-teal-100 shadow-xs">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-gray-200 hover:border-[#07643D] transition-all shadow-2xs">
+              <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-[#07643D] flex items-center justify-center shrink-0 border border-emerald-100">
                 <Gift className="w-5 h-5" />
               </div>
               <div>

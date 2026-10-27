@@ -132,19 +132,19 @@ export default function DealsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5] py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white py-10 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-8">
         
-        {/* Page Banner Header (Suleman Sweets Benchmark) */}
+        {/* Page Banner Header (Green & White Theme) */}
         <div className="text-center space-y-2.5 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-700 font-bold text-xs uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-[#07643D] border border-emerald-200 font-bold text-xs uppercase tracking-wider">
             <Tag className="w-3.5 h-3.5" />
             <span>{isUrdu ? 'محدود وقت کے لیے خصوصی بچت' : 'Limited Time Savings'}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold font-serif text-[#07643D] tracking-tight">
             {isUrdu ? 'ہاٹ ڈیلز اور خصوصی آفرز' : 'Hot Deals & Offers'}
           </h1>
-          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+          <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
             {isUrdu
               ? 'اپنی پسندیدہ روایتی مٹھائیوں اور بیکری پر خصوصی رعایتی ڈیلز اور فیملی پیکجز حاصل کریں'
               : 'Discover exclusive value deals and curated bundles on your favorite traditional sweets and bakery.'}
@@ -205,7 +205,7 @@ export default function DealsPage() {
                     <span className="bg-[#07643D] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
                       {deal.badge}
                     </span>
-                    <span className="bg-red-600 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-sm">
+                    <span className="bg-[#D4AF37] text-neutral-950 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-sm">
                       Save Rs. {deal.savings}
                     </span>
                   </div>
@@ -215,7 +215,7 @@ export default function DealsPage() {
                 <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs text-stone-500">
-                      <span className="text-amber-700 font-semibold font-serif">{isUrdu ? deal.urduTitle : deal.title}</span>
+                      <span className="text-amber-800 font-semibold font-serif">{isUrdu ? deal.urduTitle : deal.title}</span>
                       <span className="font-mono text-emerald-800 font-bold">⭐ {deal.rating} ({deal.reviewsCount})</span>
                     </div>
 
@@ -250,7 +250,7 @@ export default function DealsPage() {
                           Rs. {deal.price.toLocaleString()}
                         </span>
                       </div>
-                      <span className="text-[11px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-md border border-red-100">
+                      <span className="text-[11px] font-bold text-[#07643D] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                         {Math.round((deal.savings / deal.originalPrice) * 100)}% OFF
                       </span>
                     </div>
