@@ -70,64 +70,83 @@ export default function HomePage() {
       .slice(0, 4);
   }, [recentlyViewedIds, activeProducts]);
 
-  // Full-width Hero Slider Slides (Mouth-watering photography matching Suleman Sweets standard)
+  // Full-width VIP Hero Slider Slides (Showcasing authentic Sawera Sweets handmade in Jhang)
   const heroSlides = useMemo(() => {
     return [
       {
-        id: "slide-sweets",
-        tag: "100% Pure Desi Ghee",
-        urduTag: "سو فیصد خالص دیسی گھی",
-        title: "Traditional Sweets & Royal Mithai",
-        urduTitle: "خالص روایتی مٹھائیاں و شاہی مٹھائی",
-        subtitle: "Prepared fresh daily with slow-simmered buffalo milk khoya, fragrant desi ghee, and 30+ years of heritage.",
-        urduSubtitle: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ مٹھائیاں، جھنگ کا سب سے بااعتماد نام۔",
-        image: "/images/hero/all-sweets.jpg",
-        link: "/category/sweets",
-        buttonText: "Order Fresh Mithai",
-        urduButtonText: "مٹھائی آرڈر کریں",
-        badge: "Heritage 1994"
+        id: "slide-roll-barfi",
+        productId: "prd-special-roll-barfi",
+        tag: "⭐ Flagship Signature Since 1994",
+        urduTag: "⭐ سویرا کا ۳۰ سالہ بااعتماد نام",
+        title: "Special Roll Barfi",
+        urduTitle: "سوئیرا اسپیشل رول برفی",
+        subtitle: "Hand-rolled with 100% pure thick khoya, fragrant desi ghee, and lavishly coated with crunchy roasted pistachios and almonds.",
+        urduSubtitle: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ، پستے اور بادام کے لذیذ مغز میں لپٹی منہ میں گھل جانے والی شاہی رول برفی۔",
+        image: "/images/hero/hero-roll-barfi.jpg",
+        link: "/product/prd-special-roll-barfi",
+        buttonText: "Order Roll Barfi (Rs. 1,200/kg)",
+        urduButtonText: "رول برفی آرڈر کریں (1,200 روپے)",
+        badge: "Top Seller #1"
       },
       {
-        id: "slide-sohan-halwa",
-        tag: "Crunch & Heritage",
-        urduTag: "شاہی سوہن حلوہ",
-        title: "Special Desi Ghee Sohan Halwa",
-        urduTitle: "اسپیشل دیسی گھی سوہن حلوہ و بادامی حلوہ",
-        subtitle: "Caramelized sprouted wheat slow-cooked with pure desi ghee and lavishly crowned with roasted almonds and walnuts.",
-        urduSubtitle: "سمنک اور دیسی گھی سے روایتی کڑھائی میں پکا ہوا مشہور سوہن حلوہ، بادام اور اخروٹ سے بھرپور۔",
-        image: "/images/categories/sweets.jpg",
-        link: "/category/sweets",
-        buttonText: "Explore Halwajaat",
-        urduButtonText: "حلوہ جات دیکھیں",
-        badge: "Signature"
+        id: "slide-paltawa-patisa",
+        productId: "prd-paltawa-patisa",
+        tag: "Flaky & Melt-in-Mouth",
+        urduTag: "خالص دیسی گھی خستہ پتیسہ",
+        title: "Paltawa Patisa (Flaky Patisa)",
+        urduTitle: "مشہور پلٹواں پتیسہ (خستہ دیسی گھی)",
+        subtitle: "Multi-layered crispy caramelized desi ghee patisa loaded with hand-sliced almond slivers. Traditional royal perfection.",
+        urduSubtitle: "خالص دیسی گھی اور الائچی کی سوندھی خوشبو میں پکا ہوا خستہ اور لذیذ تہوں والا روایتی پلٹواں پتیسہ۔",
+        image: "/images/hero/hero-paltawa-patisa.jpg",
+        link: "/product/prd-paltawa-patisa",
+        buttonText: "Order Paltawa Patisa",
+        urduButtonText: "پلٹواں پتیسہ آرڈر کریں",
+        badge: "Pure Desi Ghee"
       },
       {
-        id: "slide-bakery",
-        tag: "Oven-Fresh Daily",
-        urduTag: "تازہ اوون بیکری",
-        title: "Fresh Artisan Cakes & Bakery Treats",
-        urduTitle: "تازہ بیکری کیکس، کوکیز اور خستہ پیٹیز",
-        subtitle: "Oven-fresh celebration cakes, melt-in-mouth cookies, crispy patties, and breakfast rusks baked every morning.",
-        urduSubtitle: "روزانہ صبح تازہ تیار کردہ کریمی کیکس، بسکٹس، پیٹیز اور خستہ رسک۔ بہترین خاندانی ناشتہ۔",
-        image: "/images/hero/bakery-sweets.jpg",
-        link: "/category/bakery",
-        buttonText: "Explore Bakery",
-        urduButtonText: "بیکری وزٹ کریں",
-        badge: "Baked Today"
+        id: "slide-pista-patisa",
+        productId: "prd-shapper-pista-patisa",
+        tag: "Royal Green Pistachio",
+        urduTag: "شاہی شاپڑ پستہ پتیسہ",
+        title: "Special Shapper Pista Patisa",
+        urduTitle: "اسپیشل شاپڑ پستہ پتیسہ (گول لچھا)",
+        subtitle: "Iconic green pistachio round flaky cakes studded with almond flakes. Fragrant, crisp, and freshly prepared.",
+        urduSubtitle: "سبز پستے اور بادام سے سجا ہوا لچھے دار گول شاپڑ پتیسہ، ہر نوالے میں روایتی خستہ مٹھاس۔",
+        image: "/images/hero/hero-pista-patisa.jpg",
+        link: "/product/prd-shapper-pista-patisa",
+        buttonText: "Order Pista Patisa",
+        urduButtonText: "پستہ پتیسہ آرڈر کریں",
+        badge: "Crispy Royal"
       },
       {
-        id: "slide-trending",
-        tag: "🔥 Viral Sensation",
-        urduTag: "🔥 سوشل میڈیا وائرل",
-        title: "Dubai Viral Pistachio Kunafa Bar",
-        urduTitle: "دبئی وائرل کنافہ پستہ چاکلیٹ اور ٹرینڈنگ اشیاء",
-        subtitle: "The worldwide internet sensation! Crunchy golden kunafa phyllo and rich pistachio butter inside Belgian milk chocolate.",
-        urduSubtitle: "انسٹاگرام اور ٹک ٹاک کا سب سے مشہور وائرل ٹرینڈ! خستہ کنافہ اور شاہی پستہ بٹر سے بھرپور وائرل چاکلیٹ۔",
-        image: "/images/categories/bakery.jpg",
-        link: "/category/trending",
-        buttonText: "Shop Trending Items",
-        urduButtonText: "ٹرینڈنگ اشیاء خریدیں",
-        badge: "Viral Hit"
+        id: "slide-shahi-halwa",
+        productId: "prd-dry-fruit-halwa",
+        tag: "Rich & Loaded Dry Fruits",
+        urduTag: "شاہی ڈرائی فروٹ حلوہ",
+        title: "Special Shahi Dry Fruit Halwa",
+        urduTitle: "اسپیشل شاہی ڈرائی فروٹ حلوہ",
+        subtitle: "Slow-simmered in pure desi ghee, richly crowned with whole cashews, almonds, pistachios, and golden raisins.",
+        urduSubtitle: "خالص دیسی گھی میں روایتی کڑھائی میں پکا ہوا حلوہ، کاجو، بادام، پستہ اور کشمش کے وافر مغز سے مالا مال۔",
+        image: "/images/hero/hero-shahi-halwa.jpg",
+        link: "/product/prd-dry-fruit-halwa",
+        buttonText: "Order Shahi Halwa",
+        urduButtonText: "شاہی حلوہ آرڈر کریں",
+        badge: "Desi Ghee Recipe"
+      },
+      {
+        id: "slide-coconut-halwa",
+        productId: "prd-special-coconut-halwa",
+        tag: "Fresh Coconut & Khoya",
+        urduTag: "بادامی و اسپیشل کوکونٹ حلوہ",
+        title: "Special Coconut & Badami Halwa",
+        urduTitle: "اسپیشل کوکونٹ و بادامی حلوہ",
+        subtitle: "Delicate shredded coconut and fresh buffalo milk khoya cooked in pure desi ghee, garnished with toasted pistachios and almonds.",
+        urduSubtitle: "تازہ ناریل اور کھوئے سے تیار کردہ منفرد ذائقے دار حلوہ، بادام اور پستے کے لذیذ چھڑکاؤ کے ساتھ۔",
+        image: "/images/hero/hero-coconut-halwa.jpg",
+        link: "/product/prd-special-coconut-halwa",
+        buttonText: "Order Coconut Halwa",
+        urduButtonText: "کوکونٹ حلوہ آرڈر کریں",
+        badge: "Fresh Daily"
       }
     ];
   }, []);
@@ -151,8 +170,21 @@ export default function HomePage() {
 
   // Categorized product selections for shelves (only from active products and active categories)
   const topSellingProducts = useMemo(() => {
-    const bSellers = activeProducts.filter(p => p.isBestSeller || p.salesCount > 0);
-    return (bSellers.length >= 6 ? bSellers : activeProducts).slice(0, 6);
+    const priorityIds = [
+      'prd-special-roll-barfi',
+      'prd-paltawa-patisa',
+      'prd-shapper-pista-patisa',
+      'prd-dry-fruit-halwa',
+      'prd-special-coconut-halwa',
+      'prd-special-badam-barfi'
+    ];
+    const prioritized = [];
+    priorityIds.forEach(id => {
+      const found = activeProducts.find(p => p.id === id);
+      if (found) prioritized.push(found);
+    });
+    const rest = activeProducts.filter(p => !priorityIds.includes(p.id) && (p.isBestSeller || p.salesCount > 0));
+    return [...prioritized, ...rest].slice(0, 6);
   }, [activeProducts]);
 
   const halwaSweets = useMemo(() => {
@@ -175,9 +207,9 @@ export default function HomePage() {
   return (
     <div className="space-y-12 sm:space-y-16 pb-16 bg-white font-sans">
 
-      {/* 1. FULL-WIDTH EDGE-TO-EDGE HERO SLIDER (Suleman Sweets Standard) */}
+      {/* 1. FULL-WIDTH EDGE-TO-EDGE VIP HERO SLIDER */}
       <section className="relative w-full overflow-hidden bg-black border-b-4 border-[#D4AF37]">
-        <div className="relative w-full h-[400px] sm:h-[480px] lg:h-[540px]">
+        <div className="relative w-full h-[460px] sm:h-[520px] lg:h-[580px]">
           {heroSlides.map((slide, idx) => (
             <div
               key={slide.id}
@@ -185,20 +217,20 @@ export default function HomePage() {
                 currentSlide === idx ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0'
               }`}
             >
-              {/* Full-bleed Natural Photo without heavy green tint */}
+              {/* Full-bleed VIP High-Res Photo */}
               <img
                 src={slide.image}
                 alt={slide.title}
                 className="w-full h-full object-cover object-center"
               />
 
-              {/* Natural Left Vignette for Razor-Sharp Typography Contrast */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent z-10" />
+              {/* Elegant ambient contrast gradient - Food photo stays bright & mouthwatering */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent/10 z-10" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10" />
 
-              {/* Slide Content */}
-              <div className="max-w-7xl mx-auto h-full px-6 sm:px-10 lg:px-12 flex items-center relative z-20">
-                <div className="max-w-2xl space-y-4 text-left">
+              {/* VIP Frosted Glass Slide Content */}
+              <div className="max-w-7xl mx-auto h-full px-4 sm:px-8 lg:px-12 flex items-center relative z-20">
+                <div className="max-w-xl bg-black/50 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/20 shadow-2xl space-y-3.5 text-left">
                   
                   {/* Tag Pill */}
                   <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37] text-neutral-950 font-extrabold text-xs uppercase tracking-wider shadow-lg">
@@ -208,41 +240,33 @@ export default function HomePage() {
                   </div>
 
                   {/* Title */}
-                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-serif text-white leading-tight drop-shadow-md">
+                  <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold font-serif text-white leading-tight drop-shadow-md">
                     {isUrdu ? slide.urduTitle : slide.title}
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="text-xs sm:text-base text-gray-200 leading-relaxed font-light drop-shadow-xs max-w-xl">
+                  <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-light drop-shadow-xs">
                     {isUrdu ? slide.urduSubtitle : slide.subtitle}
                   </p>
 
                   {/* Action Buttons */}
-                  <div className="pt-2 flex flex-wrap gap-3">
+                  <div className="pt-2 flex flex-wrap gap-2.5">
                     <Link
                       to={slide.link}
-                      className="px-6 py-3.5 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-transform hover:-translate-y-0.5 border border-emerald-400/40"
+                      className="px-5 py-3 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-extrabold text-xs sm:text-sm flex items-center gap-2 shadow-xl transition-transform hover:-translate-y-0.5 border border-emerald-400/40 cursor-pointer"
                     >
                       <Sparkles className="w-4 h-4 text-[#D4AF37]" />
                       <span>{isUrdu ? slide.urduButtonText : slide.buttonText}</span>
                     </Link>
 
-                    <Link
-                      to="/mithai-box-studio"
-                      className="px-5 py-3.5 rounded-xl bg-white/15 hover:bg-white/25 text-white backdrop-blur-md border border-white/30 font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors"
-                    >
-                      <Box className="w-4 h-4 text-[#D4AF37]" />
-                      <span>{isUrdu ? 'کسٹم بکس اسٹوڈیو' : 'Mithai Box Studio'}</span>
-                    </Link>
-
                     <a
-                      href={`https://wa.me/923227434080?text=${encodeURIComponent(`Assalam o Alaikum Sawera Sweets!\nI am interested in: ${slide.title}.\nPlease share details.`)}`}
+                      href={`https://wa.me/923227434080?text=${encodeURIComponent(`Assalam o Alaikum Sawera Sweets!\nI want to order: ${slide.title}.\nPlease share details and confirm delivery.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-5 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-lg transition-colors"
+                      className="px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg transition-colors cursor-pointer"
                     >
                       <MessageSquare className="w-4 h-4" />
-                      <span>{isUrdu ? 'واٹس ایپ (0322 7434080)' : 'WhatsApp (0322 7434080)'}</span>
+                      <span>{isUrdu ? 'واٹس ایپ آرڈر' : 'WhatsApp (0322 7434080)'}</span>
                     </a>
                   </div>
 

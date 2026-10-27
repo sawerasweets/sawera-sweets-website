@@ -124,18 +124,18 @@ export default function ProductDetailPage() {
             
             {/* Image Gallery */}
             <div className="space-y-4">
-              <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-gray-200 p-4 flex items-center justify-center">
+              <div className="relative aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-xs">
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="max-h-full object-contain"
+                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = "/images/products/gulab-jamun.svg";
                   }}
                 />
                 {product.badge && (
-                  <span className="absolute top-4 left-4 bg-[#07643D] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                  <span className="absolute top-4 left-4 bg-[#07643D] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
                     {product.badge}
                   </span>
                 )}
