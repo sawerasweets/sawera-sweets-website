@@ -309,17 +309,18 @@ class SaweraDB {
 
       // Automatically sync and merge catalog products into local storage
       try {
+        const deletedIds = this.get('deleted_product_ids') || [];
         const currentProds = this.get('products') || [];
-        const catalogProds = seedInitialProducts();
+        const catalogProds = seedInitialProducts().filter(cp => !deletedIds.includes(cp.id));
         let hasProdsUpdate = false;
         const updatedProds = [...currentProds];
 
         for (const cp of catalogProds) {
           const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
-          if (foundIdx === -1) {
+          if (foundIdx === -1 && !deletedIds.includes(cp.id)) {
             updatedProds.push(cp);
             hasProdsUpdate = true;
-          } else if (updatedProds[foundIdx].image !== cp.image || !updatedProds[foundIdx].urduDescription) {
+          } else if (foundIdx !== -1 && (updatedProds[foundIdx].image !== cp.image || !updatedProds[foundIdx].urduDescription)) {
             updatedProds[foundIdx] = {
               ...cp,
               ...updatedProds[foundIdx],
@@ -334,8 +335,14 @@ class SaweraDB {
           }
         }
 
+        // Clean up any previously deleted products from storage
+        const cleanedProds = updatedProds.filter(p => !deletedIds.includes(p.id));
+        if (cleanedProds.length !== updatedProds.length) {
+          hasProdsUpdate = true;
+        }
+
         if (hasProdsUpdate || currentProds.length === 0) {
-          this.set('products', updatedProds.length > 0 ? updatedProds : catalogProds);
+          this.set('products', cleanedProds.length > 0 ? cleanedProds : (deletedIds.length > 0 ? [] : catalogProds));
         }
       } catch (err) {
         console.warn('Catalog merge error in init:', err);
@@ -593,16 +600,20 @@ class SaweraDB {
 
   // Product Operations
   getProducts() {
+    const deletedIds = this.get('deleted_product_ids') || [];
     const prods = this.get('products');
-    const catalog = seedInitialProducts();
+    const catalog = seedInitialProducts().filter(c => !deletedIds.includes(c.id));
+
     if (!Array.isArray(prods) || prods.length === 0) {
       return catalog;
     }
-    const missing = catalog.filter(c => !prods.some(p => p.id === c.id));
+
+    const activeProds = prods.filter(p => !deletedIds.includes(p.id));
+    const missing = catalog.filter(c => !activeProds.some(p => p.id === c.id) && !deletedIds.includes(c.id));
     if (missing.length > 0) {
-      return [...prods, ...missing];
+      return [...activeProds, ...missing];
     }
-    return prods;
+    return activeProds;
   }
 
   getProductById(id) {
@@ -627,6 +638,12 @@ class SaweraDB {
       this.logActivity('Product Added', `New product ${productToSave.name} added.`);
     }
 
+    // If this product was previously in deletedIds, unmark it
+    const deletedIds = this.get('deleted_product_ids') || [];
+    if (deletedIds.includes(productToSave.id)) {
+      this.set('deleted_product_ids', deletedIds.filter(id => id !== productToSave.id));
+    }
+
     if (isSupabaseConfigured && supabase) {
       supabase.from('sawera_products').upsert({
         id: productToSave.id,
@@ -637,22 +654,32 @@ class SaweraDB {
       });
     }
 
+    this.broadcast();
     return true;
   }
 
   deleteProduct(id) {
-    const products = this.getProducts();
-    const product = products.find(p => p.id === id);
-    const filtered = products.filter(p => p.id !== id);
+    // 1. Record ID in deleted_product_ids list to prevent re-seeding
+    const deletedIds = this.get('deleted_product_ids') || [];
+    if (!deletedIds.includes(id)) {
+      this.set('deleted_product_ids', [...deletedIds, id]);
+    }
+
+    // 2. Remove product from products storage
+    const currentProds = this.get('products') || [];
+    const product = currentProds.find(p => p.id === id);
+    const filtered = currentProds.filter(p => p.id !== id);
     this.set('products', filtered);
     this.logActivity('Product Deleted', `Product ${product?.name || id} was deleted.`);
 
+    // 3. Delete from Supabase if connected
     if (isSupabaseConfigured && supabase) {
       supabase.from('sawera_products').delete().eq('id', id).then(({ error }) => {
         if (error) console.warn("Supabase product delete error:", error.message);
       });
     }
 
+    this.broadcast();
     return true;
   }
 

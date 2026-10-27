@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -22,6 +22,19 @@ export default function AdminProductsPage() {
   const [selectedCat, setSelectedCat] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [notification, setNotification] = useState('');
+
+  const syncProducts = () => {
+    setProducts(db.getProducts());
+  };
+
+  useEffect(() => {
+    const unsubscribe = db.subscribe(() => {
+      setProducts(db.getProducts());
+    });
+    return unsubscribe;
+  }, []);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -46,10 +59,6 @@ export default function AdminProductsPage() {
       { label: '1 Kilogram', price: 1000, discountPrice: 900 }
     ]
   });
-
-  const syncProducts = () => {
-    setProducts(db.getProducts());
-  };
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
@@ -102,11 +111,25 @@ export default function AdminProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      db.deleteProduct(id);
-      syncProducts();
-    }
+  const handleDeleteClick = (prod) => {
+    setProductToDelete(prod);
+  };
+
+  const confirmDelete = () => {
+    if (!productToDelete) return;
+    const targetId = productToDelete.id;
+    const targetName = productToDelete.name;
+
+    // Delete in DB
+    db.deleteProduct(targetId);
+
+    // Immediate reactive local state update
+    setProducts(prev => prev.filter(p => p.id !== targetId));
+    setProductToDelete(null);
+
+    // Show toast confirmation
+    setNotification(`Product "${targetName}" was successfully deleted.`);
+    setTimeout(() => setNotification(''), 3500);
   };
 
   const handleSaveProduct = (e) => {
@@ -176,6 +199,19 @@ export default function AdminProductsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Success Notification Alert */}
+      {notification && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 text-[#07643D] text-xs font-bold rounded-2xl flex items-center justify-between shadow-2xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-emerald-600" />
+            <span>{notification}</span>
+          </div>
+          <button onClick={() => setNotification('')} className="text-emerald-800 hover:text-emerald-950 cursor-pointer">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -323,8 +359,8 @@ export default function AdminProductsPage() {
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleDelete(p.id)}
-                          className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50"
+                          onClick={() => handleDeleteClick(p)}
+                          className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 cursor-pointer"
                           title="Delete Product"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -535,6 +571,43 @@ export default function AdminProductsPage() {
           </div>
         </div>
       )}
+      {/* Delete Product Confirmation Modal */}
+      {productToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-7 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+
+            <div className="text-center space-y-1.5">
+              <h3 className="text-base font-bold text-gray-900">
+                Delete Product?
+              </h3>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Are you sure you want to permanently delete <strong className="text-gray-900">{productToDelete.name}</strong> ({productToDelete.urduName || productToDelete.category})? This product will be removed from your store and customer catalog.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setProductToDelete(null)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
+              >
+                Yes, Delete Product
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
