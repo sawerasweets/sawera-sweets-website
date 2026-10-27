@@ -25,8 +25,9 @@ export default function OrderConfirmationPage() {
   }
 
   // Pre-fill WhatsApp message
+  const customerCity = order.city || order.customer?.city || '';
   const waText = encodeURIComponent(
-    `Assalam o Alaikum Sawera Sweets & Bakers!\nI have placed order #${order.id} for Rs. ${order.total}.\nFulfillment: ${order.fulfillmentType === 'delivery' ? 'Home Delivery' : 'Pickup at ' + order.assignedBranchName}.\nPlease confirm preparation.`
+    `Assalam o Alaikum Sawera Sweets & Bakers!\nI have placed order #${order.id} for Rs. ${order.total?.toLocaleString()}.\nCustomer: ${order.customer?.name || ''}\nCity: ${customerCity || 'Jhang'}\nAddress: ${order.customer?.address || ''}\nPlease confirm my order.`
   );
   const waUrl = `https://wa.me/923227434080?text=${waText}`;
 

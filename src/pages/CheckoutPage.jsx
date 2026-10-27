@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useNotifications } from '../context/NotificationContext';
 import db from '../services/db';
+import { PAKISTAN_CITIES, TOP_CITIES } from '../data/pakistanCities';
 
 export default function CheckoutPage() {
   const { cart, subtotal, clearCart } = useCart();
@@ -32,12 +33,11 @@ export default function CheckoutPage() {
 
   // Form State - Online Delivery (Shop pickup disabled for now)
   const fulfillmentType = 'delivery';
-  const [deliveryArea, setDeliveryArea] = useState('jhang'); // 'jhang' | 'outside'
 
   const [fullName, setFullName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.addresses?.find(a => a.isDefault)?.address || '');
-  const [city, setCity] = useState('Jhang');
+  const [city, setCity] = useState(user?.addresses?.find(a => a.isDefault)?.city || 'Jhang');
   const [specialNotes, setSpecialNotes] = useState('');
   
   // Payment
@@ -46,11 +46,11 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Calculate delivery fee: Jhang City (Rs. 100 or Free if >= 3000), Outside Jhang (Rs. 250)
-  const isFreeDelivery = deliveryArea === 'jhang' && subtotal >= (settings.freeDeliveryThreshold || 3000);
-  const deliveryFee = deliveryArea === 'jhang'
-    ? (isFreeDelivery ? 0 : (settings.deliveryOptions?.inCityFee || 100))
-    : (settings.deliveryOptions?.outCityFee || 250);
+  // Delivery fee calculation controlled by Admin Settings
+  // Admin sets standard delivery charges and free delivery threshold in Admin Panel.
+  const isFreeDelivery = Boolean(settings.freeDeliveryThreshold && subtotal >= settings.freeDeliveryThreshold);
+  const configuredDeliveryFee = Number(settings.defaultDeliveryFee ?? settings.deliveryFee ?? 100);
+  const deliveryFee = isFreeDelivery ? 0 : configuredDeliveryFee;
   const totalPayable = subtotal + deliveryFee;
 
   const handleProofUpload = (e) => {
@@ -119,13 +119,17 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
+    const deliveryArea = city.trim().toLowerCase() === 'jhang' ? 'jhang' : 'outside';
+
     const orderPayload = {
       customer: {
         name: fullName.trim(),
         email: user?.email || 'guest@sawerasweets.pk',
         phone: phone.trim(),
-        address: fulfillmentType === 'delivery' ? `${address.trim()}, ${city}` : 'Shop Pickup (Sawera Sweets & Bakers Main Store - Gojra Road, Jhang)'
+        city: city.trim(),
+        address: `${address.trim()}, ${city.trim()}`
       },
+      city: city.trim(),
       items: cart.map(item => ({
         id: item.id,
         name: item.name,
@@ -215,79 +219,46 @@ export default function CheckoutPage() {
           {/* Left 2 Columns: Details & Payment */}
           <div className="lg:col-span-2 space-y-6 text-xs">
             
-            {/* 1. Delivery Area Selector (Online Delivery Only) */}
-            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-[#07643D]" />
-                  <span>1. Delivery Area / ڈلیوری کا علاقہ</span>
-                </h2>
-                <span className="text-[10px] font-bold text-[#07643D] bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full uppercase">
-                  Home Delivery
-                </span>
+            {/* All Pakistan Doorstep Delivery Banner */}
+            <div className="bg-gradient-to-r from-emerald-950 via-[#07643D] to-teal-950 text-white p-4 sm:p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md border border-emerald-800/80">
+              <div className="flex items-center gap-3.5">
+                <div className="w-11 h-11 rounded-2xl bg-white/10 flex items-center justify-center text-emerald-200 shrink-0">
+                  <Truck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
+                    <span>{isUrdu ? 'پورے پاکستان میں ہوم ڈلیوری' : 'All Pakistan Doorstep Delivery'}</span>
+                    <span className="text-[10px] font-bold tracking-wider uppercase px-2.5 py-0.5 bg-[#D4AF37] text-gray-950 rounded-full font-mono">
+                      A to Z Cities
+                    </span>
+                  </h3>
+                  <p className="text-[11px] text-emerald-100/90 mt-0.5">
+                    {isUrdu 
+                      ? 'جھنگ سمیت پاکستان کے ہر شہر، قصبے اور علاقے میں معیاری اور تازہ مٹھائی کی ترسیل' 
+                      : 'Express safe doorstep delivery across Jhang and all cities across Pakistan'}
+                  </p>
+                </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeliveryArea('jhang');
-                    setCity('Jhang');
-                  }}
-                  className={`p-4 rounded-2xl border text-left transition-all ${
-                    deliveryArea === 'jhang'
-                      ? 'border-[#07643D] bg-emerald-50/80 ring-2 ring-[#07643D]/20 shadow-xs'
-                      : 'border-gray-200 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-gray-900 text-xs">Inside Jhang City</span>
-                    <span className="font-mono font-bold text-[#07643D] bg-white px-2 py-0.5 rounded-md border text-xs">
-                      {isFreeDelivery ? 'FREE' : 'Rs. 100'}
-                    </span>
-                  </div>
-                  <span className="text-xs text-amber-900 font-semibold urdu-text block">جھنگ شہر میں ہوم ڈلیوری</span>
-                  <span className="text-[11px] text-gray-500 mt-1 block">
-                    Fast same-day doorstep delivery across Jhang
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeliveryArea('outside');
-                    if (city === 'Jhang') setCity('');
-                  }}
-                  className={`p-4 rounded-2xl border text-left transition-all ${
-                    deliveryArea === 'outside'
-                      ? 'border-[#07643D] bg-emerald-50/80 ring-2 ring-[#07643D]/20 shadow-xs'
-                      : 'border-gray-200 bg-white hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-gray-900 text-xs">Outside Jhang / Other Cities</span>
-                    <span className="font-mono font-bold text-[#07643D] bg-white px-2 py-0.5 rounded-md border text-xs">
-                      Rs. 250
-                    </span>
-                  </div>
-                  <span className="text-xs text-amber-900 font-semibold urdu-text block">دیگر تمام شہروں میں ڈلیوری</span>
-                  <span className="text-[11px] text-gray-500 mt-1 block">
-                    Safe express courier packing across all Pakistan
-                  </span>
-                </button>
+              <div className="text-left sm:text-right sm:border-l sm:border-white/20 sm:pl-4 shrink-0">
+                <span className="text-[10px] uppercase tracking-wider text-emerald-200 block">
+                  {isUrdu ? 'ڈلیوری چارجز' : 'Delivery Charges'}
+                </span>
+                <span className="font-mono font-bold text-amber-300 text-sm">
+                  {deliveryFee === 0 ? (isUrdu ? 'مفت ڈلیوری (FREE)' : 'FREE DELIVERY') : `Rs. ${deliveryFee}`}
+                </span>
               </div>
             </div>
 
-            {/* 2. Customer Contact & Address Info */}
+            {/* 1. Customer Contact & Delivery Info */}
             <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                   <User className="w-4 h-4 text-[#07643D]" />
-                  <span>2. Customer &amp; Delivery Information</span>
+                  <span>{isUrdu ? '۱. کسٹمر اور ڈلیوری کی معلومات' : '1. Customer & Delivery Information'}</span>
                 </h2>
                 {!user && (
                   <Link to="/login" className="text-xs font-bold text-[#07643D] hover:underline">
-                    Have an account? Sign in
+                    {isUrdu ? 'اکاؤنٹ ہے؟ لاگ ان کریں' : 'Have an account? Sign in'}
                   </Link>
                 )}
               </div>
@@ -317,19 +288,23 @@ export default function CheckoutPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Full Name *</label>
+                  <label className="block font-bold text-gray-700 mb-1">
+                    {isUrdu ? 'مکمل نام *' : 'Full Name *'}
+                  </label>
                   <input
                     type="text"
                     required
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Muhammad Usman"
+                    placeholder={isUrdu ? 'اپنا نام درج کریں' : 'e.g. Muhammad Usman'}
                     className="w-full p-2.5 border rounded-xl outline-none focus:border-[#07643D]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-gray-700 mb-1">Phone Number (Call/WhatsApp) *</label>
+                  <label className="block font-bold text-gray-700 mb-1">
+                    {isUrdu ? 'فون نمبر (کال / واٹس ایپ) *' : 'Phone Number (Call/WhatsApp) *'}
+                  </label>
                   <input
                     type="tel"
                     required
@@ -341,49 +316,108 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {fulfillmentType === 'delivery' && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="block font-bold text-gray-700 mb-1">Street Address, House #, Colony *</label>
-                    <textarea
-                      required
-                      rows={2}
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      placeholder="e.g. House #14, Street 5, Near DHQ Hospital, Gojra Road..."
-                      className="w-full p-2.5 border rounded-xl outline-none focus:border-[#07643D]"
-                    />
-                  </div>
+              {/* City Selection with A to Z Pakistan Coverage */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-gray-700 text-xs">
+                    {isUrdu ? 'شہر منتخب کریں (تمام پاکستان A to Z) *' : 'Select City (All Pakistan A to Z) *'}
+                  </label>
+                  <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    {PAKISTAN_CITIES.length}+ Cities Covered
+                  </span>
+                </div>
 
+                {/* Popular Quick City Chips */}
+                <div className="flex flex-wrap gap-1.5 pb-1">
+                  {TOP_CITIES.slice(0, 10).map((tc) => (
+                    <button
+                      key={tc}
+                      type="button"
+                      onClick={() => setCity(tc)}
+                      className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition-all cursor-pointer ${
+                        city.toLowerCase() === tc.toLowerCase()
+                          ? 'bg-[#07643D] text-white shadow-xs'
+                          : 'bg-gray-100 text-gray-700 hover:bg-emerald-50 hover:text-[#07643D]'
+                      }`}
+                    >
+                      {tc} {tc === 'Jhang' ? '(مرکزی اسٹور)' : ''}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {/* Search / Type Input with Datalist Autocomplete */}
                   <div>
-                    <label className="block font-bold text-gray-700 mb-1">City</label>
                     <input
                       type="text"
+                      list="pakistan-cities-list"
+                      required
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full p-2.5 border rounded-xl outline-none"
+                      placeholder={isUrdu ? 'شہر کا نام ٹائپ کریں (مثلاً: Jhang, Lahore, Karachi)' : 'Type city name or search...'}
+                      className="w-full p-2.5 border rounded-xl outline-none focus:border-[#07643D] bg-white text-xs"
                     />
+                    <datalist id="pakistan-cities-list">
+                      {PAKISTAN_CITIES.map((c) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name} ({c.urduName} - {c.province})
+                        </option>
+                      ))}
+                    </datalist>
+                  </div>
+
+                  {/* Dropdown Selector grouped A to Z */}
+                  <div>
+                    <select
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="w-full p-2.5 border rounded-xl outline-none focus:border-[#07643D] bg-white text-xs cursor-pointer"
+                    >
+                      <option value="">-- {isUrdu ? 'فہرست سے شہر منتخب کریں' : 'Or select from A-Z list'} --</option>
+                      {PAKISTAN_CITIES.map((c) => (
+                        <option key={c.name} value={c.name}>
+                          {c.name} - {c.urduName} ({c.province})
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Street Address */}
+              <div>
+                <label className="block font-bold text-gray-700 mb-1 text-xs">
+                  {isUrdu ? 'گھر کا پتہ، محلہ / گلی / مکان نمبر *' : 'Street Address, House #, Colony / Mohallah *'}
+                </label>
+                <textarea
+                  required
+                  rows={2}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder={isUrdu ? 'مثلاً: مکان نمبر 12، گلی نمبر 4، بالمقابل ڈی ایچ کیو ہسپتال، گوجرہ روڈ...' : 'e.g. House #14, Street 5, Near DHQ Hospital, Gojra Road...'}
+                  className="w-full p-2.5 border rounded-xl outline-none focus:border-[#07643D] text-xs"
+                />
+              </div>
 
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Special Order Instructions (Optional)</label>
+                <label className="block font-bold text-gray-700 mb-1 text-xs">
+                  {isUrdu ? 'آرڈر کی خاص ہدایات (اختیاری)' : 'Special Order Instructions (Optional)'}
+                </label>
                 <input
                   type="text"
                   value={specialNotes}
                   onChange={(e) => setSpecialNotes(e.target.value)}
-                  placeholder="e.g. Gift packing with ribbon, less sugar syrup, call upon arrival..."
-                  className="w-full p-2.5 border rounded-xl outline-none"
+                  placeholder={isUrdu ? 'مثلاً: گفٹ پیکنگ، کم شیرہ، پہنچ کر کال کریں...' : 'e.g. Gift packing with ribbon, less sugar syrup, call upon arrival...'}
+                  className="w-full p-2.5 border rounded-xl outline-none text-xs"
                 />
               </div>
             </div>
 
-            {/* 3. Payment Method */}
+            {/* 2. Payment Method */}
             <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
               <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-[#07643D]" />
-                <span>3. Payment Method</span>
+                <span>{isUrdu ? '۲. ادائیگی کا طریقہ' : '2. Payment Method'}</span>
               </h2>
 
               <div className="space-y-3">
@@ -428,7 +462,7 @@ export default function CheckoutPage() {
                     <div className="mt-3 pt-3 border-t border-emerald-200 space-y-2">
                       <div className="bg-white p-3 rounded-xl border font-mono">
                         <p className="text-[11px] text-gray-600">
-                          Number: <span className="font-bold text-[#07643D] text-sm">{settings.payments?.easypaisa?.number || '0348 1702710'}</span>
+                          Number: <span className="font-bold text-[#07643D] text-sm">{settings.payments?.easypaisa?.number || '0322 7434080'}</span>
                         </p>
                         <p className="text-[11px] text-gray-600">
                           Title: <span className="font-bold text-gray-900">{settings.payments?.easypaisa?.accountTitle || 'Muhammad Akash'}</span>

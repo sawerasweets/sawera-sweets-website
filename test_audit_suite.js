@@ -8,6 +8,7 @@ import { STORE_CONFIG } from './src/data/storeConfig.js';
 import { DEFAULT_BOX_OPTIONS, GIFT_RIBBON_OPTIONS, GIFT_OCCASION_TEMPLATES } from './src/data/boxStudioConfig.js';
 import { DEFAULT_OCCASIONS } from './src/data/occasionsConfig.js';
 import { TRANSLATIONS } from './src/data/translations.js';
+import { PAKISTAN_CITIES, TOP_CITIES } from './src/data/pakistanCities.js';
 
 let passed = 0;
 let failed = 0;
@@ -147,23 +148,26 @@ if (missingUrduKeys.length > 0) {
 assert(missingUrduKeys.length === 0, `All ${enKeys.length} English translation keys have exact Urdu counterparts`);
 
 console.log('\n==================================================');
-console.log('6. DELIVERY FEE RULES & LOGIC');
+console.log('6. ALL PAKISTAN CITIES (A-Z) & NATIONWIDE DELIVERY RULES');
 console.log('==================================================');
 
-// Delivery rules:
-// Jhang City: Rs 100, Free if >= Rs 3000
-// Outside Jhang: Rs 250
-function calculateDelivery(area, subtotal) {
-  if (area === 'jhang') {
-    return subtotal >= 3000 ? 0 : 100;
-  }
-  return 250;
+assert(PAKISTAN_CITIES.length >= 200, `Comprehensive Pakistan city catalog has ${PAKISTAN_CITIES.length} cities (Expected: >= 200)`);
+assert(TOP_CITIES.includes('Jhang') && TOP_CITIES.includes('Lahore') && TOP_CITIES.includes('Karachi') && TOP_CITIES.includes('Islamabad'), 'Top quick-select cities include Jhang, Lahore, Karachi, and Islamabad');
+
+// Check alphabetical order of cities A to Z
+const firstCity = PAKISTAN_CITIES[0].name;
+const lastCity = PAKISTAN_CITIES[PAKISTAN_CITIES.length - 1].name;
+assert(firstCity.startsWith('A') && lastCity.startsWith('Z'), `Cities ordered A to Z: Starts with ${firstCity}, ends with ${lastCity}`);
+
+// Delivery rules: Standard Nationwide Delivery Fee with Free Delivery threshold
+function calculateDelivery(subtotal, defaultFee = 100, freeThreshold = 3000) {
+  return (freeThreshold && subtotal >= freeThreshold) ? 0 : defaultFee;
 }
 
-assert(calculateDelivery('jhang', 1500) === 100, 'Jhang order Rs. 1500 delivery fee is Rs. 100');
-assert(calculateDelivery('jhang', 3000) === 0, 'Jhang order Rs. 3000 qualifies for Free Delivery (Rs. 0)');
-assert(calculateDelivery('jhang', 4500) === 0, 'Jhang order Rs. 4500 qualifies for Free Delivery (Rs. 0)');
-assert(calculateDelivery('outside', 5000) === 250, 'Outside Jhang order Rs. 5000 delivery fee is Rs. 250');
+assert(calculateDelivery(1500) === 100, 'Order Rs. 1500 delivery fee is standard Rs. 100');
+assert(calculateDelivery(3000) === 0, 'Order Rs. 3000 qualifies for Free Delivery (Rs. 0)');
+assert(calculateDelivery(4500) === 0, 'Order Rs. 4500 qualifies for Free Delivery (Rs. 0)');
+assert(calculateDelivery(500, 150) === 150, 'Custom Admin delivery fee (Rs. 150) calculates correctly');
 
 console.log('\n==================================================');
 console.log('7. IN-MEMORY / LOCALSTORAGE DATABASE MOCK TESTS');
@@ -219,8 +223,10 @@ const testOrderPayload = {
     name: "Audit Test Customer",
     email: "audit@sawerasweets.pk",
     phone: "0322 7434080",
-    address: "Civil Lines, Jhang"
+    city: "Lahore",
+    address: "Gulberg III, Lahore"
   },
+  city: "Lahore",
   items: [
     {
       id: "prd-special-roll-barfi",
@@ -231,7 +237,7 @@ const testOrderPayload = {
     }
   ],
   fulfillmentType: "delivery",
-  deliveryArea: "jhang",
+  deliveryArea: "outside",
   paymentMethod: "cod",
   subtotal: 1200,
   deliveryFee: 100,

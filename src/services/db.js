@@ -62,9 +62,9 @@ const defaultSettings = {
     easypaisa: {
       enabled: true,
       title: "Easypaisa",
-      number: "0348 1702710",
+      number: "0322 7434080",
       accountTitle: "Muhammad Akash",
-      instructions: "Transfer to Easypaisa Account 0348 1702710 (Muhammad Akash) and upload your payment screenshot."
+      instructions: "Transfer to Easypaisa Account 0322 7434080 (Muhammad Akash) and upload your payment screenshot."
     },
     bank: {
       enabled: true,
@@ -226,8 +226,8 @@ const defaultFaqs = [
     id: "faq-3",
     question: "What are your payment options?",
     questionUrdu: "ادائیگی کے کون سے طریقے موجود ہیں؟",
-    answer: "We support Cash on Delivery (COD), Easypaisa mobile wallet (0348 1702710 - Muhammad Akash), and direct MCB Bank Transfer with payment proof receipt upload.",
-    answerUrdu: "کیش آن ڈلیوری، ایزی پیسہ (0348 1702710) اور ایم سی بی بینک ٹرانسفر کے ذریعے ادائیگی ممکن ہے۔",
+    answer: "We support Cash on Delivery (COD), Easypaisa mobile wallet (0322 7434080 - Muhammad Akash), and direct MCB Bank Transfer with payment proof receipt upload.",
+    answerUrdu: "کیش آن ڈلیوری، ایزی پیسہ (0322 7434080) اور ایم سی بی بینک ٹرانسفر کے ذریعے ادائیگی ممکن ہے۔",
     category: "payments"
   },
   {
@@ -378,7 +378,7 @@ class SaweraDB {
       // Migrate any cached phone numbers in branches/settings to 0322 7434080
       try {
         const branches = this.get('branches');
-        if (Array.isArray(branches) && branches.some(b => b.whatsapp?.includes('0347') || b.phone?.includes('0347'))) {
+        if (Array.isArray(branches) && branches.some(b => b.whatsapp?.includes('0347') || b.phone?.includes('0347') || b.whatsapp?.includes('0348') || b.phone?.includes('0348'))) {
           const updatedBranches = branches.map(b => ({
             ...b,
             whatsapp: '0322 7434080',
@@ -388,8 +388,17 @@ class SaweraDB {
         }
 
         const sets = this.get('settings');
-        if (sets?.integrations?.whatsapp?.senderPhone?.includes('0347')) {
+        let hasSetsUpdate = false;
+        if (sets?.integrations?.whatsapp?.senderPhone?.includes('0347') || sets?.integrations?.whatsapp?.senderPhone?.includes('0348')) {
           sets.integrations.whatsapp.senderPhone = '0322 7434080';
+          hasSetsUpdate = true;
+        }
+        if (sets?.payments?.easypaisa?.number && (sets.payments.easypaisa.number.includes('0348') || sets.payments.easypaisa.number.includes('0347'))) {
+          sets.payments.easypaisa.number = '0322 7434080';
+          sets.payments.easypaisa.instructions = "Transfer to Easypaisa Account 0322 7434080 (Muhammad Akash) and upload your payment screenshot.";
+          hasSetsUpdate = true;
+        }
+        if (hasSetsUpdate) {
           this.set('settings', sets);
         }
       } catch (e) {}

@@ -56,7 +56,7 @@ export default function TermsPage() {
         <section className="space-y-2">
           <h2 className="text-base font-bold text-gray-900">4. Payment &amp; Confirmation</h2>
           <p>
-            We support Cash on Delivery (COD), verified Easypaisa mobile wallet payments (0348 1702710 - Muhammad Akash), and direct MCB Bank transfers. Proof of payment receipts are inspected confidentially.
+            We support Cash on Delivery (COD), verified Easypaisa mobile wallet payments (0322 7434080 - Muhammad Akash), and direct MCB Bank transfers. Proof of payment receipts are inspected confidentially.
           </p>
         </section>
 

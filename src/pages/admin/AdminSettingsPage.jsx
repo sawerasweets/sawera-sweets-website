@@ -169,28 +169,30 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* City & Out-of-City Online Delivery Configuration */}
+        {/* All Pakistan Online Delivery Configuration */}
         <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-2 border-b">
             <div>
-              <h2 className="text-sm font-bold text-gray-900">Online Delivery Fee Settings</h2>
+              <h2 className="text-sm font-bold text-gray-900">All Pakistan Online Delivery Charges</h2>
               <p className="text-[11px] text-gray-500">
-                Configure delivery rates for Inside Jhang City and Out-of-City courier shipping.
+                Set standard delivery charges for orders across Pakistan, or configure free delivery threshold. Set fee to 0 for free delivery on all orders.
               </p>
             </div>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-[#07643D]">
-              Shop Pickup Disabled
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-[#07643D]">
+              Nationwide Delivery Active
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 space-y-2">
               <label className="block font-bold text-[#07643D] text-xs">
-                Apna City (Inside Jhang City) Delivery Fee (Rs)
+                Standard Nationwide Delivery Fee (ڈلیوری چارجز - PKR)
               </label>
               <input
                 type="number"
-                value={settings.deliveryOptions?.inCityFee ?? settings.defaultDeliveryFee ?? 100}
+                min="0"
+                step="10"
+                value={settings.defaultDeliveryFee ?? settings.deliveryOptions?.inCityFee ?? 100}
                 onChange={(e) => {
                   const val = Number(e.target.value);
                   setSettings({
@@ -198,46 +200,50 @@ export default function AdminSettingsPage() {
                     defaultDeliveryFee: val,
                     deliveryOptions: {
                       ...(settings.deliveryOptions || {}),
-                      inCityFee: val
+                      inCityFee: val,
+                      outCityFee: val
                     }
                   });
                 }}
-                className="w-full p-2 border rounded-xl bg-white outline-none font-mono text-sm"
+                className="w-full p-2.5 border rounded-xl bg-white outline-none font-mono text-sm focus:border-[#07643D]"
               />
               <p className="text-[10px] text-gray-500">
-                Applied for local riders delivering inside Jhang.
+                Current standard delivery fee charged at checkout (e.g. 100, 150, or 0 for free).
               </p>
             </div>
 
             <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100 space-y-2">
               <label className="block font-bold text-amber-900 text-xs">
-                Out City (Outside Jhang / Other Cities) Courier Fee (Rs)
+                Free Delivery Threshold (مفت ڈلیوری کی کم از کم رقم - PKR)
               </label>
               <input
                 type="number"
-                value={settings.deliveryOptions?.outCityFee ?? 250}
+                min="0"
+                step="100"
+                value={settings.freeDeliveryThreshold ?? 3000}
                 onChange={(e) => {
                   const val = Number(e.target.value);
                   setSettings({
                     ...settings,
+                    freeDeliveryThreshold: val,
                     deliveryOptions: {
                       ...(settings.deliveryOptions || {}),
-                      outCityFee: val
+                      freeDeliveryThreshold: val
                     }
                   });
                 }}
-                className="w-full p-2 border rounded-xl bg-white outline-none font-mono text-sm"
+                className="w-full p-2.5 border rounded-xl bg-white outline-none font-mono text-sm focus:border-amber-700"
               />
               <p className="text-[10px] text-gray-500">
-                Applied for parcel courier to other cities.
+                Orders equal to or above this total get automatic Free Delivery (Rs. 0).
               </p>
             </div>
           </div>
 
           <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
-            <span>Free Delivery on orders above:</span>
+            <span>Customer Checkout Status:</span>
             <span className="font-bold text-[#07643D] font-mono">
-              Rs. {settings.freeDeliveryThreshold?.toLocaleString() || '3,000'}
+              Rs. {settings.defaultDeliveryFee ?? 100} Delivery Fee (Free on orders ≥ Rs. {(settings.freeDeliveryThreshold ?? 3000).toLocaleString()})
             </span>
           </div>
         </div>
