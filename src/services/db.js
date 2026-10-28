@@ -882,7 +882,11 @@ class SaweraDB {
           }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'sawera_settings' }, (payload) => {
-          if (payload.new?.data) {
+          if (payload.new?.id === 'categories' && Array.isArray(payload.new?.data)) {
+            this.set('categories', payload.new.data);
+          } else if (payload.new?.id === 'settings' && payload.new?.data) {
+            this.set('settings', payload.new.data);
+          } else if (payload.new?.data) {
             this.set('settings', payload.new.data);
           }
         })
