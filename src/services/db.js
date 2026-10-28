@@ -736,29 +736,43 @@ class SaweraDB {
 
       // 1. Fetch Products - FILTER OUT all deleted products!
       const { data: prods, error: pErr } = await supabase.from('sawera_products').select('*');
-      if (!pErr && Array.isArray(prods) && prods.length > 0) {
-        const productList = prods
-          .map(p => p.data)
-          .filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
-        
-        // Merge with local changes instead of blindly overwriting
-        const localProds = this.get('products') || [];
-        const mergedProds = [...localProds];
-        for (const cp of productList) {
-          const idx = mergedProds.findIndex(p => p.id === cp.id);
-          if (idx === -1 && !combinedDeletedIds.includes(cp.id)) {
-            mergedProds.push(cp);
-          } else if (idx !== -1) {
-            // Merge metadata but protect local price/variations if locally updated
-            mergedProds[idx] = { ...cp, ...mergedProds[idx] };
+      if (!pErr && Array.isArray(prods)) {
+        if (prods.length === 0) {
+          // Brand new empty Supabase table: seed initial 16 authentic products to cloud!
+          const localProds = this.get('products') || [];
+          for (const lp of localProds) {
+            if (!combinedDeletedIds.includes(lp.id)) {
+              supabase.from('sawera_products').upsert({
+                id: lp.id,
+                data: lp,
+                updated_at: new Date().toISOString()
+              }).catch(() => {});
+            }
           }
-        }
-        const finalProds = mergedProds.filter(p => !combinedDeletedIds.includes(p.id));
-        this.set('products', finalProds);
+        } else {
+          const productList = prods
+            .map(p => p.data)
+            .filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
+          
+          // Merge with local changes instead of blindly overwriting
+          const localProds = this.get('products') || [];
+          const mergedProds = [...localProds];
+          for (const cp of productList) {
+            const idx = mergedProds.findIndex(p => p.id === cp.id);
+            if (idx === -1 && !combinedDeletedIds.includes(cp.id)) {
+              mergedProds.push(cp);
+            } else if (idx !== -1) {
+              // Merge metadata but protect local price/variations if locally updated
+              mergedProds[idx] = { ...cp, ...mergedProds[idx] };
+            }
+          }
+          const finalProds = mergedProds.filter(p => !combinedDeletedIds.includes(p.id));
+          this.set('products', finalProds);
 
-        // Also clean up any lingering deleted products from Supabase
-        for (const delId of combinedDeletedIds) {
-          supabase.from('sawera_products').delete().eq('id', delId).then(() => {});
+          // Also clean up any lingering deleted products from Supabase
+          for (const delId of combinedDeletedIds) {
+            supabase.from('sawera_products').delete().eq('id', delId).then(() => {});
+          }
         }
       }
 
@@ -795,6 +809,14 @@ class SaweraDB {
           return lc;
         });
         this.set('categories', mergedCats);
+      } else if (!cErr && !catSetting) {
+        // Initial seed categories to Supabase
+        const currentCats = this.getCategories();
+        supabase.from('sawera_settings').upsert({
+          id: 'categories',
+          data: currentCats,
+          updated_at: new Date().toISOString()
+        }).catch(() => {});
       }
 
       // 5. Fetch Admin Security (Password persistence)
