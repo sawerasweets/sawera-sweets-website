@@ -13,8 +13,11 @@ import {
 } from 'lucide-react';
 import { STORE_CONFIG } from '../../data/storeConfig';
 import { CATEGORIES } from '../../data/categories';
+import { useStore } from '../../context/StoreContext';
 
 export default function Footer() {
+  const { categories } = useStore();
+  const activeCategories = (categories || CATEGORIES).filter(cat => cat.isActive !== false);
   return (
     <footer className="bg-[#043E26] text-white pt-12 pb-24 md:pb-12 border-t-4 border-[#D4AF37]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +105,7 @@ export default function Footer() {
               Our Products
             </h4>
             <ul className="space-y-2 text-xs">
-              {CATEGORIES.map((cat) => (
+              {activeCategories.map((cat) => (
                 <li key={cat.id}>
                   <Link 
                     to={`/category/${cat.slug}`}

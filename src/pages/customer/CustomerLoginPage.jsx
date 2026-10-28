@@ -9,8 +9,7 @@ import {
   ArrowRight, 
   CheckCircle2, 
   AlertCircle,
-  KeyRound,
-  Sparkles
+  KeyRound
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -78,12 +77,6 @@ export default function CustomerLoginPage() {
     }
   };
 
-  // Demo Role Quick-Login Helper
-  const quickLoginAs = (demoEmail, demoPassword) => {
-    setError(null);
-    login(demoEmail, demoPassword);
-  };
-
   return (
     <div className="min-h-[80vh] py-12 px-4 flex items-center justify-center bg-[#FDFBF7]">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95">
@@ -103,40 +96,6 @@ export default function CustomerLoginPage() {
           </div>
           <h2 className="text-xl font-bold font-serif">Sawera Sweets &amp; Bakers</h2>
           <p className="text-xs text-[#F4D375] font-semibold urdu-text">سویرا سویٹس اینڈ بیکرز - ہر خوشی کیساتھ</p>
-        </div>
-
-        {/* Quick Role-Switcher Bar (Production Testing Shortcuts) */}
-        <div className="bg-amber-50/70 border-b border-amber-200/60 p-3 text-xs">
-          <p className="font-bold text-amber-900 text-center mb-2 flex items-center justify-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>Fast Role Switcher (One-Click Demo Access):</span>
-          </p>
-          <div className="grid grid-cols-2 gap-1.5">
-            <button
-              onClick={() => quickLoginAs('admin@sawerasweets.pk', 'admin123')}
-              className="px-2 py-1.5 rounded-lg bg-emerald-800 text-white font-bold text-[11px] hover:bg-emerald-900 transition-colors shadow-sm"
-            >
-              👑 Owner / Admin
-            </button>
-            <button
-              onClick={() => quickLoginAs('staff@sawerasweets.pk', 'staff123')}
-              className="px-2 py-1.5 rounded-lg bg-emerald-700 text-white font-bold text-[11px] hover:bg-emerald-800 transition-colors shadow-sm"
-            >
-              👨‍🍳 Shop Staff
-            </button>
-            <button
-              onClick={() => quickLoginAs('rider@sawerasweets.pk', 'rider123')}
-              className="px-2 py-1.5 rounded-lg bg-amber-700 text-white font-bold text-[11px] hover:bg-amber-800 transition-colors shadow-sm"
-            >
-              🛵 Delivery Rider
-            </button>
-            <button
-              onClick={() => quickLoginAs('customer@sawerasweets.pk', 'customer123')}
-              className="px-2 py-1.5 rounded-lg bg-gray-800 text-white font-bold text-[11px] hover:bg-gray-900 transition-colors shadow-sm"
-            >
-              🛍️ Verified Buyer
-            </button>
-          </div>
         </div>
 
         {/* Tabs for Login / Register */}

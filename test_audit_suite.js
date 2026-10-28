@@ -401,6 +401,66 @@ db.updateAdminPassword('admin@sawerasweets.pk', currentAdminPass);
 assert(db.get('users').find(u => u.role === 'owner_admin').password === currentAdminPass, 'Admin password restored cleanly');
 
 console.log('\n==================================================');
+console.log('9. MASTER SECURITY, VISIBILITY & CROSS-DEVICE TESTS');
+console.log('==================================================');
+
+// A. Historical Order Price Snapshot Integrity
+const histProduct = db.getProductById('prd-special-roll-barfi');
+const originalHistPrice = histProduct.price;
+const testHistoricalOrder = db.createOrder({
+  customer: { name: "Test Historical Customer", phone: "03001234567" },
+  items: [
+    {
+      id: histProduct.id,
+      name: histProduct.name,
+      price: histProduct.price,
+      quantity: 2,
+      unit: histProduct.unit
+    }
+  ],
+  subtotal: histProduct.price * 2,
+  deliveryFee: 100,
+  total: (histProduct.price * 2) + 100,
+  paymentMethod: "cod"
+});
+
+// Update the product's price in the store to a different price (e.g. inflation / price change)
+db.saveProduct({
+  ...histProduct,
+  price: originalHistPrice + 500
+});
+
+// Fetch historical order and verify that historical prices are NEVER altered by modern product price changes
+const checkedHistOrder = db.getOrderById(testHistoricalOrder.id);
+assert(checkedHistOrder.items[0].price === originalHistPrice, 'Historical order retained original price snapshot (Not altered by today\'s price changes)');
+assert(checkedHistOrder.total === (originalHistPrice * 2) + 100, 'Historical order total remained completely intact');
+
+// Clean up historical order and restore product price
+db.set('orders', db.getOrders().filter(o => o.id !== testHistoricalOrder.id));
+db.saveProduct(histProduct);
+
+// B. Category Public Visibility Enforcement
+db.toggleCategoryActive('trending');
+const activePublicCats = db.getCategories().filter(c => c.isActive !== false);
+assert(!activePublicCats.some(c => c.slug === 'trending'), 'Disabled category completely excluded from public activeCategories');
+db.toggleCategoryActive('trending'); // re-enable
+assert(db.getCategories().filter(c => c.isActive !== false).some(c => c.slug === 'trending'), 'Re-enabled category restored to public activeCategories');
+
+// C. Production Login Page Security Audit
+const loginPageContent = fs.readFileSync('./src/pages/customer/CustomerLoginPage.jsx', 'utf8');
+assert(!loginPageContent.includes('quickLoginAs'), 'quickLoginAs demo shortcut function removed from production login page');
+assert(!loginPageContent.includes('Fast Role Switcher'), 'Fast Role Switcher (One-Click Demo Access) UI removed from login page');
+assert(!loginPageContent.includes('admin123'), 'Hardcoded demo credentials removed from customer login page source');
+
+// D. Footer Category Visibility Audit
+const footerContent = fs.readFileSync('./src/components/common/Footer.jsx', 'utf8');
+assert(footerContent.includes('activeCategories'), 'Footer renders activeCategories with isActive status instead of unfiltered static categories');
+
+// E. Product Detail Page Inactive Category Protection Audit
+const pdpContent = fs.readFileSync('./src/pages/ProductDetailPage.jsx', 'utf8');
+assert(pdpContent.includes('isCategoryActive'), 'Product detail page enforces category active gate to prevent public access to paused categories');
+
+console.log('\n==================================================');
 console.log('AUDIT SUMMARY');
 console.log('==================================================');
 console.log(`Passed: ${passed}`);

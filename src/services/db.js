@@ -473,6 +473,9 @@ class SaweraDB {
         console.warn('Box options init error:', e);
       }
 
+      // Cross-Device Server Sync (Mobile + Desktop Authoritative State)
+      this.syncFromServer();
+
       // Supabase Cloud Sync & Realtime Subscription
       if (isSupabaseConfigured && supabase) {
         this.syncFromSupabase();
@@ -587,6 +590,17 @@ class SaweraDB {
       localStorage.setItem(`sawera_${collection}`, JSON.stringify(data));
       this.broadcast();
 
+      // Cross-Device Server Persistence (Ensures mobile and desktop show matching data)
+      if (typeof window !== 'undefined' && typeof fetch === 'function') {
+        try {
+          fetch('/api/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ collection, data })
+          }).catch(() => {});
+        } catch (e) {}
+      }
+
       // Cloud Persistence via Supabase
       if (isSupabaseConfigured && supabase) {
         if (collection === 'settings') {
@@ -617,6 +631,84 @@ class SaweraDB {
       }
     } catch (e) {
       console.error(`Error writing ${collection}:`, e);
+    }
+  }
+
+  async syncFromServer() {
+    if (typeof window === 'undefined' || typeof fetch !== 'function') return;
+    try {
+      const res = await fetch('/api/sync');
+      if (!res.ok) return;
+      const json = await res.json();
+      if (!json?.success || !json.data) return;
+
+      const serverStore = json.data;
+
+      // 0. Merge deleted product IDs first
+      const serverDeletedIds = serverStore.deleted_product_ids;
+      const localDeletedIds = this.get('deleted_product_ids') || [];
+      if (Array.isArray(serverDeletedIds) && serverDeletedIds.length > 0) {
+        const combined = Array.from(new Set([...localDeletedIds, ...serverDeletedIds]));
+        if (combined.length !== localDeletedIds.length) {
+          localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(combined));
+        }
+      }
+
+      // 1. Merge Products (protecting deleted products and custom variations)
+      const currentDeleted = this.get('deleted_product_ids') || [];
+      if (Array.isArray(serverStore.products) && serverStore.products.length > 0) {
+        const validServerProds = serverStore.products.filter(p => p && p.id && !currentDeleted.includes(p.id));
+        const localProds = this.get('products') || [];
+        const mergedProds = [...localProds];
+
+        for (const sp of validServerProds) {
+          const idx = mergedProds.findIndex(p => p.id === sp.id);
+          if (idx === -1) {
+            mergedProds.push(sp);
+          } else {
+            mergedProds[idx] = { ...mergedProds[idx], ...sp };
+          }
+        }
+        const cleaned = mergedProds.filter(p => !currentDeleted.includes(p.id));
+        localStorage.setItem('sawera_products', JSON.stringify(cleaned));
+      }
+
+      // 2. Merge Categories (preserves isActive)
+      if (Array.isArray(serverStore.categories) && serverStore.categories.length > 0) {
+        const localCats = this.getCategories();
+        const mergedCats = localCats.map(lc => {
+          const sc = serverStore.categories.find(c => c.id === lc.id || c.slug === lc.slug);
+          if (sc && sc.isActive !== undefined) {
+            return { ...lc, ...sc, isActive: sc.isActive };
+          }
+          return lc;
+        });
+        localStorage.setItem('sawera_categories', JSON.stringify(mergedCats));
+      }
+
+      // 3. Merge Settings
+      if (serverStore.settings && typeof serverStore.settings === 'object' && !Array.isArray(serverStore.settings)) {
+        const localSettings = this.getSettings();
+        localStorage.setItem('sawera_settings', JSON.stringify({ ...localSettings, ...serverStore.settings }));
+      }
+
+      // 4. Merge Admin Security
+      if (serverStore.admin_security?.password) {
+        const users = this.get('users');
+        const adminPass = serverStore.admin_security.password;
+        const updatedUsers = users.map(u => {
+          if ((u.role === 'owner_admin' || u.role === 'super_admin' || u.email === 'admin@sawerasweets.pk') && u.password !== adminPass) {
+            return { ...u, password: adminPass };
+          }
+          return u;
+        });
+        localStorage.setItem('sawera_users', JSON.stringify(updatedUsers));
+        localStorage.setItem('sawera_admin_security', JSON.stringify(serverStore.admin_security));
+      }
+
+      this.broadcast();
+    } catch (e) {
+      // Quiet fail if /api/sync is not running or unreachable
     }
   }
 

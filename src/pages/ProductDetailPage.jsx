@@ -17,6 +17,7 @@ import {
 import db from '../services/db';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/product/ProductCard';
 import VariationSelector from '../components/product/VariationSelector';
 import ReviewFormModal from '../components/customer/ReviewFormModal';
@@ -27,6 +28,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { isUrdu } = useLanguage();
+  const { isAdmin } = useAuth();
 
   const [product, setProduct] = useState(() => db.getProductById(id));
   const [reviews, setReviews] = useState(() => db.get('reviews'));
@@ -76,6 +78,36 @@ export default function ProductDetailPage() {
     );
   }
 
+  const cat = db.getCategories().find(c => c.slug === product.category || c.id === product.category);
+  const isCategoryActive = cat ? cat.isActive !== false : true;
+  const isProductActive = product.isActive !== false;
+
+  if ((!isProductActive || !isCategoryActive) && !isAdmin) {
+    return (
+      <div className="min-h-[70vh] bg-[#FDFBF7] flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md w-full bg-white p-8 rounded-3xl border border-amber-200 shadow-sm space-y-3">
+          <span className="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider">
+            {isCategoryActive ? 'Product Temporarily Unavailable' : 'Category Paused'}
+          </span>
+          <h2 className="text-xl font-bold font-serif text-gray-900">{product.name}</h2>
+          <p className="text-xs text-gray-500">
+            {isCategoryActive 
+              ? 'This specific item is currently paused by store administration.' 
+              : `The "${cat?.name || product.category}" department is currently offline.`}
+          </p>
+          <div className="pt-3">
+            <Link 
+              to="/products"
+              className="inline-block px-5 py-2.5 rounded-xl bg-[#07643D] text-white text-xs font-semibold hover:bg-[#043E26] transition-colors"
+            >
+              Browse All Available Products →
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const currentPrice = selectedVariation 
     ? (selectedVariation.discountPrice ?? selectedVariation.price) 
     : (product.discountPrice ?? product.price);
@@ -107,6 +139,13 @@ export default function ProductDetailPage() {
     <div className="min-h-screen bg-[#FDFBF7] py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-10">
         
+        {(!isProductActive || !isCategoryActive) && isAdmin && (
+          <div className="bg-amber-100 border border-amber-300 text-amber-900 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between">
+            <span>👑 Admin Preview Mode: This item is currently hidden from public customers because {!isProductActive ? 'the product is turned off' : 'its category is paused'}.</span>
+            <Link to="/admin/products" className="underline hover:text-amber-950">Manage in Admin</Link>
+          </div>
+        )}
+
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <Link to="/" className="hover:text-[#07643D]">Home</Link>
