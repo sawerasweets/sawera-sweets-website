@@ -95,24 +95,30 @@ assert(GIFT_OCCASION_TEMPLATES.length === 4, `4 gift greeting card templates con
 const rollBarfi = PRODUCTS.find(p => p.id === 'prd-special-roll-barfi');
 const badamBarfi = PRODUCTS.find(p => p.id === 'prd-special-badam-barfi');
 
-const rollPricePerGram = (rollBarfi.discountPrice || rollBarfi.price) / 1000;
-const badamPricePerGram = (badamBarfi.discountPrice || badamBarfi.price) / 1000;
+const getTestPerKgPrice = (prod) => {
+  const base = prod?.discountPrice || prod?.price || 0;
+  if (prod?.unit?.includes('500')) return base * 2;
+  return base;
+};
 
-const rollPortionCost = Math.round(500 * rollPricePerGram); // 600
-const badamPortionCost = Math.round(500 * badamPricePerGram); // 600
-const sweetsContentSubtotal = rollPortionCost + badamPortionCost; // 1200
+const rollPricePerGram = getTestPerKgPrice(rollBarfi) / 1000;
+const badamPricePerGram = getTestPerKgPrice(badamBarfi) / 1000;
+
+const rollPortionCost = Math.round(500 * rollPricePerGram); // 775 (Authentic owner price)
+const badamPortionCost = Math.round(500 * badamPricePerGram); // 675 (Authentic owner price)
+const sweetsContentSubtotal = rollPortionCost + badamPortionCost; // 1450
 const packagingFee = 100; // 1kg box
-const expectedBoxTotal = sweetsContentSubtotal + packagingFee; // 1300
+const expectedBoxTotal = sweetsContentSubtotal + packagingFee; // 1550
 
-assert(rollPortionCost === 600, `500g Roll Barfi portion calculated as Rs. 600 (Got: ${rollPortionCost})`);
-assert(badamPortionCost === 600, `500g Badam Barfi portion calculated as Rs. 600 (Got: ${badamPortionCost})`);
-assert(expectedBoxTotal === 1300, `1kg custom box total is Rs. 1,300 (Got: ${expectedBoxTotal})`);
+assert(rollPortionCost === 775, `500g Roll Barfi portion calculated as Rs. 775 (Got: ${rollPortionCost})`);
+assert(badamPortionCost === 675, `500g Badam Barfi portion calculated as Rs. 675 (Got: ${badamPortionCost})`);
+assert(expectedBoxTotal === 1550, `1kg custom box total is Rs. 1,550 (Got: ${expectedBoxTotal})`);
 
-// Test Dry Fruit Halwa calculation (Rs 1300/kg promo price)
+// Test Dry Fruit Halwa calculation (Rs 750 / 500g -> Rs 1500/kg)
 const dryFruitHalwa = PRODUCTS.find(p => p.id === 'prd-dry-fruit-halwa');
-const dryHalwaPricePerGram = (dryFruitHalwa.discountPrice || dryFruitHalwa.price) / 1000;
-const dryHalwa250gCost = Math.round(250 * dryHalwaPricePerGram); // 325
-assert(dryHalwa250gCost === 325, `250g Dry Fruit Halwa calculated as Rs. 325 (Got: ${dryHalwa250gCost})`);
+const dryHalwaPricePerGram = getTestPerKgPrice(dryFruitHalwa) / 1000;
+const dryHalwa250gCost = Math.round(250 * dryHalwaPricePerGram); // 375
+assert(dryHalwa250gCost === 375, `250g Dry Fruit Halwa calculated as Rs. 375 (Got: ${dryHalwa250gCost})`);
 
 console.log('\n==================================================');
 console.log('4. OCCASION COLLECTIONS INTEGRITY');

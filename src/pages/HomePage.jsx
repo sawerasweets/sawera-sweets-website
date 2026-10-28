@@ -34,8 +34,15 @@ export default function HomePage() {
   const { isAdmin } = useAuth();
   const { isUrdu, t } = useLanguage();
 
-  const activeProducts = useMemo(() => (products || []).filter(p => p.isActive !== false), [products]);
   const activeCategories = useMemo(() => (categories || CATEGORIES).filter(c => c.isActive !== false), [categories]);
+  const activeCategorySlugs = useMemo(() => new Set(activeCategories.map(c => (c.slug || c.id || '').toLowerCase())), [activeCategories]);
+  const activeProducts = useMemo(() => {
+    return (products || []).filter(p => {
+      if (p.isActive === false) return false;
+      const catSlug = (p.category || '').toLowerCase();
+      return activeCategorySlugs.has(catSlug);
+    });
+  }, [products, activeCategorySlugs]);
 
   const featuredProducts = useMemo(() => {
     return activeProducts.filter(p => p.isFeatured).slice(0, 4);
@@ -84,8 +91,8 @@ export default function HomePage() {
         urduSubtitle: "سو فیصد خالص کڑھے ہوئے کھوئے اور دیسی گھی سے تیار کردہ، پستے اور بادام کے لذیذ مغز میں لپٹی منہ میں گھل جانے والی شاہی رول برفی۔",
         image: "/images/hero/hero-roll-barfi.jpg",
         link: "/product/prd-special-roll-barfi",
-        buttonText: "Order Roll Barfi (Rs. 1,200/kg)",
-        urduButtonText: "رول برفی آرڈر کریں (1,200 روپے)",
+        buttonText: "Order Roll Barfi (Rs. 775 / 500g)",
+        urduButtonText: "رول برفی آرڈر کریں (775 روپے)",
         badge: "Top Seller #1"
       },
       {

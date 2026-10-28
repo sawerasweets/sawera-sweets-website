@@ -344,6 +344,13 @@ class SaweraDB {
                 patched.variations = cp.variations;
                 itemUpdated = true;
               }
+              // Upgrade any stale demo Rs. 600 prices to authentic owner rates
+              if (patched.variations?.some(v => v.price === 650 && v.discountPrice === 600)) {
+                patched.price = cp.price;
+                patched.discountPrice = cp.discountPrice;
+                patched.variations = cp.variations;
+                itemUpdated = true;
+              }
               if (itemUpdated) {
                 updatedProds[foundIdx] = patched;
                 hasProdsUpdate = true;

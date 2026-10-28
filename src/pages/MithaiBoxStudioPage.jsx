@@ -73,11 +73,18 @@ export default function MithaiBoxStudioPage() {
   const remainingGrams = Math.max(0, maxCapacity - totalGrams);
   const isFull = totalGrams >= maxCapacity;
 
+  // Helper for per-kg rate (normalizes 500g base prices to 1kg)
+  const getProductPerKgPrice = (prod) => {
+    const base = prod?.discountPrice || prod?.price || 0;
+    if (prod?.unit?.includes('500')) return base * 2;
+    return base;
+  };
+
   // Price calculations based strictly on real product catalog prices
   const sweetsSubtotal = useMemo(() => {
     return selectedItems.reduce((sum, item) => {
       const prod = item.product;
-      const effectivePerKgPrice = prod.discountPrice || prod.price;
+      const effectivePerKgPrice = getProductPerKgPrice(prod);
       const itemCost = Math.round((item.grams / 1000) * effectivePerKgPrice);
       return sum + itemCost;
     }, 0);
@@ -97,7 +104,7 @@ export default function MithaiBoxStudioPage() {
       if (existingIdx >= 0) {
         const updated = [...prev];
         const newGrams = updated[existingIdx].grams + addedPortion;
-        const effectivePerKg = product.discountPrice || product.price;
+        const effectivePerKg = getProductPerKgPrice(product);
         updated[existingIdx] = {
           ...updated[existingIdx],
           grams: newGrams,
@@ -105,7 +112,7 @@ export default function MithaiBoxStudioPage() {
         };
         return updated;
       } else {
-        const effectivePerKg = product.discountPrice || product.price;
+        const effectivePerKg = getProductPerKgPrice(product);
         return [
           ...prev,
           {
@@ -130,7 +137,7 @@ export default function MithaiBoxStudioPage() {
               targetGrams = currentGrams + remainingGrams;
             }
             if (targetGrams <= 0) return null;
-            const effectivePerKg = item.product.discountPrice || item.product.price;
+            const effectivePerKg = getProductPerKgPrice(item.product);
             return {
               ...item,
               grams: targetGrams,
@@ -400,7 +407,7 @@ export default function MithaiBoxStudioPage() {
               {/* Sweets Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {sweetsCatalog.map(product => {
-                  const effectivePrice = product.discountPrice || product.price;
+                  const effectivePrice = getProductPerKgPrice(product);
                   const selectedInBox = selectedItems.find(i => i.product.id === product.id);
                   const inBoxGrams = selectedInBox ? selectedInBox.grams : 0;
                   const isOutOfSpace = remainingGrams <= 0;
