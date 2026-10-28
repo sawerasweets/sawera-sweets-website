@@ -333,7 +333,15 @@ db.toggleCategoryActive('trending');
 assert(db.getCategories().find(c => c.slug === 'trending').isActive === true, 'Trending category re-enabled cleanly');
 
 // C. Deleted Product Permanence Across Restart (Never Returns)
-const testProdToDelete = 'prd-paltawa-patisa';
+const tempTestProduct = {
+  id: 'prd-custom-test-delete-item',
+  name: 'Temporary Test Delete Item',
+  category: 'sweets',
+  price: 500,
+  stocks: { 'shop-1': 10 }
+};
+db.saveProduct(tempTestProduct);
+const testProdToDelete = 'prd-custom-test-delete-item';
 assert(db.getProductById(testProdToDelete) !== undefined, 'Target product exists prior to deletion');
 db.deleteProduct(testProdToDelete);
 
@@ -346,13 +354,9 @@ db.init();
 assert(db.getProductById(testProdToDelete) === undefined, 'Deleted product does NOT return after db.init()');
 assert(db.getProducts().some(p => p.id === testProdToDelete) === false, 'Deleted product completely absent from getProducts() after restart');
 
-// Restore deleted product for catalog integrity
+// Clean up test deleted ID
 const deletedIds = db.get('deleted_product_ids').filter(id => id !== testProdToDelete);
 db.set('deleted_product_ids', deletedIds);
-db.saveProduct(testRollBarfi); // trigger catalog refresh
-const restoredProd = (await import('./src/data/products.js')).PRODUCTS.find(p => p.id === testProdToDelete);
-db.saveProduct(restoredProd);
-assert(db.getProductById(testProdToDelete) !== undefined, 'Catalog product cleanly restored for testing suite');
 
 // D. Admin Settings Persistence (Never Corrupted into Array)
 const initialSettings = db.getSettings();

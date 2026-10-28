@@ -310,63 +310,75 @@ class SaweraDB {
         }
       }
 
-      // Non-destructive catalog check: Only backfill missing metadata without overwriting prices/variations
+      // Non-destructive catalog check: Ensure all 16 catalog items exist and stale demo prices are upgraded
       try {
         const deletedIds = this.get('deleted_product_ids') || [];
-        const currentProds = this.get('products');
+        const currentProds = this.get('products') || [];
+        const catalogProds = seedInitialProducts();
+        const officialIds = new Set(catalogProds.map(p => p.id));
         
-        if (Array.isArray(currentProds) && currentProds.length > 0) {
-          const catalogProds = seedInitialProducts().filter(cp => !deletedIds.includes(cp.id));
-          let hasProdsUpdate = false;
-          const updatedProds = [...currentProds];
+        // Clean official catalog IDs from deleted_product_ids so authentic products are never suppressed
+        const cleanDeletedIds = deletedIds.filter(id => !officialIds.has(id));
+        if (cleanDeletedIds.length !== deletedIds.length) {
+          this.setLocal('deleted_product_ids', cleanDeletedIds);
+        }
 
-          for (const cp of catalogProds) {
-            const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
-            if (foundIdx !== -1) {
-              const existing = updatedProds[foundIdx];
-              let itemUpdated = false;
-              const patched = { ...existing };
+        let hasProdsUpdate = false;
+        const updatedProds = [...currentProds];
 
-              // Only backfill missing fields without overwriting user-configured prices or variations
-              if (!patched.image && cp.image) {
-                patched.image = cp.image;
-                itemUpdated = true;
-              }
-              if (!patched.urduDescription && cp.urduDescription) {
-                patched.urduDescription = cp.urduDescription;
-                itemUpdated = true;
-              }
-              if (!patched.urduName && cp.urduName) {
-                patched.urduName = cp.urduName;
-                itemUpdated = true;
-              }
-              if (!patched.variations || patched.variations.length === 0) {
-                patched.variations = cp.variations;
-                itemUpdated = true;
-              }
-              // Upgrade any stale demo Rs. 600 prices to authentic owner rates
-              if (patched.variations?.some(v => v.price === 650 && v.discountPrice === 600)) {
-                patched.price = cp.price;
-                patched.discountPrice = cp.discountPrice;
-                patched.variations = cp.variations;
-                itemUpdated = true;
-              }
-              if (itemUpdated) {
-                updatedProds[foundIdx] = patched;
-                hasProdsUpdate = true;
-              }
+        for (const cp of catalogProds) {
+          const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
+          if (foundIdx === -1) {
+            // Missing product backfill! (Guarantees Admin Panel gets all 16 products)
+            updatedProds.push(cp);
+            hasProdsUpdate = true;
+          } else {
+            const existing = updatedProds[foundIdx];
+            let itemUpdated = false;
+            const patched = { ...existing };
+
+            // Upgrade any stale demo prices (1400, 1300, 1200, 1600 or missing discountPrice) to authentic rates
+            const isStaleDemoPrice = 
+              (patched.price === 1400 || patched.price === 1300 || patched.price === 1200 || patched.price === 1600) &&
+              (!patched.discountPrice || patched.discountPrice === 1200 || patched.discountPrice === 1300 || patched.discountPrice === 1400);
+            
+            const isStale600 = patched.variations?.some(v => v.price === 650 && v.discountPrice === 600);
+
+            if (isStaleDemoPrice || isStale600) {
+              patched.price = cp.price;
+              patched.discountPrice = cp.discountPrice;
+              patched.variations = cp.variations;
+              patched.unit = cp.unit;
+              itemUpdated = true;
+            }
+
+            if (!patched.image && cp.image) {
+              patched.image = cp.image;
+              itemUpdated = true;
+            }
+            if (!patched.urduDescription && cp.urduDescription) {
+              patched.urduDescription = cp.urduDescription;
+              itemUpdated = true;
+            }
+            if (!patched.urduName && cp.urduName) {
+              patched.urduName = cp.urduName;
+              itemUpdated = true;
+            }
+            if (!patched.variations || patched.variations.length === 0) {
+              patched.variations = cp.variations;
+              itemUpdated = true;
+            }
+
+            if (itemUpdated) {
+              updatedProds[foundIdx] = patched;
+              hasProdsUpdate = true;
             }
           }
+        }
 
-          // Clean up any previously deleted products from storage
-          const cleanedProds = updatedProds.filter(p => !deletedIds.includes(p.id));
-          if (cleanedProds.length !== updatedProds.length) {
-            hasProdsUpdate = true;
-          }
-
-          if (hasProdsUpdate) {
-            this.set('products', cleanedProds);
-          }
+        const cleanedProds = updatedProds.filter(p => !cleanDeletedIds.includes(p.id));
+        if (cleanedProds.length !== currentProds.length || hasProdsUpdate) {
+          this.setLocal('products', cleanedProds);
         }
       } catch (err) {
         console.warn('Catalog merge error in init:', err);
@@ -395,7 +407,7 @@ class SaweraDB {
           }
 
           if (hasCatsUpdate) {
-            this.set('categories', updatedCats);
+            this.setLocal('categories', updatedCats);
           }
         }
       } catch (err) {
@@ -496,55 +508,55 @@ class SaweraDB {
 
   seedInitialMissing() {
     if (localStorage.getItem('sawera_branches') === null) {
-      this.set('branches', defaultBranches);
+      this.setLocal('branches', defaultBranches);
     }
     if (localStorage.getItem('sawera_settings') === null) {
-      this.set('settings', defaultSettings);
+      this.setLocal('settings', defaultSettings);
     }
     if (localStorage.getItem('sawera_users') === null) {
-      this.set('users', defaultUsers);
+      this.setLocal('users', defaultUsers);
     }
     if (localStorage.getItem('sawera_categories') === null) {
-      this.set('categories', CATEGORIES.map(c => ({ ...c, isActive: true })));
+      this.setLocal('categories', CATEGORIES.map(c => ({ ...c, isActive: true })));
     }
     if (localStorage.getItem('sawera_products') === null) {
-      this.set('products', seedInitialProducts());
+      this.setLocal('products', seedInitialProducts());
     }
     if (localStorage.getItem('sawera_orders') === null) {
-      this.set('orders', defaultOrders);
+      this.setLocal('orders', defaultOrders);
     }
     if (localStorage.getItem('sawera_stockRequests') === null) {
-      this.set('stockRequests', defaultStockRequests);
+      this.setLocal('stockRequests', defaultStockRequests);
     }
     if (localStorage.getItem('sawera_reviews') === null) {
-      this.set('reviews', defaultReviews);
+      this.setLocal('reviews', defaultReviews);
     }
     if (localStorage.getItem('sawera_questions') === null) {
-      this.set('questions', defaultQuestions);
+      this.setLocal('questions', defaultQuestions);
     }
     if (localStorage.getItem('sawera_tickets') === null) {
-      this.set('tickets', defaultTickets);
+      this.setLocal('tickets', defaultTickets);
     }
     if (localStorage.getItem('sawera_chats') === null) {
-      this.set('chats', defaultChats);
+      this.setLocal('chats', defaultChats);
     }
     if (localStorage.getItem('sawera_banners') === null) {
-      this.set('banners', defaultBanners);
+      this.setLocal('banners', defaultBanners);
     }
     if (localStorage.getItem('sawera_faqs') === null) {
-      this.set('faqs', defaultFaqs);
+      this.setLocal('faqs', defaultFaqs);
     }
     if (localStorage.getItem('sawera_boxOptions') === null) {
-      this.set('boxOptions', DEFAULT_BOX_OPTIONS);
+      this.setLocal('boxOptions', DEFAULT_BOX_OPTIONS);
     }
     if (localStorage.getItem('sawera_occasions') === null) {
-      this.set('occasions', DEFAULT_OCCASIONS);
+      this.setLocal('occasions', DEFAULT_OCCASIONS);
     }
     if (localStorage.getItem('sawera_activityLogs') === null) {
-      this.set('activityLogs', defaultActivityLogs);
+      this.setLocal('activityLogs', defaultActivityLogs);
     }
     if (localStorage.getItem('sawera_contactMessages') === null) {
-      this.set('contactMessages', []);
+      this.setLocal('contactMessages', []);
     }
     this.broadcast();
   }
@@ -568,6 +580,15 @@ class SaweraDB {
     this.set('activityLogs', defaultActivityLogs);
     this.set('contactMessages', []);
     this.broadcast();
+  }
+
+  setLocal(collection, data) {
+    try {
+      localStorage.setItem(`sawera_${collection}`, JSON.stringify(data));
+      this.broadcast();
+    } catch (e) {
+      console.error(`Error writing local ${collection}:`, e);
+    }
   }
 
   get(collection) {
@@ -730,49 +751,55 @@ class SaweraDB {
       }
       const localDeletedIds = this.get('deleted_product_ids') || [];
       const combinedDeletedIds = Array.from(new Set([...localDeletedIds, ...cloudDeletedIds]));
-      if (combinedDeletedIds.length !== localDeletedIds.length) {
-        localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(combinedDeletedIds));
+      
+      // Clean official catalog IDs from combinedDeletedIds so authentic products are NEVER suppressed
+      const catalogProds = seedInitialProducts();
+      const officialIds = new Set(catalogProds.map(p => p.id));
+      const cleanCombinedDeletedIds = combinedDeletedIds.filter(id => !officialIds.has(id));
+
+      if (cleanCombinedDeletedIds.length !== localDeletedIds.length) {
+        localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(cleanCombinedDeletedIds));
       }
 
-      // 1. Fetch Products - FILTER OUT all deleted products!
+      // 1. Fetch Products
       const { data: prods, error: pErr } = await supabase.from('sawera_products').select('*');
       if (!pErr && Array.isArray(prods)) {
         if (prods.length === 0) {
           // Brand new empty Supabase table: seed initial 16 authentic products to cloud!
-          const localProds = this.get('products') || [];
-          for (const lp of localProds) {
-            if (!combinedDeletedIds.includes(lp.id)) {
-              supabase.from('sawera_products').upsert({
+          for (const lp of catalogProds) {
+            if (!cleanCombinedDeletedIds.includes(lp.id)) {
+              await supabase.from('sawera_products').upsert({
                 id: lp.id,
                 data: lp,
                 updated_at: new Date().toISOString()
               }).catch(() => {});
             }
           }
+          this.setLocal('products', catalogProds.filter(p => !cleanCombinedDeletedIds.includes(p.id)));
         } else {
-          const productList = prods
-            .map(p => p.data)
-            .filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
-          
-          // Merge with local changes instead of blindly overwriting
+          const cloudProducts = prods.map(p => p.data).filter(p => p && p.id);
           const localProds = this.get('products') || [];
-          const mergedProds = [...localProds];
-          for (const cp of productList) {
-            const idx = mergedProds.findIndex(p => p.id === cp.id);
-            if (idx === -1 && !combinedDeletedIds.includes(cp.id)) {
-              mergedProds.push(cp);
-            } else if (idx !== -1) {
-              // Merge metadata but protect local price/variations if locally updated
-              mergedProds[idx] = { ...cp, ...mergedProds[idx] };
+          
+          const mergedMap = new Map();
+          // 1. Seed with authentic catalog
+          for (const cp of catalogProds) {
+            mergedMap.set(cp.id, cp);
+          }
+          // 2. Cloud products from Supabase take priority (authoritative cloud prices and variations)
+          for (const cp of cloudProducts) {
+            if (cp && cp.id) {
+              const base = mergedMap.get(cp.id) || {};
+              mergedMap.set(cp.id, { ...base, ...cp });
             }
           }
-          const finalProds = mergedProds.filter(p => !combinedDeletedIds.includes(p.id));
-          this.set('products', finalProds);
-
-          // Also clean up any lingering deleted products from Supabase
-          for (const delId of combinedDeletedIds) {
-            supabase.from('sawera_products').delete().eq('id', delId).then(() => {});
+          // 3. Local custom products
+          for (const lp of localProds) {
+            if (lp && lp.id && !mergedMap.has(lp.id) && !cleanCombinedDeletedIds.includes(lp.id)) {
+              mergedMap.set(lp.id, lp);
+            }
           }
+          const finalProds = Array.from(mergedMap.values()).filter(p => !cleanCombinedDeletedIds.includes(p.id));
+          this.setLocal('products', finalProds);
         }
       }
 
@@ -787,14 +814,14 @@ class SaweraDB {
             mergedOrders.push(o);
           }
         }
-        this.set('orders', mergedOrders);
+        this.setLocal('orders', mergedOrders);
       }
 
       // 3. Fetch Settings
       const { data: sets, error: sErr } = await supabase.from('sawera_settings').select('*').eq('id', 'settings').maybeSingle();
       if (!sErr && sets?.data) {
         const localSettings = this.getSettings();
-        this.set('settings', { ...localSettings, ...sets.data });
+        this.setLocal('settings', { ...localSettings, ...sets.data });
       }
 
       // 4. Fetch Categories - preserve isActive status
@@ -804,11 +831,11 @@ class SaweraDB {
         const mergedCats = localCats.map(lc => {
           const cloudCat = catSetting.data.find(cc => cc.id === lc.id || cc.slug === lc.slug);
           if (cloudCat && cloudCat.isActive !== undefined) {
-            return { ...lc, isActive: cloudCat.isActive };
+            return { ...lc, ...cloudCat, isActive: cloudCat.isActive };
           }
           return lc;
         });
-        this.set('categories', mergedCats);
+        this.setLocal('categories', mergedCats);
       } else if (!cErr && !catSetting) {
         // Initial seed categories to Supabase
         const currentCats = this.getCategories();
@@ -834,7 +861,7 @@ class SaweraDB {
           return u;
         });
         if (userUpdated) {
-          this.set('users', updatedUsers);
+          this.setLocal('users', updatedUsers);
           localStorage.setItem('sawera_admin_security', JSON.stringify(secSetting.data));
           const currentUserStr = localStorage.getItem('sawera_current_user');
           if (currentUserStr) {
@@ -854,8 +881,9 @@ class SaweraDB {
   }
 
   subscribeToSupabase() {
-    if (!isSupabaseConfigured || !supabase) return;
+    if (!isSupabaseConfigured || !supabase || this.realtimeSubscribed) return;
     try {
+      this.realtimeSubscribed = true;
       supabase
         .channel('sawera_cloud_realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'sawera_products' }, (payload) => {
@@ -865,10 +893,10 @@ class SaweraDB {
             const updated = current.some(p => p.id === item.id)
               ? current.map(p => p.id === item.id ? item : p)
               : [item, ...current];
-            this.set('products', updated);
+            this.setLocal('products', updated);
           } else if (payload.eventType === 'DELETE') {
             const filtered = current.filter(p => p.id !== payload.old.id);
-            this.set('products', filtered);
+            this.setLocal('products', filtered);
           }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'sawera_orders' }, (payload) => {
@@ -878,20 +906,21 @@ class SaweraDB {
             const updated = current.some(o => o.id === item.id)
               ? current.map(o => o.id === item.id ? item : o)
               : [item, ...current];
-            this.set('orders', updated);
+            this.setLocal('orders', updated);
           }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'sawera_settings' }, (payload) => {
           if (payload.new?.id === 'categories' && Array.isArray(payload.new?.data)) {
-            this.set('categories', payload.new.data);
+            this.setLocal('categories', payload.new.data);
           } else if (payload.new?.id === 'settings' && payload.new?.data) {
-            this.set('settings', payload.new.data);
+            this.setLocal('settings', payload.new.data);
           } else if (payload.new?.data) {
-            this.set('settings', payload.new.data);
+            this.setLocal('settings', payload.new.data);
           }
         })
         .subscribe();
     } catch (err) {
+      this.realtimeSubscribed = false;
       console.warn('Supabase realtime subscription error:', err);
     }
   }
