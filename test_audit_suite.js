@@ -277,6 +277,130 @@ db.set('orders', cleanedOrders);
 assert(db.getOrderById(placedOrder.id) === undefined, 'Test order safely cleaned up without altering real data');
 
 console.log('\n==================================================');
+console.log('8. CRITICAL EMERGENCY REPAIR & PERSISTENCE VERIFICATION');
+console.log('==================================================');
+
+// A. Product Prices & Variations Persistence Test
+const testRollBarfi = db.getProductById('prd-special-roll-barfi');
+const originalPrice = testRollBarfi.price;
+const customPrice = 1450;
+const customVariations = [
+  { label: '500 Grams', price: 725, discountPrice: 700 },
+  { label: '1 kg Special', price: 1450, discountPrice: 1400 }
+];
+
+db.saveProduct({
+  ...testRollBarfi,
+  price: customPrice,
+  variations: customVariations
+});
+
+// Verify saved
+assert(db.getProductById('prd-special-roll-barfi').price === customPrice, 'Test product price changed to custom Rs. 1450');
+assert(db.getProductById('prd-special-roll-barfi').variations[0].price === 725, 'Test product custom variation price saved');
+
+// Simulate page refresh / restart / version check
+db.init();
+assert(db.getProductById('prd-special-roll-barfi').price === customPrice, 'Product price remained Rs. 1450 after db.init() (Did not revert to default)');
+assert(db.getProductById('prd-special-roll-barfi').variations[0].price === 725, 'Product variations remained custom after db.init()');
+
+// Restore original product price
+db.saveProduct({
+  ...testRollBarfi,
+  price: originalPrice,
+  variations: testRollBarfi.variations
+});
+assert(db.getProductById('prd-special-roll-barfi').price === originalPrice, 'Product price restored cleanly');
+
+// B. Category ON/OFF Persistence Across Restart
+const trendingBefore = db.getCategories().find(c => c.slug === 'trending');
+assert(trendingBefore.isActive === true, 'Trending category starts Active');
+db.toggleCategoryActive('trending');
+assert(db.getCategories().find(c => c.slug === 'trending').isActive === false, 'Trending category disabled (isActive === false)');
+
+// Simulate page refresh / restart / version check
+db.init();
+assert(db.getCategories().find(c => c.slug === 'trending').isActive === false, 'Trending category remained disabled after db.init() (Did not revert to ON)');
+
+// Re-enable trending category
+db.toggleCategoryActive('trending');
+assert(db.getCategories().find(c => c.slug === 'trending').isActive === true, 'Trending category re-enabled cleanly');
+
+// C. Deleted Product Permanence Across Restart (Never Returns)
+const testProdToDelete = 'prd-paltawa-patisa';
+assert(db.getProductById(testProdToDelete) !== undefined, 'Target product exists prior to deletion');
+db.deleteProduct(testProdToDelete);
+
+assert(db.getProductById(testProdToDelete) === undefined, 'Product successfully removed from active catalog');
+assert(db.getProducts().some(p => p.id === testProdToDelete) === false, 'Product not present in getProducts()');
+assert(db.get('deleted_product_ids').includes(testProdToDelete), 'Product ID recorded in deleted_product_ids');
+
+// Simulate multiple page reloads / restarts
+db.init();
+assert(db.getProductById(testProdToDelete) === undefined, 'Deleted product does NOT return after db.init()');
+assert(db.getProducts().some(p => p.id === testProdToDelete) === false, 'Deleted product completely absent from getProducts() after restart');
+
+// Restore deleted product for catalog integrity
+const deletedIds = db.get('deleted_product_ids').filter(id => id !== testProdToDelete);
+db.set('deleted_product_ids', deletedIds);
+db.saveProduct(testRollBarfi); // trigger catalog refresh
+const restoredProd = (await import('./src/data/products.js')).PRODUCTS.find(p => p.id === testProdToDelete);
+db.saveProduct(restoredProd);
+assert(db.getProductById(testProdToDelete) !== undefined, 'Catalog product cleanly restored for testing suite');
+
+// D. Admin Settings Persistence (Never Corrupted into Array)
+const initialSettings = db.getSettings();
+assert(typeof initialSettings === 'object' && !Array.isArray(initialSettings), 'Settings is a valid object and not an array');
+
+const updatedSettings = db.updateSettings({
+  defaultDeliveryFee: 175,
+  freeDeliveryThreshold: 3500
+});
+assert(updatedSettings.defaultDeliveryFee === 175, 'Settings delivery fee updated to Rs. 175');
+assert(db.getSettings().freeDeliveryThreshold === 3500, 'Settings free threshold updated to Rs. 3500');
+
+// Simulate application restart
+db.init();
+const reloadedSettings = db.getSettings();
+assert(reloadedSettings.defaultDeliveryFee === 175, 'Delivery fee persisted after db.init()');
+assert(reloadedSettings.freeDeliveryThreshold === 3500, 'Free threshold persisted after db.init()');
+assert(!Array.isArray(reloadedSettings), 'Reloaded settings is strictly an object');
+
+// Restore settings
+db.updateSettings(initialSettings);
+
+// E. Admin Password Persistence Across Restarts & Version Changes
+const adminUsers = db.get('users');
+const currentAdminPass = adminUsers.find(u => u.role === 'owner_admin')?.password;
+assert(Boolean(currentAdminPass), 'Admin user found with valid password');
+
+// Update password
+const updatePassRes = db.updateAdminPassword('admin@sawerasweets.pk', 'VerifiedSafePass2026!');
+assert(updatePassRes.success === true, 'Admin password successfully updated via updateAdminPassword()');
+assert(db.get('users').find(u => u.role === 'owner_admin').password === 'VerifiedSafePass2026!', 'Admin password updated in database users');
+
+// Simulate application reload / db version check
+db.init();
+const adminAfterRestart = db.get('users').find(u => u.role === 'owner_admin');
+assert(adminAfterRestart.password === 'VerifiedSafePass2026!', 'Admin password persisted after db.init() and did NOT revert to admin123');
+
+// F. Failed Writes Display Validation
+const failedPassUpdate = db.updateAdminPassword('admin@sawerasweets.pk', '12');
+assert(failedPassUpdate.success === false, 'Short password correctly rejected with error');
+
+let settingsErrorCaught = false;
+try {
+  db.updateSettings('invalid-string');
+} catch (e) {
+  settingsErrorCaught = true;
+}
+assert(settingsErrorCaught === true, 'Invalid settings write throws error instead of falsely reporting success');
+
+// Clean up admin password back to initial test state
+db.updateAdminPassword('admin@sawerasweets.pk', currentAdminPass);
+assert(db.get('users').find(u => u.role === 'owner_admin').password === currentAdminPass, 'Admin password restored cleanly');
+
+console.log('\n==================================================');
 console.log('AUDIT SUMMARY');
 console.log('==================================================');
 console.log(`Passed: ${passed}`);

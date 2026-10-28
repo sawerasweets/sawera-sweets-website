@@ -297,8 +297,10 @@ class SaweraDB {
     try {
       const storedVersion = localStorage.getItem('sawera_db_version');
       if (storedVersion !== DB_VERSION) {
-        // Clear or seed initial collections
-        this.seedInitial();
+        // NON-DESTRUCTIVE INITIALIZATION:
+        // Only seed collections that are completely missing (null in localStorage).
+        // NEVER overwrite existing collections like users, settings, categories, products!
+        this.seedInitialMissing();
         localStorage.setItem('sawera_db_version', DB_VERSION);
       } else {
         // Migration safeguard: Ensure only 1 branch exists
@@ -308,72 +310,115 @@ class SaweraDB {
         }
       }
 
-      // Automatically sync and merge catalog products into local storage
+      // Non-destructive catalog check: Only backfill missing metadata without overwriting prices/variations
       try {
         const deletedIds = this.get('deleted_product_ids') || [];
-        const currentProds = this.get('products') || [];
-        const catalogProds = seedInitialProducts().filter(cp => !deletedIds.includes(cp.id));
-        let hasProdsUpdate = false;
-        const updatedProds = [...currentProds];
+        const currentProds = this.get('products');
+        
+        if (Array.isArray(currentProds) && currentProds.length > 0) {
+          const catalogProds = seedInitialProducts().filter(cp => !deletedIds.includes(cp.id));
+          let hasProdsUpdate = false;
+          const updatedProds = [...currentProds];
 
-        for (const cp of catalogProds) {
-          const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
-          if (foundIdx === -1 && !deletedIds.includes(cp.id)) {
-            updatedProds.push(cp);
-            hasProdsUpdate = true;
-          } else if (foundIdx !== -1 && (updatedProds[foundIdx].image !== cp.image || !updatedProds[foundIdx].urduDescription)) {
-            updatedProds[foundIdx] = {
-              ...cp,
-              ...updatedProds[foundIdx],
-              image: cp.image,
-              urduDescription: cp.urduDescription,
-              urduName: cp.urduName,
-              variations: cp.variations,
-              ingredients: cp.ingredients,
-              stocks: updatedProds[foundIdx].stocks || cp.stocks
-            };
+          for (const cp of catalogProds) {
+            const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
+            if (foundIdx !== -1) {
+              const existing = updatedProds[foundIdx];
+              let itemUpdated = false;
+              const patched = { ...existing };
+
+              // Only backfill missing fields without overwriting user-configured prices or variations
+              if (!patched.image && cp.image) {
+                patched.image = cp.image;
+                itemUpdated = true;
+              }
+              if (!patched.urduDescription && cp.urduDescription) {
+                patched.urduDescription = cp.urduDescription;
+                itemUpdated = true;
+              }
+              if (!patched.urduName && cp.urduName) {
+                patched.urduName = cp.urduName;
+                itemUpdated = true;
+              }
+              if (!patched.variations || patched.variations.length === 0) {
+                patched.variations = cp.variations;
+                itemUpdated = true;
+              }
+              if (itemUpdated) {
+                updatedProds[foundIdx] = patched;
+                hasProdsUpdate = true;
+              }
+            }
+          }
+
+          // Clean up any previously deleted products from storage
+          const cleanedProds = updatedProds.filter(p => !deletedIds.includes(p.id));
+          if (cleanedProds.length !== updatedProds.length) {
             hasProdsUpdate = true;
           }
-        }
 
-        // Clean up any previously deleted products from storage
-        const cleanedProds = updatedProds.filter(p => !deletedIds.includes(p.id));
-        if (cleanedProds.length !== updatedProds.length) {
-          hasProdsUpdate = true;
-        }
-
-        if (hasProdsUpdate || currentProds.length === 0) {
-          this.set('products', cleanedProds.length > 0 ? cleanedProds : (deletedIds.length > 0 ? [] : catalogProds));
+          if (hasProdsUpdate) {
+            this.set('products', cleanedProds);
+          }
         }
       } catch (err) {
         console.warn('Catalog merge error in init:', err);
       }
 
-      // Automatically sync and merge categories into local storage
+      // Non-destructive category check: Preserve admin isActive status
       try {
-        const curCats = this.get('categories') || [];
-        let hasCatsUpdate = false;
-        const updatedCats = [...curCats];
+        const curCats = this.get('categories');
+        if (Array.isArray(curCats) && curCats.length > 0) {
+          let hasCatsUpdate = false;
+          const updatedCats = [...curCats];
 
-        for (const cat of CATEGORIES) {
-          const foundIdx = updatedCats.findIndex(c => c.id === cat.id || c.slug === cat.slug);
-          if (foundIdx === -1) {
-            updatedCats.push({ ...cat, isActive: true });
-            hasCatsUpdate = true;
-          } else {
-            const existingIsActive = updatedCats[foundIdx].isActive !== undefined ? updatedCats[foundIdx].isActive : true;
-            if (updatedCats[foundIdx].isActive === undefined || (cat.badge && updatedCats[foundIdx].badge !== cat.badge)) {
-              updatedCats[foundIdx] = { ...cat, ...updatedCats[foundIdx], badge: cat.badge || updatedCats[foundIdx].badge, isActive: existingIsActive };
+          for (const cat of CATEGORIES) {
+            const foundIdx = updatedCats.findIndex(c => c.id === cat.id || c.slug === cat.slug);
+            if (foundIdx === -1) {
+              updatedCats.push({ ...cat, isActive: true });
               hasCatsUpdate = true;
+            } else {
+              // CRITICAL: Preserve existing isActive state! NEVER revert to true!
+              const existing = updatedCats[foundIdx];
+              if (existing.isActive === undefined) {
+                updatedCats[foundIdx] = { ...cat, ...existing, isActive: true };
+                hasCatsUpdate = true;
+              }
             }
           }
-        }
 
-        if (hasCatsUpdate || curCats.length === 0) {
-          this.set('categories', updatedCats.length > 0 ? updatedCats : CATEGORIES.map(c => ({ ...c, isActive: true })));
+          if (hasCatsUpdate) {
+            this.set('categories', updatedCats);
+          }
         }
       } catch (err) {
         console.warn('Categories merge error in init:', err);
+      }
+
+      // Admin Security Safeguard: Restore saved admin password if customized
+      try {
+        const adminSec = localStorage.getItem('sawera_admin_security');
+        if (adminSec) {
+          const parsedSec = JSON.parse(adminSec);
+          if (parsedSec?.password) {
+            const curUsers = this.get('users');
+            if (Array.isArray(curUsers) && curUsers.length > 0) {
+              let passChanged = false;
+              const patchedUsers = curUsers.map(u => {
+                if ((u.role === 'owner_admin' || u.role === 'super_admin' || u.email === (parsedSec.adminEmail || 'admin@sawerasweets.pk')) && u.password !== parsedSec.password) {
+                  passChanged = true;
+                  return { ...u, password: parsedSec.password };
+                }
+                return u;
+              });
+              if (passChanged) {
+                localStorage.setItem('sawera_users', JSON.stringify(patchedUsers));
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Admin security check error:', e);
       }
 
       // Safeguard: Ensure cached active user session reflects Muhammad Akash
@@ -435,8 +480,63 @@ class SaweraDB {
       }
     } catch (e) {
       console.warn('LocalStorage error during init:', e);
-      this.seedInitial();
+      this.seedInitialMissing();
     }
+  }
+
+  seedInitialMissing() {
+    if (localStorage.getItem('sawera_branches') === null) {
+      this.set('branches', defaultBranches);
+    }
+    if (localStorage.getItem('sawera_settings') === null) {
+      this.set('settings', defaultSettings);
+    }
+    if (localStorage.getItem('sawera_users') === null) {
+      this.set('users', defaultUsers);
+    }
+    if (localStorage.getItem('sawera_categories') === null) {
+      this.set('categories', CATEGORIES.map(c => ({ ...c, isActive: true })));
+    }
+    if (localStorage.getItem('sawera_products') === null) {
+      this.set('products', seedInitialProducts());
+    }
+    if (localStorage.getItem('sawera_orders') === null) {
+      this.set('orders', defaultOrders);
+    }
+    if (localStorage.getItem('sawera_stockRequests') === null) {
+      this.set('stockRequests', defaultStockRequests);
+    }
+    if (localStorage.getItem('sawera_reviews') === null) {
+      this.set('reviews', defaultReviews);
+    }
+    if (localStorage.getItem('sawera_questions') === null) {
+      this.set('questions', defaultQuestions);
+    }
+    if (localStorage.getItem('sawera_tickets') === null) {
+      this.set('tickets', defaultTickets);
+    }
+    if (localStorage.getItem('sawera_chats') === null) {
+      this.set('chats', defaultChats);
+    }
+    if (localStorage.getItem('sawera_banners') === null) {
+      this.set('banners', defaultBanners);
+    }
+    if (localStorage.getItem('sawera_faqs') === null) {
+      this.set('faqs', defaultFaqs);
+    }
+    if (localStorage.getItem('sawera_boxOptions') === null) {
+      this.set('boxOptions', DEFAULT_BOX_OPTIONS);
+    }
+    if (localStorage.getItem('sawera_occasions') === null) {
+      this.set('occasions', DEFAULT_OCCASIONS);
+    }
+    if (localStorage.getItem('sawera_activityLogs') === null) {
+      this.set('activityLogs', defaultActivityLogs);
+    }
+    if (localStorage.getItem('sawera_contactMessages') === null) {
+      this.set('contactMessages', []);
+    }
+    this.broadcast();
   }
 
   seedInitial() {
@@ -463,10 +563,21 @@ class SaweraDB {
   get(collection) {
     try {
       const item = localStorage.getItem(`sawera_${collection}`);
-      if (!item) return [];
-      return JSON.parse(item);
+      if (!item) {
+        if (collection === 'settings') return defaultSettings;
+        return [];
+      }
+      const parsed = JSON.parse(item);
+      if (collection === 'settings') {
+        if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
+          return defaultSettings;
+        }
+        return { ...defaultSettings, ...parsed };
+      }
+      return parsed;
     } catch (e) {
       console.error(`Error reading ${collection}:`, e);
+      if (collection === 'settings') return defaultSettings;
       return [];
     }
   }
@@ -476,14 +587,33 @@ class SaweraDB {
       localStorage.setItem(`sawera_${collection}`, JSON.stringify(data));
       this.broadcast();
 
-      if (collection === 'settings' && isSupabaseConfigured && supabase) {
-        supabase.from('sawera_settings').upsert({
-          id: 'settings',
-          data,
-          updated_at: new Date().toISOString()
-        }).then(({ error }) => {
-          if (error) console.warn("Supabase settings sync error:", error.message);
-        });
+      // Cloud Persistence via Supabase
+      if (isSupabaseConfigured && supabase) {
+        if (collection === 'settings') {
+          supabase.from('sawera_settings').upsert({
+            id: 'settings',
+            data,
+            updated_at: new Date().toISOString()
+          }).then(({ error }) => {
+            if (error) console.warn("Supabase settings sync error:", error.message);
+          });
+        } else if (collection === 'categories') {
+          supabase.from('sawera_settings').upsert({
+            id: 'categories',
+            data,
+            updated_at: new Date().toISOString()
+          }).then(({ error }) => {
+            if (error) console.warn("Supabase categories sync error:", error.message);
+          });
+        } else if (collection === 'deleted_product_ids') {
+          supabase.from('sawera_settings').upsert({
+            id: 'deleted_product_ids',
+            data,
+            updated_at: new Date().toISOString()
+          }).then(({ error }) => {
+            if (error) console.warn("Supabase deleted_product_ids sync error:", error.message);
+          });
+        }
       }
     } catch (e) {
       console.error(`Error writing ${collection}:`, e);
@@ -493,24 +623,109 @@ class SaweraDB {
   async syncFromSupabase() {
     if (!isSupabaseConfigured || !supabase) return;
     try {
-      // 1. Fetch Products
+      // 0. Fetch Deleted Product IDs first to protect deletion state
+      const { data: delSetting } = await supabase.from('sawera_settings').select('*').eq('id', 'deleted_product_ids').maybeSingle();
+      let cloudDeletedIds = [];
+      if (delSetting?.data && Array.isArray(delSetting.data)) {
+        cloudDeletedIds = delSetting.data;
+      }
+      const localDeletedIds = this.get('deleted_product_ids') || [];
+      const combinedDeletedIds = Array.from(new Set([...localDeletedIds, ...cloudDeletedIds]));
+      if (combinedDeletedIds.length !== localDeletedIds.length) {
+        localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(combinedDeletedIds));
+      }
+
+      // 1. Fetch Products - FILTER OUT all deleted products!
       const { data: prods, error: pErr } = await supabase.from('sawera_products').select('*');
       if (!pErr && Array.isArray(prods) && prods.length > 0) {
-        const productList = prods.map(p => p.data);
-        this.set('products', productList);
+        const productList = prods
+          .map(p => p.data)
+          .filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
+        
+        // Merge with local changes instead of blindly overwriting
+        const localProds = this.get('products') || [];
+        const mergedProds = [...localProds];
+        for (const cp of productList) {
+          const idx = mergedProds.findIndex(p => p.id === cp.id);
+          if (idx === -1 && !combinedDeletedIds.includes(cp.id)) {
+            mergedProds.push(cp);
+          } else if (idx !== -1) {
+            // Merge metadata but protect local price/variations if locally updated
+            mergedProds[idx] = { ...cp, ...mergedProds[idx] };
+          }
+        }
+        const finalProds = mergedProds.filter(p => !combinedDeletedIds.includes(p.id));
+        this.set('products', finalProds);
+
+        // Also clean up any lingering deleted products from Supabase
+        for (const delId of combinedDeletedIds) {
+          supabase.from('sawera_products').delete().eq('id', delId).then(() => {});
+        }
       }
 
       // 2. Fetch Orders
       const { data: ords, error: oErr } = await supabase.from('sawera_orders').select('*');
       if (!oErr && Array.isArray(ords)) {
         const orderList = ords.map(o => o.data);
-        this.set('orders', orderList);
+        const localOrders = this.get('orders') || [];
+        const mergedOrders = [...localOrders];
+        for (const o of orderList) {
+          if (!mergedOrders.some(lo => lo.id === o.id)) {
+            mergedOrders.push(o);
+          }
+        }
+        this.set('orders', mergedOrders);
       }
 
       // 3. Fetch Settings
       const { data: sets, error: sErr } = await supabase.from('sawera_settings').select('*').eq('id', 'settings').maybeSingle();
       if (!sErr && sets?.data) {
-        this.set('settings', sets.data);
+        const localSettings = this.getSettings();
+        this.set('settings', { ...localSettings, ...sets.data });
+      }
+
+      // 4. Fetch Categories - preserve isActive status
+      const { data: catSetting, error: cErr } = await supabase.from('sawera_settings').select('*').eq('id', 'categories').maybeSingle();
+      if (!cErr && catSetting?.data && Array.isArray(catSetting.data)) {
+        const localCats = this.getCategories();
+        const mergedCats = localCats.map(lc => {
+          const cloudCat = catSetting.data.find(cc => cc.id === lc.id || cc.slug === lc.slug);
+          if (cloudCat && cloudCat.isActive !== undefined) {
+            return { ...lc, isActive: cloudCat.isActive };
+          }
+          return lc;
+        });
+        this.set('categories', mergedCats);
+      }
+
+      // 5. Fetch Admin Security (Password persistence)
+      const { data: secSetting, error: secErr } = await supabase.from('sawera_settings').select('*').eq('id', 'admin_security').maybeSingle();
+      if (!secErr && secSetting?.data?.password) {
+        const users = this.get('users');
+        const adminEmail = secSetting.data.adminEmail || 'admin@sawerasweets.pk';
+        const savedPass = secSetting.data.password;
+        let userUpdated = false;
+        const updatedUsers = users.map(u => {
+          if ((u.email?.toLowerCase() === adminEmail.toLowerCase() || u.role === 'owner_admin' || u.role === 'super_admin') && u.password !== savedPass) {
+            userUpdated = true;
+            return { ...u, password: savedPass };
+          }
+          return u;
+        });
+        if (userUpdated) {
+          this.set('users', updatedUsers);
+          localStorage.setItem('sawera_admin_security', JSON.stringify(secSetting.data));
+          const currentUserStr = localStorage.getItem('sawera_current_user');
+          if (currentUserStr) {
+            try {
+              const cur = JSON.parse(currentUserStr);
+              if (cur.email?.toLowerCase() === adminEmail.toLowerCase() || cur.role === 'owner_admin') {
+                cur.password = savedPass;
+                localStorage.setItem('sawera_current_user', JSON.stringify(cur));
+              }
+            } catch (e) {}
+          }
+        }
       }
     } catch (err) {
       console.warn('Initial Supabase sync error:', err);
@@ -650,18 +865,17 @@ class SaweraDB {
   getProducts() {
     const deletedIds = this.get('deleted_product_ids') || [];
     const prods = this.get('products');
-    const catalog = seedInitialProducts().filter(c => !deletedIds.includes(c.id));
 
     if (!Array.isArray(prods) || prods.length === 0) {
-      return catalog;
+      if (localStorage.getItem('sawera_products') === null) {
+        const catalog = seedInitialProducts().filter(c => !deletedIds.includes(c.id));
+        this.set('products', catalog);
+        return catalog;
+      }
+      return [];
     }
 
-    const activeProds = prods.filter(p => !deletedIds.includes(p.id));
-    const missing = catalog.filter(c => !activeProds.some(p => p.id === c.id) && !deletedIds.includes(c.id));
-    if (missing.length > 0) {
-      return [...activeProds, ...missing];
-    }
-    return activeProds;
+    return prods.filter(p => !deletedIds.includes(p.id));
   }
 
   getProductById(id) {
@@ -672,7 +886,11 @@ class SaweraDB {
     const products = this.getProducts();
     let productToSave;
     if (productData.id && products.some(p => p.id === productData.id)) {
-      productToSave = { ...products.find(p => p.id === productData.id), ...productData };
+      productToSave = { 
+        ...products.find(p => p.id === productData.id), 
+        ...productData,
+        updatedAt: new Date().toISOString()
+      };
       const updated = products.map(p => p.id === productData.id ? productToSave : p);
       this.set('products', updated);
       this.logActivity('Product Updated', `Product ${productData.name} updated.`);
@@ -680,7 +898,9 @@ class SaweraDB {
       productToSave = {
         ...productData,
         id: productData.id || `prd-${Date.now()}`,
-        isDemo: false
+        isDemo: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
       this.set('products', [productToSave, ...products]);
       this.logActivity('Product Added', `New product ${productToSave.name} added.`);
@@ -703,7 +923,7 @@ class SaweraDB {
     }
 
     this.broadcast();
-    return true;
+    return productToSave;
   }
 
   deleteProduct(id) {
@@ -913,15 +1133,78 @@ class SaweraDB {
 
   // Settings
   getSettings() {
-    return this.get('settings') || defaultSettings;
+    const sets = this.get('settings');
+    if (!sets || Array.isArray(sets) || typeof sets !== 'object') {
+      return defaultSettings;
+    }
+    return { ...defaultSettings, ...sets };
   }
 
   updateSettings(updates) {
+    if (!updates || typeof updates !== 'object' || Array.isArray(updates)) {
+      throw new Error("Invalid settings payload");
+    }
     const current = this.getSettings();
     const merged = { ...current, ...updates };
     this.set('settings', merged);
     this.logActivity('Store Settings Updated', 'System configurations updated.');
     return merged;
+  }
+
+  // Admin Account Security & Password Recovery
+  updateAdminPassword(adminEmail, newPassword) {
+    if (!newPassword || newPassword.length < 5) {
+      return { success: false, message: 'Password must be at least 5 characters.' };
+    }
+
+    const targetEmail = (adminEmail || 'admin@sawerasweets.pk').toLowerCase().trim();
+    const users = this.get('users');
+    let found = false;
+
+    const updatedUsers = users.map(u => {
+      if (u.email?.toLowerCase() === targetEmail || u.role === 'owner_admin' || u.role === 'super_admin') {
+        found = true;
+        return { ...u, password: newPassword };
+      }
+      return u;
+    });
+
+    if (!found) {
+      const newAdmin = {
+        ...defaultUsers[0],
+        email: targetEmail,
+        password: newPassword
+      };
+      updatedUsers.push(newAdmin);
+    }
+
+    this.set('users', updatedUsers);
+
+    try {
+      localStorage.setItem('sawera_admin_security', JSON.stringify({
+        adminEmail: targetEmail,
+        password: newPassword,
+        updatedAt: new Date().toISOString()
+      }));
+    } catch (e) {}
+
+    if (isSupabaseConfigured && supabase) {
+      supabase.from('sawera_settings').upsert({
+        id: 'admin_security',
+        data: {
+          adminEmail: targetEmail,
+          password: newPassword,
+          updatedAt: new Date().toISOString()
+        },
+        updated_at: new Date().toISOString()
+      }).then(({ error }) => {
+        if (error) console.warn("Supabase admin_security sync error:", error.message);
+      });
+    }
+
+    this.logActivity('Security Updated', 'Admin password changed successfully.');
+    this.broadcast();
+    return { success: true };
   }
 
   // Mithai Box Studio & Packaging Options

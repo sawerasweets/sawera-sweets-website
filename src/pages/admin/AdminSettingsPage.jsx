@@ -18,9 +18,16 @@ export default function AdminSettingsPage() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    db.updateSettings(settings);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 2500);
+    try {
+      const saved = db.updateSettings(settings);
+      if (saved) {
+        setSavedSuccess(true);
+        setTimeout(() => setSavedSuccess(false), 2500);
+      }
+    } catch (err) {
+      console.error("Save settings error:", err);
+      alert("Failed to save settings. Please verify your inputs.");
+    }
   };
 
   const handlePasswordChange = (e) => {
@@ -37,28 +44,23 @@ export default function AdminSettingsPage() {
     }
 
     const users = db.get('users');
-    const adminUser = users.find(u => u.email === (user?.email || 'admin@sawerasweets.pk')) || users.find(u => u.role === 'super_admin');
+    const adminUser = users.find(u => u.email === (user?.email || 'admin@sawerasweets.pk')) || users.find(u => u.role === 'owner_admin' || u.role === 'super_admin');
     
     if (adminUser && currentPassword && adminUser.password !== currentPassword) {
       setPasswordMsg({ type: 'error', text: 'Current password is incorrect.' });
       return;
     }
 
-    const updatedUsers = users.map(u => (u.id === (adminUser?.id || 'usr-admin') || u.role === 'super_admin') ? { ...u, password: newPassword } : u);
-    db.set('users', updatedUsers);
-    updateProfile({ password: newPassword });
-
-    if (isSupabaseConfigured && supabase) {
-      supabase.from('sawera_settings').upsert({
-        id: 'admin_security',
-        data: { adminEmail: adminUser?.email || 'admin@sawerasweets.pk', password: newPassword, updatedAt: new Date().toISOString() }
-      }).then(() => {});
+    const res = db.updateAdminPassword(adminUser?.email || user?.email || 'admin@sawerasweets.pk', newPassword);
+    if (res.success) {
+      updateProfile({ password: newPassword });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordMsg({ type: 'success', text: 'Admin password changed successfully! Remember your new password for your next login.' });
+    } else {
+      setPasswordMsg({ type: 'error', text: res.message || 'Failed to update admin password.' });
     }
-
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordMsg({ type: 'success', text: 'Admin password changed successfully! Remember your new password for your next login.' });
   };
 
   return (
