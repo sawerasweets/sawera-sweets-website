@@ -104,21 +104,21 @@ const getTestPerKgPrice = (prod) => {
 const rollPricePerGram = getTestPerKgPrice(rollBarfi) / 1000;
 const badamPricePerGram = getTestPerKgPrice(badamBarfi) / 1000;
 
-const rollPortionCost = Math.round(500 * rollPricePerGram); // 775 (Authentic owner price)
-const badamPortionCost = Math.round(500 * badamPricePerGram); // 675 (Authentic owner price)
-const sweetsContentSubtotal = rollPortionCost + badamPortionCost; // 1450
+const rollPortionCost = Math.round(500 * rollPricePerGram); // 700 (Authentic owner price Rs. 1400/kg)
+const badamPortionCost = Math.round(500 * badamPricePerGram); // 650 (Authentic owner price Rs. 1300/kg)
+const sweetsContentSubtotal = rollPortionCost + badamPortionCost; // 1350
 const packagingFee = 100; // 1kg box
-const expectedBoxTotal = sweetsContentSubtotal + packagingFee; // 1550
+const expectedBoxTotal = sweetsContentSubtotal + packagingFee; // 1450
 
-assert(rollPortionCost === 775, `500g Roll Barfi portion calculated as Rs. 775 (Got: ${rollPortionCost})`);
-assert(badamPortionCost === 675, `500g Badam Barfi portion calculated as Rs. 675 (Got: ${badamPortionCost})`);
-assert(expectedBoxTotal === 1550, `1kg custom box total is Rs. 1,550 (Got: ${expectedBoxTotal})`);
+assert(rollPortionCost === 700, `500g Roll Barfi portion calculated as Rs. 700 (Got: ${rollPortionCost})`);
+assert(badamPortionCost === 650, `500g Badam Barfi portion calculated as Rs. 650 (Got: ${badamPortionCost})`);
+assert(expectedBoxTotal === 1450, `1kg custom box total is Rs. 1,450 (Got: ${expectedBoxTotal})`);
 
-// Test Dry Fruit Halwa calculation (Rs 750 / 500g -> Rs 1500/kg)
+// Test Dry Fruit Halwa calculation (Rs 1400/kg -> Rs 350 for 250g)
 const dryFruitHalwa = PRODUCTS.find(p => p.id === 'prd-dry-fruit-halwa');
 const dryHalwaPricePerGram = getTestPerKgPrice(dryFruitHalwa) / 1000;
-const dryHalwa250gCost = Math.round(250 * dryHalwaPricePerGram); // 375
-assert(dryHalwa250gCost === 375, `250g Dry Fruit Halwa calculated as Rs. 375 (Got: ${dryHalwa250gCost})`);
+const dryHalwa250gCost = Math.round(250 * dryHalwaPricePerGram); // 350
+assert(dryHalwa250gCost === 350, `250g Dry Fruit Halwa calculated as Rs. 350 (Got: ${dryHalwa250gCost})`);
 
 console.log('\n==================================================');
 console.log('4. OCCASION COLLECTIONS INTEGRITY');

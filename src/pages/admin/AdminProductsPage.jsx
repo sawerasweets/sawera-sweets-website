@@ -10,7 +10,8 @@ import {
   Tag, 
   Layers, 
   AlertCircle,
-  Image as ImageIcon
+  Image as ImageIcon,
+  RefreshCw
 } from 'lucide-react';
 import db from '../../services/db';
 import { exportToCSV } from '../../services/exportUtils';
@@ -25,6 +26,7 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
   const [notification, setNotification] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const syncProducts = () => {
     setProducts(db.getProducts());
@@ -147,8 +149,8 @@ export default function AdminProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleToggleProductActive = (prod) => {
-    const updated = db.toggleProductActive(prod.id);
+  const handleToggleProductActive = async (prod) => {
+    const updated = await db.toggleProductActive(prod.id);
     syncProducts();
     const isNowActive = updated?.isActive !== false;
     setNotification(
@@ -163,13 +165,13 @@ export default function AdminProductsPage() {
     setProductToDelete(prod);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!productToDelete) return;
     const targetId = productToDelete.id;
     const targetName = productToDelete.name;
 
-    // Delete in DB
-    db.deleteProduct(targetId);
+    // Delete in DB (local + Supabase cloud)
+    await db.deleteProduct(targetId);
 
     // Immediate reactive local state update
     setProducts(prev => prev.filter(p => p.id !== targetId));
@@ -180,33 +182,101 @@ export default function AdminProductsPage() {
     setTimeout(() => setNotification(''), 3500);
   };
 
-  const handleSaveProduct = (e) => {
+  const handlePriceChange = (newPrice) => {
+    setFormData(prev => {
+      const next = { ...prev, price: newPrice };
+      const num = Number(newPrice);
+      // If variations contain standard 500g, 1kg, 2kg, auto-align them with new Base Price!
+      if (num > 0 && prev.variations.length > 0) {
+        next.variations = prev.variations.map(v => {
+          const lbl = (v.label || '').toLowerCase();
+          if (lbl.includes('500') || lbl.includes('half') || lbl.includes('آدھا')) {
+            return { ...v, price: Math.round(num * 0.5) };
+          }
+          if (lbl.includes('1 kg') || lbl.includes('1kg') || lbl.includes('1 kilo') || lbl.includes('ایک کلو')) {
+            return { ...v, price: num };
+          }
+          if (lbl.includes('2 kg') || lbl.includes('2kg') || lbl.includes('2 kilo') || lbl.includes('دو کلو')) {
+            return { ...v, price: num * 2 };
+          }
+          return v;
+        });
+      }
+      return next;
+    });
+  };
+
+  const syncVariationsFromBasePrice = () => {
+    const numPrice = Number(formData.price) || 0;
+    const numDisc = formData.discountPrice ? Number(formData.discountPrice) : null;
+    if (!numPrice) return;
+
+    setFormData(prev => ({
+      ...prev,
+      variations: prev.variations.map(v => {
+        const lbl = (v.label || '').toLowerCase();
+        if (lbl.includes('500') || lbl.includes('half') || lbl.includes('آدھا')) {
+          return {
+            ...v,
+            price: Math.round(numPrice * 0.5),
+            discountPrice: numDisc ? Math.round(numDisc * 0.5) : ''
+          };
+        }
+        if (lbl.includes('1 kg') || lbl.includes('1kg') || lbl.includes('1 kilo') || lbl.includes('ایک کلو')) {
+          return {
+            ...v,
+            price: numPrice,
+            discountPrice: numDisc ? numDisc : ''
+          };
+        }
+        if (lbl.includes('2 kg') || lbl.includes('2kg') || lbl.includes('2 kilo') || lbl.includes('دو کلو')) {
+          return {
+            ...v,
+            price: numPrice * 2,
+            discountPrice: numDisc ? numDisc * 2 : ''
+          };
+        }
+        return v;
+      })
+    }));
+  };
+
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
+    setIsSaving(true);
 
-    // Clean up variations: remove any empty labels
-    const cleanedVariations = (formData.variations || [])
-      .filter(v => v.label && v.label.trim())
-      .map(v => ({
-        label: v.label.trim(),
-        price: Number(v.price) || Number(formData.price) || 0,
-        discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null
-      }));
+    try {
+      // Clean up variations: remove any empty labels
+      const cleanedVariations = (formData.variations || [])
+        .filter(v => v.label && v.label.trim())
+        .map(v => ({
+          label: v.label.trim(),
+          price: Number(v.price) || Number(formData.price) || 0,
+          discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null
+        }));
 
-    const productPayload = {
-      ...formData,
-      id: editingProduct?.id,
-      price: Number(formData.price),
-      discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
-      isActive: formData.isActive !== false,
-      variations: cleanedVariations,
-      stocks: editingProduct?.stocks || { 'shop-1': 50 }
-    };
+      const productPayload = {
+        ...formData,
+        id: editingProduct?.id,
+        price: Number(formData.price),
+        discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
+        isActive: formData.isActive !== false,
+        variations: cleanedVariations,
+        stocks: editingProduct?.stocks || { 'shop-1': 50 },
+        updatedAt: new Date().toISOString()
+      };
 
-    db.saveProduct(productPayload);
-    syncProducts();
-    setIsModalOpen(false);
-    setNotification(`Product "${productPayload.name}" saved successfully.`);
-    setTimeout(() => setNotification(''), 3500);
+      await db.saveProduct(productPayload);
+      syncProducts();
+      setIsModalOpen(false);
+      setNotification(`Product "${productPayload.name}" saved successfully to Cloud & Store.`);
+      setTimeout(() => setNotification(''), 3500);
+    } catch (err) {
+      console.error('Error saving product:', err);
+      setNotification('Failed to save product. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleExportCSV = () => {
@@ -639,8 +709,8 @@ export default function AdminProductsPage() {
                     type="number"
                     required
                     value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="e.g. 1200"
+                    onChange={(e) => handlePriceChange(e.target.value)}
+                    placeholder="e.g. 1400"
                     className="w-full p-2 border rounded-xl outline-none font-mono focus:border-[#07643D]"
                   />
                   <span className="text-[10px] text-gray-400 mt-0.5 block">Price for single item ({formData.unit || 'Piece'})</span>
@@ -672,13 +742,23 @@ export default function AdminProductsPage() {
 
                   <div className="flex items-center gap-2 flex-wrap">
                     {formData.variations.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={clearAllVariations}
-                        className="text-red-600 font-semibold text-[11px] hover:underline cursor-pointer"
-                      >
-                        Clear All
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={syncVariationsFromBasePrice}
+                          className="text-[#07643D] bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-md font-bold text-[11px] hover:bg-emerald-100 cursor-pointer"
+                          title="Recalculate 500g (50%), 1kg (100%), 2kg (200%) from current Base Price"
+                        >
+                          ⚡ Sync with Base Price
+                        </button>
+                        <button
+                          type="button"
+                          onClick={clearAllVariations}
+                          className="text-red-600 font-semibold text-[11px] hover:underline cursor-pointer"
+                        >
+                          Clear All
+                        </button>
+                      </>
                     )}
                     <button
                       type="button"
@@ -836,9 +916,17 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#07643D] text-white rounded-xl font-bold hover:bg-[#043E26]"
+                  disabled={isSaving}
+                  className="px-5 py-2 bg-[#07643D] text-white rounded-xl font-bold hover:bg-[#043E26] disabled:opacity-60 flex items-center gap-2 cursor-pointer shadow-sm"
                 >
-                  Save Product
+                  {isSaving ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Saving to Cloud...</span>
+                    </>
+                  ) : (
+                    <span>Save Product</span>
+                  )}
                 </button>
               </div>
             </form>

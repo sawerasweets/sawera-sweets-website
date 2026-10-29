@@ -337,21 +337,7 @@ class SaweraDB {
             let itemUpdated = false;
             const patched = { ...existing };
 
-            // Upgrade any stale demo prices (1400, 1300, 1200, 1600 or missing discountPrice) to authentic rates
-            const isStaleDemoPrice = 
-              (patched.price === 1400 || patched.price === 1300 || patched.price === 1200 || patched.price === 1600) &&
-              (!patched.discountPrice || patched.discountPrice === 1200 || patched.discountPrice === 1300 || patched.discountPrice === 1400);
-            
-            const isStale600 = patched.variations?.some(v => v.price === 650 && v.discountPrice === 600);
-
-            if (isStaleDemoPrice || isStale600) {
-              patched.price = cp.price;
-              patched.discountPrice = cp.discountPrice;
-              patched.variations = cp.variations;
-              patched.unit = cp.unit;
-              itemUpdated = true;
-            }
-
+            // Fill missing metadata ONLY if not present (NEVER touch price, variations, unit, discountPrice)
             if (!patched.image && cp.image) {
               patched.image = cp.image;
               itemUpdated = true;
@@ -364,7 +350,7 @@ class SaweraDB {
               patched.urduName = cp.urduName;
               itemUpdated = true;
             }
-            if (!patched.variations || patched.variations.length === 0) {
+            if (patched.variations === undefined && cp.variations) {
               patched.variations = cp.variations;
               itemUpdated = true;
             }
@@ -781,21 +767,34 @@ class SaweraDB {
           const localProds = this.get('products') || [];
           
           const mergedMap = new Map();
-          // 1. Seed with authentic catalog
-          for (const cp of catalogProds) {
-            mergedMap.set(cp.id, cp);
-          }
-          // 2. Cloud products from Supabase take priority (authoritative cloud prices and variations)
+          // 1. Cloud products from Supabase are authoritative
           for (const cp of cloudProducts) {
             if (cp && cp.id) {
-              const base = mergedMap.get(cp.id) || {};
-              mergedMap.set(cp.id, { ...base, ...cp });
+              mergedMap.set(cp.id, cp);
             }
           }
-          // 3. Local custom products
+          // 2. Local custom products or products with newer local timestamp
           for (const lp of localProds) {
-            if (lp && lp.id && !mergedMap.has(lp.id) && !cleanCombinedDeletedIds.includes(lp.id)) {
-              mergedMap.set(lp.id, lp);
+            if (lp && lp.id && !cleanCombinedDeletedIds.includes(lp.id)) {
+              if (!mergedMap.has(lp.id)) {
+                mergedMap.set(lp.id, lp);
+              } else {
+                const cloudItem = mergedMap.get(lp.id);
+                if (lp.updatedAt && cloudItem.updatedAt && new Date(lp.updatedAt) > new Date(cloudItem.updatedAt)) {
+                  mergedMap.set(lp.id, lp);
+                  supabase.from('sawera_products').upsert({
+                    id: lp.id,
+                    data: lp,
+                    updated_at: lp.updatedAt
+                  }).then(() => {}, () => {});
+                }
+              }
+            }
+          }
+          // 3. Fallback for any missing official catalog item
+          for (const cp of catalogProds) {
+            if (!mergedMap.has(cp.id) && !cleanCombinedDeletedIds.includes(cp.id)) {
+              mergedMap.set(cp.id, cp);
             }
           }
           const finalProds = Array.from(mergedMap.values()).filter(p => !cleanCombinedDeletedIds.includes(p.id));
@@ -1062,6 +1061,8 @@ class SaweraDB {
         updated_at: new Date().toISOString()
       }).then(({ error }) => {
         if (error) console.warn("Supabase product save error:", error.message);
+      }, (err) => {
+        console.warn("Supabase product save network error:", err);
       });
     }
 
@@ -1087,6 +1088,8 @@ class SaweraDB {
     if (isSupabaseConfigured && supabase) {
       supabase.from('sawera_products').delete().eq('id', id).then(({ error }) => {
         if (error) console.warn("Supabase product delete error:", error.message);
+      }, (err) => {
+        console.warn("Supabase product delete network error:", err);
       });
     }
 
@@ -1099,7 +1102,7 @@ class SaweraDB {
     const target = products.find(p => p.id === id);
     if (!target) return false;
     const nextState = target.isActive === false ? true : false;
-    const updated = { ...target, isActive: nextState };
+    const updated = { ...target, isActive: nextState, updatedAt: new Date().toISOString() };
     this.saveProduct(updated);
     this.logActivity('Product Status Changed', `Product "${target.name}" is now ${nextState ? 'Active (Live)' : 'Inactive (Off)'}.`);
     this.broadcast();

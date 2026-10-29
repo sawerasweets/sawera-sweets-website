@@ -13,9 +13,8 @@ export const PRODUCTS = [
     urduDescription: "سو فیصد خالص کڑھے ہوئے کھوئے اور سبز الائچی کی دلکش خوشبو سے تیار کردہ، پستے اور بادام کے لذیذ مغز میں لپٹی شاہی رول برفی۔ منہ میں گھل جانے والی مٹھاس اور سویرا سویٹس کا تیس سالہ بااعتماد روایتی ذائقہ۔",
     ingredients: "Pure Khoya (Milk Solids), Sugar, Desi Ghee, Green Cardamom, Premium Sliced Almonds, Roasted Pistachios",
     image: "/images/products/special-roll-barfi.jpg",
-    price: 900,
-    discountPrice: 775,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -32,24 +31,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 900,
-        discountPrice: 775
+        price: 700
       },
       {
         id: "var-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1800,
-        discountPrice: 1550
+        price: 1400
       },
       {
         id: "var-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3600,
-        discountPrice: 3100
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -66,9 +62,8 @@ export const PRODUCTS = [
     urduDescription: "تازہ کڑھے ہوئے خالص کھوئے اور دیسی گھی سے تیار کردہ روایتی مربع بادام برفی، جس کے ہر ٹکڑے کے اندر اور اوپر کٹے ہوئے بادام اور پستے کا وافر مغز شامل ہے۔ سویرا سویٹس جھنگ کا ایک خاص اور شاہی تحفہ۔",
     ingredients: "Pure Khoya (Milk Solids), Sugar, Desi Ghee, Green Cardamom, Premium California Almonds (Badam), Roasted Pistachios",
     image: "/images/products/special-badam-barfi.jpg",
-    price: 750,
-    discountPrice: 675,
-    unit: "500g",
+    price: 1300,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -85,24 +80,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 750,
-        discountPrice: 675
+        price: 650
       },
       {
         id: "var-badam-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1500,
-        discountPrice: 1350
+        price: 1300
       },
       {
         id: "var-badam-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3000,
-        discountPrice: 2700
+        price: 2600
       }
     ],
     rating: 5.0,
@@ -119,9 +111,8 @@ export const PRODUCTS = [
     urduDescription: "تازہ پسے ہوئے ناریل، خالص دیسی گھی، بالائی والے دودھ اور سبز الائچی سے تیار کردہ دانے دار اسپیشل کوکونٹ حلوہ۔ بادام اور پستے کے لذیذ چھڑکاؤ کے ساتھ ہر خاص تقریب اور سردیوں کا شاہی تحفہ۔",
     ingredients: "Fresh Grated Coconut, Pure Desi Ghee, Milk, Sugar, Green Cardamom, Almonds (Badam), Roasted Pistachios",
     image: "/images/products/special-coconut-halwa.jpg",
-    price: 850,
-    discountPrice: 730,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -138,24 +129,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 850,
-        discountPrice: 730
+        price: 700
       },
       {
         id: "var-coconut-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1700,
-        discountPrice: 1460
+        price: 1400
       },
       {
         id: "var-coconut-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3400,
-        discountPrice: 2920
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -172,9 +160,8 @@ export const PRODUCTS = [
     urduDescription: "خالص دیسی گھی اور بھنے ہوئے بیسن سے روایتی ہاتھ سے پلٹ کر تیار کردہ لچھے دار پتیسہ۔ باریک اور کرسپی تہوں میں بادام اور پستے کی وافر سجاوٹ، جو منہ میں جاتے ہی گھل جائے۔ سویرا سویٹس کی خاص پہچان۔",
     ingredients: "Pure Desi Ghee, Roasted Gram Flour (Besan), Fine Flour, Sugar, Green Cardamom, Premium Sliced Almonds, Pistachios",
     image: "/images/products/paltawa-patisa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -191,24 +178,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 700
       },
       {
         id: "var-patisa-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1400
       },
       {
         id: "var-patisa-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -225,9 +209,8 @@ export const PRODUCTS = [
     urduDescription: "خالص بالائی والے دودھ کے کھوئے، دیسی گھی اور بادام کے لذیذ ٹکڑوں سے تیار کردہ نرم و ملائم ملکی پتیسہ۔ روایتی مٹھاس اور کریمی ذائقے کا ایک منفرد شاہکار، جو ہر عمر کے افراد کی اولین پسند ہے۔",
     ingredients: "Pure Milk Khoya, Desi Ghee, Sugar, Refined Flour, Green Cardamom, Premium California Almonds (Badam)",
     image: "/images/products/milky-patisa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -244,24 +227,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 700
       },
       {
         id: "var-milky-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1400
       },
       {
         id: "var-milky-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -278,9 +258,8 @@ export const PRODUCTS = [
     urduDescription: "انگوری (سمنک)، کڑھے ہوئے دودھ اور خالص دیسی گھی سے روایتی شاہی انداز میں تیار کردہ مشہور دہلی حلوہ ٹکی۔ تازہ گری (ناریل) اور کٹے بادام کے پروقار تاج کے ساتھ تیار، جو روایتی مٹھاس کا اعلیٰ ترین معیار پیش کرتا ہے۔",
     ingredients: "Sprouted Wheat Germ (Samnak/Angoori), Fresh Milk, Pure Desi Ghee, Sugar, Sliced Coconut (Gari), Premium Almonds, Cardamom",
     image: "/images/products/dilli-halwa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1200,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -297,24 +276,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 600
       },
       {
         id: "var-dilli-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1200
       },
       {
         id: "var-dilli-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 2400
       }
     ],
     rating: 5.0,
@@ -331,9 +307,8 @@ export const PRODUCTS = [
     urduDescription: "سو فیصد خالص دیسی گھی، سوجی اور دودھ سے تیار کردہ شاہی ڈرائی فروٹ حلوہ۔ کاجو، بادام، اخروٹ، پستے اور کشمش کے بھرپور اور وافر میوہ جات سے سجا مقوی اور لذیذ شاہکار۔ سردیوں اور پروقار دعوتوں کے لیے لاجواب سوغات۔",
     ingredients: "Pure Desi Ghee, Fine Semolina (Suji), Fresh Milk, Sugar, Whole Cashews (Kaju), California Almonds (Badam), Walnuts (Akhrot), Pistachios (Pista), Golden Raisins (Kishmish), Green Cardamom",
     image: "/images/products/dry-fruit-halwa.jpg",
-    price: 850,
-    discountPrice: 750,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -350,24 +325,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 850,
-        discountPrice: 750
+        price: 700
       },
       {
         id: "var-dryfruit-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1700,
-        discountPrice: 1500
+        price: 1400
       },
       {
         id: "var-dryfruit-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3400,
-        discountPrice: 3000
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -384,9 +356,8 @@ export const PRODUCTS = [
     urduDescription: "انگوری (سمنک گندم)، گھنٹوں کڑھے ہوئے دودھ اور سو فیصد خالص دیسی گھی سے تیار کردہ دانے دار روایتی سوہن حلوہ۔ دیسی گھی کی خوشبو، قدرتی کیریمل مٹھاس اور کٹے باداموں کی بھرپور سجاوٹ۔ سویرا سویٹس کا سب سے خاص اور تاریخی تحفہ۔",
     ingredients: "Sprouted Wheat (Samnak/Angoori), Fresh Buffalo Milk, Pure Desi Ghee, Sugar, Sliced California Almonds, Green Cardamom",
     image: "/images/products/special-sohan-halwa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1600,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -403,24 +374,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 800
       },
       {
         id: "var-sohan-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1600
       },
       {
         id: "var-sohan-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 3200
       }
     ],
     rating: 5.0,
@@ -437,9 +405,8 @@ export const PRODUCTS = [
     urduDescription: "خالص دیسی گھی، سوجی کی سنہری بھنائی اور تازہ دودھ سے روایتی انداز میں تیار کردہ دانے دار بادامی حلوہ۔ کٹے ہوئے خستہ باداموں اور الائچی کے عطر سے سجا لاجواب تحفہ۔ منہ میں گھل جانے والا روایتی اور شاہی ذائقہ۔",
     ingredients: "Pure Desi Ghee, Fine Semolina (Suji), Fresh Milk, Sugar, California Sliced Almonds (Badam), Green Cardamom",
     image: "/images/products/badami-halwa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -456,24 +423,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 700
       },
       {
         id: "var-badamih-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1400
       },
       {
         id: "var-badamih-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -490,9 +454,8 @@ export const PRODUCTS = [
     urduDescription: "خالص دیسی گھی، پستے کی خوشبو اور لچھے دار روایتی کاریگری سے تیار کردہ گول شاپر پستہ پتیسہ۔ روئی کی طرح نرم، کرسپی اور منہ میں گھل جانے والی لذیذ تہیں، جن پر بادام اور پستے کی بھرپور سجاوٹ کی گئی ہے۔",
     ingredients: "Pure Desi Ghee, Roasted Gram Flour, Fine Flour, Sugar, Natural Pistachio Essence, Green Cardamom, Sliced Almonds, Pistachios",
     image: "/images/products/shapper-pista-patisa.jpg",
-    price: 900,
-    discountPrice: 800,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -509,24 +472,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 900,
-        discountPrice: 800
+        price: 700
       },
       {
         id: "var-shapper-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1800,
-        discountPrice: 1600
+        price: 1400
       },
       {
         id: "var-shapper-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3600,
-        discountPrice: 3200
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -543,9 +503,8 @@ export const PRODUCTS = [
     urduDescription: "خالص بالائی والے دودھ کے کھوئے اور دیسی گھی سے تیار کردہ سفید گول شاپر ملکی پتیسہ۔ روئی جیسے نرم و نازک لچھوں سے مزین، جس پر پستے اور بادام کا وافر چھڑکاؤ کیا گیا ہے۔ زبان پر رکھتے ہی گھل جانے والی لاجواب مٹھاس۔",
     ingredients: "Pure Milk Khoya, Desi Ghee, Fine Wheat Flour, Sugar, Green Cardamom, Premium Sliced Almonds, Crushed Pistachios",
     image: "/images/products/shapper-milky-patisa.jpg",
-    price: 800,
-    discountPrice: 700,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -562,24 +521,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 800,
-        discountPrice: 700
+        price: 700
       },
       {
         id: "var-shapperm-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1600,
-        discountPrice: 1400
+        price: 1400
       },
       {
         id: "var-shapperm-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3200,
-        discountPrice: 2800
+        price: 2800
       }
     ],
     rating: 5.0,
@@ -596,9 +552,8 @@ export const PRODUCTS = [
     urduDescription: "کڑھے ہوئے دودھ اور خالص دیسی گھی سے روایتی طریقے سے تیار کردہ لذیذ اور چبانے دار بادام ٹافی۔ ہر ٹکڑا تازگی کو برقرار رکھنے کے لیے انفرادی پیکنگ میں لپٹا ہوا ہے اور اس پر ثابت خستہ بادام سجایا گیا ہے۔ بچوں اور بڑوں کا پسندیدہ لذیذ تحفہ۔",
     ingredients: "Fresh Milk Solids, Pure Desi Ghee, Sprouted Wheat (Samnak), Sugar, Whole California Almonds (Badam), Green Cardamom",
     image: "/images/products/special-badam-tafi.jpg",
-    price: 850,
-    discountPrice: 750,
-    unit: "500g",
+    price: 1400,
+    unit: "per 1 kg",
     isFeatured: true,
     isBestSeller: true,
     isSpecialOffer: true,
@@ -615,24 +570,21 @@ export const PRODUCTS = [
         label: "500 Grams (آدھا کلو)",
         urduLabel: "500 گرام (آدھا کلو)",
         weight: "500g",
-        price: 850,
-        discountPrice: 750
+        price: 700
       },
       {
         id: "var-tafi-1kg",
         label: "1 Kilogram (ایک کلو)",
         urduLabel: "1 کلوگرام (ایک کلو)",
         weight: "1kg",
-        price: 1700,
-        discountPrice: 1500
+        price: 1400
       },
       {
         id: "var-tafi-2kg",
         label: "2 Kilogram Gift Box (دو کلو تحفہ بکس)",
         urduLabel: "2 کلوگرام (دو کلو تحفہ بکس)",
         weight: "2kg",
-        price: 3400,
-        discountPrice: 3000
+        price: 2800
       }
     ],
     rating: 5.0,
