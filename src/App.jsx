@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import trafficTracker from './services/trafficTracker';
 
 // Providers
 import { LanguageProvider } from './context/LanguageContext';
@@ -101,6 +102,13 @@ function StorefrontLayout() {
   const isAdminRoute = location.pathname.startsWith('/admin');
   const { user, isAdmin, isStaff } = useAuth();
   const { settings } = useStore();
+
+  // Organic Traffic & Pageview Tracking (Customer Storefront Only)
+  useEffect(() => {
+    if (!isAdminRoute) {
+      trafficTracker.recordPageView(location.pathname);
+    }
+  }, [location.pathname, isAdminRoute]);
 
   if (isAdminRoute) {
     return (
