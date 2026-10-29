@@ -315,21 +315,17 @@ class SaweraDB {
         const deletedIds = this.get('deleted_product_ids') || [];
         const currentProds = this.get('products') || [];
         const catalogProds = seedInitialProducts();
-        const officialIds = new Set(catalogProds.map(p => p.id));
-        
-        // Clean official catalog IDs from deleted_product_ids so authentic products are never suppressed
-        const cleanDeletedIds = deletedIds.filter(id => !officialIds.has(id));
-        if (cleanDeletedIds.length !== deletedIds.length) {
-          this.setLocal('deleted_product_ids', cleanDeletedIds);
-        }
 
         let hasProdsUpdate = false;
         const updatedProds = [...currentProds];
 
         for (const cp of catalogProds) {
+          // Never re-add or backfill any product explicitly deleted by Admin!
+          if (deletedIds.includes(cp.id)) continue;
+
           const foundIdx = updatedProds.findIndex(p => p.id === cp.id);
           if (foundIdx === -1) {
-            // Missing product backfill! (Guarantees Admin Panel gets all 16 products)
+            // Missing product backfill for non-deleted catalog items
             updatedProds.push(cp);
             hasProdsUpdate = true;
           } else {
@@ -362,7 +358,7 @@ class SaweraDB {
           }
         }
 
-        const cleanedProds = updatedProds.filter(p => !cleanDeletedIds.includes(p.id));
+        const cleanedProds = updatedProds.filter(p => !deletedIds.includes(p.id));
         if (cleanedProds.length !== currentProds.length || hasProdsUpdate) {
           this.setLocal('products', cleanedProds);
         }
@@ -780,22 +776,18 @@ class SaweraDB {
       const localDeletedIds = this.get('deleted_product_ids') || [];
       const combinedDeletedIds = Array.from(new Set([...localDeletedIds, ...cloudDeletedIds]));
       
-      // Clean official catalog IDs from combinedDeletedIds so authentic products are NEVER suppressed
-      const catalogProds = seedInitialProducts();
-      const officialIds = new Set(catalogProds.map(p => p.id));
-      const cleanCombinedDeletedIds = combinedDeletedIds.filter(id => !officialIds.has(id));
-
-      if (cleanCombinedDeletedIds.length !== localDeletedIds.length) {
-        localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(cleanCombinedDeletedIds));
+      if (combinedDeletedIds.length !== localDeletedIds.length) {
+        localStorage.setItem('sawera_deleted_product_ids', JSON.stringify(combinedDeletedIds));
       }
 
       // 1. Fetch Products
       const { data: prods, error: pErr } = await supabase.from('sawera_products').select('*');
       if (!pErr && Array.isArray(prods)) {
+        const catalogProds = seedInitialProducts();
         if (prods.length === 0) {
           // Brand new empty Supabase table: seed initial 16 authentic products to cloud!
           for (const lp of catalogProds) {
-            if (!cleanCombinedDeletedIds.includes(lp.id)) {
+            if (!combinedDeletedIds.includes(lp.id)) {
               await supabase.from('sawera_products').upsert({
                 id: lp.id,
                 data: lp,
@@ -803,21 +795,21 @@ class SaweraDB {
               }).catch(() => {});
             }
           }
-          this.setLocal('products', catalogProds.filter(p => !cleanCombinedDeletedIds.includes(p.id)));
+          this.setLocal('products', catalogProds.filter(p => !combinedDeletedIds.includes(p.id)));
         } else {
-          const cloudProducts = prods.map(p => p.data).filter(p => p && p.id);
-          const localProds = this.get('products') || [];
+          const cloudProducts = prods.map(p => p.data).filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
+          const localProds = (this.get('products') || []).filter(p => p && p.id && !combinedDeletedIds.includes(p.id));
           
           const mergedMap = new Map();
           // 1. Cloud products from Supabase are authoritative
           for (const cp of cloudProducts) {
-            if (cp && cp.id) {
+            if (cp && cp.id && !combinedDeletedIds.includes(cp.id)) {
               mergedMap.set(cp.id, cp);
             }
           }
           // 2. Local custom products or products with newer local timestamp
           for (const lp of localProds) {
-            if (lp && lp.id && !cleanCombinedDeletedIds.includes(lp.id)) {
+            if (lp && lp.id && !combinedDeletedIds.includes(lp.id)) {
               if (!mergedMap.has(lp.id)) {
                 mergedMap.set(lp.id, lp);
               } else {
@@ -833,13 +825,13 @@ class SaweraDB {
               }
             }
           }
-          // 3. Fallback for any missing official catalog item
+          // 3. Fallback for any missing official catalog item (only if NEVER deleted by Admin)
           for (const cp of catalogProds) {
-            if (!mergedMap.has(cp.id) && !cleanCombinedDeletedIds.includes(cp.id)) {
+            if (!mergedMap.has(cp.id) && !combinedDeletedIds.includes(cp.id)) {
               mergedMap.set(cp.id, cp);
             }
           }
-          const finalProds = Array.from(mergedMap.values()).filter(p => !cleanCombinedDeletedIds.includes(p.id));
+          const finalProds = Array.from(mergedMap.values()).filter(p => !combinedDeletedIds.includes(p.id));
           this.setLocal('products', finalProds);
         }
       }
@@ -1115,9 +1107,8 @@ class SaweraDB {
   deleteProduct(id) {
     // 1. Record ID in deleted_product_ids list to prevent re-seeding
     const deletedIds = this.get('deleted_product_ids') || [];
-    if (!deletedIds.includes(id)) {
-      this.set('deleted_product_ids', [...deletedIds, id]);
-    }
+    const updatedDeleted = Array.from(new Set([...deletedIds, id]));
+    this.set('deleted_product_ids', updatedDeleted);
 
     // 2. Remove product from products storage
     const currentProds = this.get('products') || [];
@@ -1133,6 +1124,15 @@ class SaweraDB {
       }, (err) => {
         console.warn("Supabase product delete network error:", err);
       });
+      supabase.from('sawera_settings').select('*').eq('id', 'deleted_product_ids').maybeSingle().then(({ data: existing }) => {
+        const cur = Array.isArray(existing?.data) ? existing.data : [];
+        const merged = Array.from(new Set([...cur, id]));
+        supabase.from('sawera_settings').upsert({
+          id: 'deleted_product_ids',
+          data: merged,
+          updated_at: new Date().toISOString()
+        }).then(() => {}, () => {});
+      }, () => {});
     }
 
     this.broadcast();

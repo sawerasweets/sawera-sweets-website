@@ -174,7 +174,7 @@ export default function AdminProductsPage() {
     await db.deleteProduct(targetId);
 
     // Immediate reactive local state update
-    setProducts(prev => prev.filter(p => p.id !== targetId));
+    setProducts(db.getProducts());
     setProductToDelete(null);
 
     // Show toast confirmation
