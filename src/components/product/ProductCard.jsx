@@ -17,9 +17,24 @@ export default function ProductCard({ product }) {
   };
 
   const hasVariations = product.variations && product.variations.length > 0;
-  const [selectedVariation, setSelectedVariation] = useState(
-    hasVariations ? product.variations[0] : null
+  
+  // Detect if product has 500g/1kg/2kg weight options (traditional sweets)
+  const oneKgVariation = product.variations?.find(v => 
+    v.weight === '1kg' || 
+    v.id === 'var-1kg' || 
+    v.label?.toLowerCase().includes('1 kilo') || 
+    v.label?.toLowerCase().includes('1kg') ||
+    v.label?.includes('1 کلو')
+  ) || null;
+
+  const hasKgVariations = Boolean(
+    oneKgVariation || 
+    product.variations?.some(v => v.label?.toLowerCase().includes('500') || v.weight === '500g')
   );
+
+  // If sweet with kg options, enforce 1kg rate as requested by user; otherwise use first variation or null
+  const defaultVar = hasKgVariations ? (oneKgVariation || null) : (hasVariations ? product.variations[0] : null);
+  const [selectedVariation, setSelectedVariation] = useState(defaultVar);
 
   const currentPrice = selectedVariation 
     ? (selectedVariation.discountPrice ?? selectedVariation.price) 
@@ -52,14 +67,9 @@ export default function ProductCard({ product }) {
   return (
     <div className="group bg-white rounded-2xl border border-gray-200/80 hover:border-[#D4AF37]/70 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden relative">
       
-      {/* Top Badges */}
+      {/* Top Badges (Text badges like Special Desi Ghee removed per user request) */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
         <div className="flex flex-col gap-1 items-start">
-          {product.badge && (
-            <span className="bg-[#07643D] text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
-              {product.badge}
-            </span>
-          )}
           {discountPercent && (
             <span className="bg-red-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full shadow-xs">
               {discountPercent}% OFF
@@ -139,11 +149,18 @@ export default function ProductCard({ product }) {
 
           {/* Packaging Unit / Subtitle */}
           <p className="text-xs text-gray-500 mt-1">
-            {isUrdu ? 'پیکنگ:' : 'Packaging:'} <span className="font-medium text-gray-700">{selectedVariation ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label) : product.unit}</span>
+            {isUrdu ? 'پیکنگ:' : 'Packaging:'}{' '}
+            <span className="font-medium text-gray-700">
+              {hasKgVariations
+                ? (isUrdu ? '1 کلوگرام (ایک کلو)' : '1 Kilogram (1 kg)')
+                : (selectedVariation
+                    ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label)
+                    : (isUrdu ? (product.urduUnit || product.unit) : product.unit))}
+            </span>
           </p>
 
-          {/* Variation Selector (if available) */}
-          {hasVariations && product.variations.length > 1 && (
+          {/* Variation Selector (only for non-weight items; 500g/1kg/2kg pills removed as requested) */}
+          {hasVariations && !hasKgVariations && product.variations.length > 1 && (
             <div className="mt-2.5">
               <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
                 {isUrdu ? 'آپشن منتخب کریں:' : 'Select Option:'}
@@ -212,7 +229,7 @@ export default function ProductCard({ product }) {
 
             <a
               href={`https://wa.me/923227434080?text=${encodeURIComponent(
-                `Assalam o Alaikum Sawera Sweets!\nI want to order: ${product.name} (${selectedVariation?.label || product.unit || '1 kg'})\nPrice: Rs. ${currentPrice}\nPlease confirm delivery.`
+                `Assalam o Alaikum Sawera Sweets!\nI want to order: ${product.name} (${hasKgVariations ? '1 Kilogram' : (selectedVariation?.label || product.unit || '1 kg')})\nPrice: Rs. ${currentPrice}\nPlease confirm delivery.`
               )}`}
               target="_blank"
               rel="noopener noreferrer"

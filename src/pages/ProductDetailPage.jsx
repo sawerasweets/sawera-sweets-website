@@ -38,9 +38,19 @@ export default function ProductDetailPage() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
-  const [selectedVariation, setSelectedVariation] = useState(
-    product?.variations?.[0] || null
-  );
+  const findDefaultVariation = (prod) => {
+    if (!prod?.variations || prod.variations.length === 0) return null;
+    const oneKg = prod.variations.find(v => 
+      v.weight === '1kg' || 
+      v.id === 'var-1kg' || 
+      v.label?.toLowerCase().includes('1 kilo') || 
+      v.label?.toLowerCase().includes('1kg') ||
+      v.label?.includes('1 کلو')
+    );
+    return oneKg || prod.variations[0];
+  };
+
+  const [selectedVariation, setSelectedVariation] = useState(() => findDefaultVariation(product));
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -48,7 +58,7 @@ export default function ProductDetailPage() {
     setProduct(prod);
     setReviews(db.get('reviews'));
     setQuestions(db.get('questions'));
-    setSelectedVariation(prod?.variations?.[0] || null);
+    setSelectedVariation(findDefaultVariation(prod));
     setQuantity(1);
 
     if (id) {
@@ -173,11 +183,6 @@ export default function ProductDetailPage() {
                     e.target.src = "/images/products/gulab-jamun.svg";
                   }}
                 />
-                {product.badge && (
-                  <span className="absolute top-4 left-4 bg-[#07643D] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                    {product.badge}
-                  </span>
-                )}
               </div>
             </div>
 
