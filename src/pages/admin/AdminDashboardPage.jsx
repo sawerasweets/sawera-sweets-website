@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -50,72 +50,93 @@ export default function AdminDashboardPage() {
     return totalStock <= (p.lowStockThreshold || 10);
   });
 
-  // Sales Chart Data dynamically driven by real store orders
-  const chartPoints = orders.length === 0
-    ? {
-        daily: [
-          { label: '6 AM', val: 0 },
-          { label: '9 AM', val: 0 },
-          { label: '12 PM', val: 0 },
-          { label: '3 PM', val: 0 },
-          { label: '6 PM', val: 0 },
-          { label: '9 PM', val: 0 },
-          { label: '12 AM', val: 0 }
-        ],
-        weekly: [
-          { label: 'Mon', val: 0 },
-          { label: 'Tue', val: 0 },
-          { label: 'Wed', val: 0 },
-          { label: 'Thu', val: 0 },
-          { label: 'Fri', val: 0 },
-          { label: 'Sat', val: 0 },
-          { label: 'Sun', val: 0 }
-        ],
-        monthly: [
-          { label: 'Week 1', val: 0 },
-          { label: 'Week 2', val: 0 },
-          { label: 'Week 3', val: 0 },
-          { label: 'Week 4', val: 0 }
-        ],
-        yearly: [
-          { label: 'Q1', val: 0 },
-          { label: 'Q2', val: 0 },
-          { label: 'Q3', val: 0 },
-          { label: 'Q4', val: 0 }
-        ]
-      }[timeframe]
-    : {
-        daily: [
-          { label: '6 AM', val: Math.round(totalRevenue * 0.1) },
-          { label: '9 AM', val: Math.round(totalRevenue * 0.15) },
-          { label: '12 PM', val: Math.round(totalRevenue * 0.2) },
-          { label: '3 PM', val: Math.round(totalRevenue * 0.15) },
-          { label: '6 PM', val: Math.round(totalRevenue * 0.25) },
-          { label: '9 PM', val: Math.round(totalRevenue * 0.1) },
-          { label: '12 AM', val: Math.round(totalRevenue * 0.05) }
-        ],
-        weekly: [
-          { label: 'Mon', val: Math.round(totalRevenue * 0.12) },
-          { label: 'Tue', val: Math.round(totalRevenue * 0.14) },
-          { label: 'Wed', val: Math.round(totalRevenue * 0.11) },
-          { label: 'Thu', val: Math.round(totalRevenue * 0.16) },
-          { label: 'Fri', val: Math.round(totalRevenue * 0.22) },
-          { label: 'Sat', val: Math.round(totalRevenue * 0.15) },
-          { label: 'Sun', val: Math.round(totalRevenue * 0.1) }
-        ],
-        monthly: [
-          { label: 'Week 1', val: Math.round(totalRevenue * 0.2) },
-          { label: 'Week 2', val: Math.round(totalRevenue * 0.25) },
-          { label: 'Week 3', val: Math.round(totalRevenue * 0.25) },
-          { label: 'Week 4', val: Math.round(totalRevenue * 0.3) }
-        ],
-        yearly: [
-          { label: 'Q1', val: Math.round(totalRevenue * 0.2) },
-          { label: 'Q2', val: Math.round(totalRevenue * 0.25) },
-          { label: 'Q3', val: Math.round(totalRevenue * 0.25) },
-          { label: 'Q4', val: Math.round(totalRevenue * 0.3) }
-        ]
-      }[timeframe];
+  // Sales Chart Data dynamically driven by 100% real store orders
+  const chartPoints = useMemo(() => {
+    const validOrders = orders.filter(o => o.status !== 'cancelled');
+
+    if (validOrders.length === 0) {
+      if (timeframe === 'daily') {
+        return ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM', '9 PM', '12 AM'].map(l => ({ label: l, val: 0 }));
+      }
+      if (timeframe === 'weekly') {
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(l => ({ label: l, val: 0 }));
+      }
+      if (timeframe === 'monthly') {
+        return ['Week 1', 'Week 2', 'Week 3', 'Week 4'].map(l => ({ label: l, val: 0 }));
+      }
+      return ['Q1', 'Q2', 'Q3', 'Q4'].map(l => ({ label: l, val: 0 }));
+    }
+
+    if (timeframe === 'weekly') {
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const map = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+      for (const o of validOrders) {
+        if (!o.createdAt) continue;
+        const d = new Date(o.createdAt);
+        const day = dayNames[d.getDay()];
+        if (map[day] !== undefined) {
+          map[day] += Number(o.total) || 0;
+        }
+      }
+      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(label => ({ label, val: map[label] }));
+    }
+
+    if (timeframe === 'daily') {
+      const map = { '6 AM': 0, '9 AM': 0, '12 PM': 0, '3 PM': 0, '6 PM': 0, '9 PM': 0, '12 AM': 0 };
+      const todayStr = new Date().toISOString().slice(0, 10);
+      for (const o of validOrders) {
+        if (!o.createdAt) continue;
+        const d = new Date(o.createdAt);
+        if (d.toISOString().slice(0, 10) === todayStr) {
+          const hour = d.getHours();
+          const amt = Number(o.total) || 0;
+          if (hour < 8) map['6 AM'] += amt;
+          else if (hour < 11) map['9 AM'] += amt;
+          else if (hour < 14) map['12 PM'] += amt;
+          else if (hour < 17) map['3 PM'] += amt;
+          else if (hour < 20) map['6 PM'] += amt;
+          else if (hour < 23) map['9 PM'] += amt;
+          else map['12 AM'] += amt;
+        }
+      }
+      return Object.entries(map).map(([label, val]) => ({ label, val }));
+    }
+
+    if (timeframe === 'monthly') {
+      const map = { 'Week 1': 0, 'Week 2': 0, 'Week 3': 0, 'Week 4': 0 };
+      const now = new Date();
+      for (const o of validOrders) {
+        if (!o.createdAt) continue;
+        const d = new Date(o.createdAt);
+        if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+          const dateNum = d.getDate();
+          const amt = Number(o.total) || 0;
+          if (dateNum <= 7) map['Week 1'] += amt;
+          else if (dateNum <= 14) map['Week 2'] += amt;
+          else if (dateNum <= 21) map['Week 3'] += amt;
+          else map['Week 4'] += amt;
+        }
+      }
+      return Object.entries(map).map(([label, val]) => ({ label, val }));
+    }
+
+    // Yearly
+    const map = { Q1: 0, Q2: 0, Q3: 0, Q4: 0 };
+    const curYear = new Date().getFullYear();
+    for (const o of validOrders) {
+      if (!o.createdAt) continue;
+      const d = new Date(o.createdAt);
+      if (d.getFullYear() === curYear) {
+        const m = d.getMonth();
+        const amt = Number(o.total) || 0;
+        if (m <= 2) map.Q1 += amt;
+        else if (m <= 5) map.Q2 += amt;
+        else if (m <= 8) map.Q3 += amt;
+        else map.Q4 += amt;
+      }
+    }
+    return Object.entries(map).map(([label, val]) => ({ label, val }));
+  }, [orders, timeframe]);
 
   const maxVal = Math.max(1, ...chartPoints.map(p => p.val));
 

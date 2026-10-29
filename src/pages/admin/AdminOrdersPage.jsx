@@ -13,7 +13,8 @@ import {
   X,
   RefreshCw,
   MessageCircle,
-  Phone
+  Phone,
+  Trash2
 } from 'lucide-react';
 import db from '../../services/db';
 import { exportToCSV } from '../../services/exportUtils';
@@ -29,6 +30,9 @@ export default function AdminOrdersPage() {
   const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [proofModalOrder, setProofModalOrder] = useState(null);
   const [detailOrder, setDetailOrder] = useState(null);
+  const [orderToDelete, setOrderToDelete] = useState(null);
+  const [isClearingAll, setIsClearingAll] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const branches = db.getBranches();
   const riders = db.get('users').filter(u => u.role === 'rider');
@@ -38,6 +42,22 @@ export default function AdminOrdersPage() {
     await db.syncOrdersFromSupabase();
     setOrders(db.getOrders());
     setIsRefreshing(false);
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    setIsDeleting(true);
+    await db.deleteOrder(orderId);
+    setOrders(db.getOrders());
+    setOrderToDelete(null);
+    setIsDeleting(false);
+  };
+
+  const handleClearAllOrders = async () => {
+    setIsDeleting(true);
+    await db.clearAllOrders();
+    setOrders([]);
+    setIsClearingAll(false);
+    setIsDeleting(false);
   };
 
   useEffect(() => {
@@ -108,6 +128,16 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          {orders.length > 0 && (
+            <button
+              onClick={() => setIsClearingAll(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-xs font-semibold text-red-700 shadow-xs transition-colors cursor-pointer"
+              title="Remove all test/demo orders"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Clear Test Orders</span>
+            </button>
+          )}
           <button
             onClick={refreshOrders}
             disabled={isRefreshing}
@@ -293,17 +323,24 @@ export default function AdminOrdersPage() {
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => setDetailOrder(o)}
-                        className="p-1.5 text-gray-500 hover:text-emerald-800 hover:bg-gray-100 rounded-lg"
+                        className="p-1.5 text-gray-500 hover:text-emerald-800 hover:bg-gray-100 rounded-lg cursor-pointer"
                         title="View details"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setInvoiceOrder(o)}
-                        className="p-1.5 text-gray-500 hover:text-[#07643D] hover:bg-gray-100 rounded-lg"
+                        className="p-1.5 text-gray-500 hover:text-[#07643D] hover:bg-gray-100 rounded-lg cursor-pointer"
                         title="Print invoice"
                       >
                         <FileText className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setOrderToDelete(o)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg cursor-pointer transition-colors"
+                        title="Delete order"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -421,6 +458,74 @@ export default function AdminOrdersPage() {
                 className="px-5 py-2 bg-gray-200 rounded-xl font-semibold"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Single Order Confirmation Modal */}
+      {orderToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-gray-900">Delete Order?</h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Are you sure you want to delete order <strong className="text-gray-900">{orderToDelete.id}</strong> (Rs. {orderToDelete.total?.toLocaleString()})? This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setOrderToDelete(null)}
+                className="flex-1 py-2 px-4 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => handleDeleteOrder(orderToDelete.id)}
+                className="flex-1 py-2 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clear All Demo Orders Confirmation Modal */}
+      {isClearingAll && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border border-gray-100 space-y-4 animate-in zoom-in-95 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-gray-900">Clear All Test Orders?</h3>
+              <p className="text-xs text-gray-500 mt-1">
+                This will remove all demo and test orders from your store, leaving your orders list completely clean and ready for real customer business.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsClearingAll(false)}
+                className="flex-1 py-2 px-4 rounded-xl border border-gray-200 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleClearAllOrders}
+                className="flex-1 py-2 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs disabled:opacity-50"
+              >
+                {isDeleting ? 'Clearing...' : 'Clear All Orders'}
               </button>
             </div>
           </div>

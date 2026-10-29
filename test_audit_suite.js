@@ -1,6 +1,8 @@
 // Sawera Sweets & Bakers — Comprehensive Post-Upgrade Test & Audit Suite
 // Tests catalog data, business rules, Box Studio logic, pricing math, DB operations, translations, and RBAC.
 
+process.env.NODE_ENV = 'test';
+
 import fs from 'fs';
 import { PRODUCTS } from './src/data/products.js';
 import { CATEGORIES } from './src/data/categories.js';
@@ -278,8 +280,7 @@ const fetchedOrder = db.getOrderById(placedOrder.id);
 assert(fetchedOrder && fetchedOrder.total === 1300, 'Order successfully retrieved from database by ID');
 
 // Cleanup test order so database remains pristine
-const cleanedOrders = db.getOrders().filter(o => o.id !== placedOrder.id);
-db.set('orders', cleanedOrders);
+db.deleteOrder(placedOrder.id);
 assert(db.getOrderById(placedOrder.id) === undefined, 'Test order safely cleaned up without altering real data');
 
 console.log('\n==================================================');
@@ -446,7 +447,7 @@ assert(checkedHistOrder.items[0].price === originalHistPrice, 'Historical order 
 assert(checkedHistOrder.total === (originalHistPrice * 2) + 100, 'Historical order total remained completely intact');
 
 // Clean up historical order and restore product price
-db.set('orders', db.getOrders().filter(o => o.id !== testHistoricalOrder.id));
+db.deleteOrder(testHistoricalOrder.id);
 db.saveProduct(histProduct);
 
 // B. Category Public Visibility Enforcement
@@ -481,4 +482,5 @@ if (failed > 0) {
   process.exit(1);
 } else {
   console.log('ALL AUDIT SUITE TESTS PASSED PERFECTLY!\n');
+  process.exit(0);
 }

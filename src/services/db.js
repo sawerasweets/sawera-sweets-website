@@ -482,7 +482,8 @@ class SaweraDB {
       this.syncFromServer();
 
       // Supabase Cloud Sync & Realtime Subscription
-      if (isSupabaseConfigured && supabase) {
+      const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+      if (isSupabaseConfigured && supabase && !isTest) {
         this.syncFromSupabase();
         this.subscribeToSupabase();
       }
@@ -616,7 +617,8 @@ class SaweraDB {
       }
 
       // Cloud Persistence via Supabase
-      if (isSupabaseConfigured && supabase) {
+      const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+      if (isSupabaseConfigured && supabase && !isTestEnv) {
         if (collection === 'settings') {
           supabase.from('sawera_settings').upsert({
             id: 'settings',
@@ -634,13 +636,29 @@ class SaweraDB {
             if (error) console.warn("Supabase categories sync error:", error.message);
           });
         } else if (collection === 'deleted_product_ids') {
-          supabase.from('sawera_settings').upsert({
-            id: 'deleted_product_ids',
-            data,
-            updated_at: new Date().toISOString()
-          }).then(({ error }) => {
-            if (error) console.warn("Supabase deleted_product_ids sync error:", error.message);
-          });
+          supabase.from('sawera_settings').select('*').eq('id', 'deleted_product_ids').maybeSingle().then(({ data: existing }) => {
+            const currentList = Array.isArray(existing?.data) ? existing.data : [];
+            const mergedList = Array.from(new Set([...currentList, ...(Array.isArray(data) ? data : [])]));
+            supabase.from('sawera_settings').upsert({
+              id: 'deleted_product_ids',
+              data: mergedList,
+              updated_at: new Date().toISOString()
+            }).then(({ error }) => {
+              if (error) console.warn("Supabase deleted_product_ids sync error:", error.message);
+            }, () => {});
+          }, () => {});
+        } else if (collection === 'deleted_order_ids') {
+          supabase.from('sawera_settings').select('*').eq('id', 'deleted_order_ids').maybeSingle().then(({ data: existing }) => {
+            const currentList = Array.isArray(existing?.data) ? existing.data : [];
+            const mergedList = Array.from(new Set([...currentList, ...(Array.isArray(data) ? data : [])]));
+            supabase.from('sawera_settings').upsert({
+              id: 'deleted_order_ids',
+              data: mergedList,
+              updated_at: new Date().toISOString()
+            }).then(({ error }) => {
+              if (error) console.warn("Supabase deleted_order_ids sync error:", error.message);
+            }, () => {});
+          }, () => {});
         }
       }
     } catch (e) {
@@ -1111,19 +1129,70 @@ class SaweraDB {
 
   // Order Operations & Single-Branch Fulfillment
   getOrders() {
-    return this.get('orders');
+    const orders = this.get('orders') || [];
+    const deleted = this.get('deleted_order_ids') || [];
+    const deletedSet = new Set(Array.isArray(deleted) ? deleted : []);
+    const knownDemoIds = new Set([
+      'SAV-849933', 'SAV-876407', 'SAV-518166', 'SAV-346015', 'SAV-296485',
+      'SAV-578139', 'SAV-930451', 'SAV-478934', 'SAV-TEST-1793299313620',
+      'SAV-481952', 'SAV-147441', 'SAV-518046', 'SAV-692611', 'SAV-297931',
+      'SAV-208180', 'SAV-665576', 'SAV-599862', 'SAV-959326', 'SAV-986936',
+      'SAV-471723', 'SAV-559690'
+    ]);
+
+    return orders.filter(o => {
+      if (!o || !o.id) return false;
+      if (deletedSet.has(o.id) || knownDemoIds.has(o.id)) return false;
+      if (typeof o.id === 'string' && o.id.startsWith('SAV-TEST-')) return false;
+      return true;
+    });
   }
 
   async syncOrdersFromSupabase() {
     if (!isSupabaseConfigured || !supabase) return this.getOrders();
     try {
+      // 1. Fetch deleted order IDs from cloud
+      let cloudDeletedIds = [];
+      const { data: delSetting } = await supabase
+        .from('sawera_settings')
+        .select('*')
+        .eq('id', 'deleted_order_ids')
+        .maybeSingle();
+      if (delSetting?.data && Array.isArray(delSetting.data)) {
+        cloudDeletedIds = delSetting.data;
+      }
+      const localDeletedIds = this.get('deleted_order_ids') || [];
+      const combinedDeletedIds = Array.from(new Set([...localDeletedIds, ...cloudDeletedIds]));
+      if (combinedDeletedIds.length !== localDeletedIds.length) {
+        localStorage.setItem('sawera_deleted_order_ids', JSON.stringify(combinedDeletedIds));
+      }
+
+      const deletedSet = new Set(combinedDeletedIds);
+      const knownDemoIds = new Set([
+        'SAV-849933', 'SAV-876407', 'SAV-518166', 'SAV-346015', 'SAV-296485',
+        'SAV-578139', 'SAV-930451', 'SAV-478934', 'SAV-TEST-1793299313620',
+        'SAV-481952', 'SAV-147441', 'SAV-518046', 'SAV-692611', 'SAV-297931',
+        'SAV-208180', 'SAV-665576', 'SAV-599862', 'SAV-959326', 'SAV-986936',
+        'SAV-471723', 'SAV-559690'
+      ]);
+
+      const isValidOrder = (o) => {
+        if (!o || !o.id) return false;
+        if (deletedSet.has(o.id) || knownDemoIds.has(o.id)) return false;
+        if (typeof o.id === 'string' && o.id.startsWith('SAV-TEST-')) return false;
+        return true;
+      };
+
+      // 2. Fetch all orders from cloud
       const { data: ords, error: oErr } = await supabase
         .from('sawera_orders')
         .select('*');
         
       if (!oErr && Array.isArray(ords)) {
-        const orderList = ords.map(o => o.data).filter(Boolean);
-        const localOrders = this.get('orders') || [];
+        const orderList = ords
+          .map(o => o.data)
+          .filter(isValidOrder);
+        const localOrders = (this.get('orders') || []).filter(isValidOrder);
         
         const mergedMap = new Map();
         // Supabase cloud orders take priority
@@ -1245,6 +1314,31 @@ class SaweraDB {
       });
     }
 
+    return true;
+  }
+
+  deleteOrder(id) {
+    const deleted = this.get('deleted_order_ids') || [];
+    if (!deleted.includes(id)) {
+      this.set('deleted_order_ids', [...deleted, id]);
+    }
+    const currentOrders = this.get('orders') || [];
+    const filtered = currentOrders.filter(o => o.id !== id);
+    this.set('orders', filtered);
+    this.logActivity('Order Deleted', `Order ${id} was deleted by Admin.`);
+    this.broadcast();
+    return true;
+  }
+
+  clearAllOrders() {
+    const currentOrders = this.get('orders') || [];
+    const orderIds = currentOrders.map(o => o.id).filter(Boolean);
+    const deleted = this.get('deleted_order_ids') || [];
+    const combined = Array.from(new Set([...deleted, ...orderIds]));
+    this.set('deleted_order_ids', combined);
+    this.set('orders', []);
+    this.logActivity('Orders Cleared', 'All demo and test orders were cleared.');
+    this.broadcast();
     return true;
   }
 
