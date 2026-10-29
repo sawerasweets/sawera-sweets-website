@@ -268,7 +268,7 @@ const testOrderPayload = {
   total: 1300
 };
 
-const placedOrder = db.createOrder(testOrderPayload);
+const placedOrder = await db.createOrder(testOrderPayload);
 assert(placedOrder.id && placedOrder.id.startsWith('SAV-'), `Order placed successfully with ID: ${placedOrder.id}`);
 assert(placedOrder.status === 'confirmed', `COD order automatically confirmed (Status: ${placedOrder.status})`);
 assert(placedOrder.assignedBranch === 'shop-1', `Order assigned to main branch shop-1 (Branch: ${placedOrder.assignedBranch})`);
@@ -417,7 +417,7 @@ console.log('==================================================');
 // A. Historical Order Price Snapshot Integrity
 const histProduct = db.getProductById('prd-special-roll-barfi');
 const originalHistPrice = histProduct.price;
-const testHistoricalOrder = db.createOrder({
+const testHistoricalOrder = await db.createOrder({
   customer: { name: "Test Historical Customer", phone: "03001234567" },
   items: [
     {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -22,10 +22,23 @@ export default function AdminDashboardPage() {
   const [rejectionModalId, setRejectionModalId] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
 
-  const orders = db.getOrders();
-  const products = db.getProducts();
-  const stockRequests = db.getStockRequests();
-  const chats = db.get('chats');
+  const [orders, setOrders] = useState(() => db.getOrders());
+  const [products, setProducts] = useState(() => db.getProducts());
+  const [stockRequests, setStockRequests] = useState(() => db.getStockRequests());
+  const [chats, setChats] = useState(() => db.get('chats'));
+
+  useEffect(() => {
+    db.syncOrdersFromSupabase().then(() => {
+      setOrders(db.getOrders());
+    });
+    const unsubscribe = db.subscribe(() => {
+      setOrders(db.getOrders());
+      setProducts(db.getProducts());
+      setStockRequests(db.getStockRequests());
+      setChats(db.get('chats'));
+    });
+    return unsubscribe;
+  }, []);
 
   // Metrics
   const totalRevenue = orders.reduce((sum, o) => sum + (o.status !== 'cancelled' ? o.total : 0), 0);

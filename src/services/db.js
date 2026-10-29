@@ -803,19 +803,8 @@ class SaweraDB {
         }
       }
 
-      // 2. Fetch Orders
-      const { data: ords, error: oErr } = await supabase.from('sawera_orders').select('*');
-      if (!oErr && Array.isArray(ords)) {
-        const orderList = ords.map(o => o.data);
-        const localOrders = this.get('orders') || [];
-        const mergedOrders = [...localOrders];
-        for (const o of orderList) {
-          if (!mergedOrders.some(lo => lo.id === o.id)) {
-            mergedOrders.push(o);
-          }
-        }
-        this.setLocal('orders', mergedOrders);
-      }
+      // 2. Fetch Orders from Supabase
+      await this.syncOrdersFromSupabase();
 
       // 3. Fetch Settings
       const { data: sets, error: sErr } = await supabase.from('sawera_settings').select('*').eq('id', 'settings').maybeSingle();
@@ -1122,11 +1111,46 @@ class SaweraDB {
     return this.get('orders');
   }
 
+  async syncOrdersFromSupabase() {
+    if (!isSupabaseConfigured || !supabase) return this.getOrders();
+    try {
+      const { data: ords, error: oErr } = await supabase
+        .from('sawera_orders')
+        .select('*');
+        
+      if (!oErr && Array.isArray(ords)) {
+        const orderList = ords.map(o => o.data).filter(Boolean);
+        const localOrders = this.get('orders') || [];
+        
+        const mergedMap = new Map();
+        // Supabase cloud orders take priority
+        for (const o of orderList) {
+          if (o && o.id) mergedMap.set(o.id, o);
+        }
+        // Retain any pending local orders
+        for (const lo of localOrders) {
+          if (lo && lo.id && !mergedMap.has(lo.id)) {
+            mergedMap.set(lo.id, lo);
+          }
+        }
+        
+        const mergedOrders = Array.from(mergedMap.values());
+        mergedOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        
+        this.setLocal('orders', mergedOrders);
+        return mergedOrders;
+      }
+    } catch (err) {
+      console.warn("syncOrdersFromSupabase error:", err);
+    }
+    return this.getOrders();
+  }
+
   getOrderById(id) {
     return this.getOrders().find(o => o.id === id);
   }
 
-  createOrder(orderData) {
+  async createOrder(orderData) {
     const orders = this.getOrders();
     const products = this.getProducts();
     const branches = this.getBranches().filter(b => !b.isArchived);
@@ -1134,20 +1158,20 @@ class SaweraDB {
 
     // Deduct stock from the store (shop-1)
     const updatedProducts = products.map(p => {
-      const cartItem = orderData.items.find(i => i.id === p.id);
+      const cartItem = orderData.items?.find(i => i.id === p.id);
       if (cartItem && p.stocks) {
         const currentStock = p.stocks[assignedBranch.id] || 0;
         return {
           ...p,
           stocks: {
             ...p.stocks,
-            [assignedBranch.id]: Math.max(0, currentStock - cartItem.quantity)
+            [assignedBranch.id]: Math.max(0, currentStock - (cartItem.quantity || 1))
           }
         };
       }
       return p;
     });
-    this.set('products', updatedProducts);
+    this.setLocal('products', updatedProducts);
 
     const newOrder = {
       ...orderData,
@@ -1160,17 +1184,21 @@ class SaweraDB {
       updatedAt: new Date().toISOString()
     };
 
-    this.set('orders', [newOrder, ...orders]);
+    this.setLocal('orders', [newOrder, ...orders]);
     this.logActivity('New Order Placed', `Order ${newOrder.id} placed for Rs. ${newOrder.total} assigned to ${assignedBranch.name}.`);
 
+    // Await cloud persistence so mobile connections never get cut short
     if (isSupabaseConfigured && supabase) {
-      supabase.from('sawera_orders').insert({
-        id: newOrder.id,
-        data: newOrder,
-        created_at: new Date().toISOString()
-      }).then(({ error }) => {
-        if (error) console.warn("Supabase order insert error:", error.message);
-      });
+      try {
+        const { error } = await supabase.from('sawera_orders').upsert({
+          id: newOrder.id,
+          data: newOrder,
+          created_at: newOrder.createdAt
+        });
+        if (error) console.warn("Supabase order upsert error:", error.message);
+      } catch (err) {
+        console.warn("Supabase order save error:", err);
+      }
     }
 
     // Award loyalty points if registered customer
@@ -1180,7 +1208,7 @@ class SaweraDB {
       if (userIdx !== -1) {
         const earnedPoints = Math.floor(newOrder.total / 100);
         users[userIdx].loyaltyPoints = (users[userIdx].loyaltyPoints || 0) + earnedPoints;
-        this.set('users', users);
+        this.setLocal('users', users);
       }
     }
 

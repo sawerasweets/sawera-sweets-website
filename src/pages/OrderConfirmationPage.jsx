@@ -24,12 +24,31 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  // Pre-fill WhatsApp message
+  // Pre-fill WhatsApp message with complete item breakdown
   const customerCity = order.city || order.customer?.city || '';
-  const waText = encodeURIComponent(
-    `Assalam o Alaikum Sawera Sweets & Bakers!\nI have placed order #${order.id} for Rs. ${order.total?.toLocaleString()}.\nCustomer: ${order.customer?.name || ''}\nCity: ${customerCity || 'Jhang'}\nAddress: ${order.customer?.address || ''}\nPlease confirm my order.`
-  );
-  const waUrl = `https://wa.me/923227434080?text=${waText}`;
+  const itemsText = (order.items || [])
+    .map(i => `• ${i.name} (${i.selectedVariation || i.unit || '1 unit'}) x ${i.quantity} = Rs. ${((i.price || 0) * (i.quantity || 1)).toLocaleString()}`)
+    .join('\n');
+
+  const waMessage = 
+`Assalam o Alaikum Sawera Sweets & Bakers! 🍰
+
+🛍️ *Order Placed on Website:* #${order.id}
+
+👤 *Customer:* ${order.customer?.name || ''}
+📱 *Phone:* ${order.customer?.phone || ''}
+📍 *City:* ${customerCity || 'Jhang'}
+🏠 *Address:* ${order.customer?.address || ''}
+
+📦 *Items Ordered:*
+${itemsText}
+
+🚚 *Delivery Charges:* Rs. ${order.deliveryFee || 0}
+💰 *Total Amount:* Rs. ${order.total?.toLocaleString()} (${order.paymentMethod?.toUpperCase() || 'COD'})
+
+Baraye meharbani mera order confirm karein aur delivery time bata dein. Shukriya!`;
+
+  const waUrl = `https://wa.me/923227434080?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
@@ -42,13 +61,13 @@ export default function OrderConfirmationPage() {
 
         <div>
           <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37] bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            {isUrdu ? 'آرڈر کامیابی سے موصول ہوا' : 'Order Placed Successfully'}
+            {isUrdu ? 'آرڈر کامیابی سے محفوظ ہوا' : 'Order Placed Successfully'}
           </span>
           <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#07643D] mt-3">
             Thank You for Your Order!
           </h1>
           <p className="text-xs text-gray-600 mt-1">
-            Your fresh sweets &amp; bakery items are being prepared with authentic care.
+            Your authentic sweets &amp; bakery items have been recorded in our store database.
           </p>
         </div>
 
@@ -60,15 +79,20 @@ export default function OrderConfirmationPage() {
           </div>
 
           <div className="flex items-center justify-between">
+            <span className="text-gray-600">Customer:</span>
+            <span className="font-bold text-gray-900">{order.customer?.name} ({order.customer?.phone})</span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-gray-600">Delivery Address:</span>
+            <span className="font-semibold text-gray-900 text-right max-w-xs">{order.customer?.address || order.city}</span>
+          </div>
+
+          <div className="flex items-center justify-between">
             <span className="text-gray-600">Fulfillment:</span>
             <span className="font-semibold text-gray-900 capitalize">
               {order.fulfillmentType === 'delivery' ? 'Home Delivery' : 'Shop Pickup'}
             </span>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <span className="text-gray-600">Fulfilling Store:</span>
-            <span className="font-semibold text-gray-900">{order.assignedBranchName || 'Sawera Sweets & Bakers (Main Store)'}</span>
           </div>
 
           <div className="flex items-center justify-between">
@@ -77,6 +101,19 @@ export default function OrderConfirmationPage() {
               {order.paymentMethod} ({order.paymentStatus})
             </span>
           </div>
+
+          {/* Items Breakdown */}
+          {order.items && order.items.length > 0 && (
+            <div className="pt-2 border-t border-amber-200/60 space-y-1.5">
+              <span className="font-bold text-gray-700 block text-[11px]">Items in this Order:</span>
+              {order.items.map((item, idx) => (
+                <div key={idx} className="flex justify-between items-center text-[11px] text-gray-600">
+                  <span>{item.name} ({item.selectedVariation || item.unit || '1 unit'}) x {item.quantity}</span>
+                  <span className="font-mono font-semibold text-gray-900">Rs. {((item.price || 0) * (item.quantity || 1)).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex items-center justify-between pt-2 border-t border-amber-200/60 font-bold text-sm">
             <span>Total Amount:</span>
@@ -87,20 +124,27 @@ export default function OrderConfirmationPage() {
         {/* Primary Action Buttons */}
         <div className="space-y-3 pt-2">
           {/* WhatsApp Direct Connect */}
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>Confirm Order on WhatsApp (0322 7434080)</span>
-          </a>
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2">
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-3.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span>Confirm Order on WhatsApp (0322 7434080)</span>
+            </a>
+            <p className="text-[11px] text-emerald-800 font-medium">
+              {isUrdu 
+                ? 'فوری آرڈر تصدیق اور تیز ترین ڈیلیوری کے لیے سبز بٹن دبا کر دکان کے واٹس ایپ پر تفصیلات ارسال فرمائیں۔'
+                : 'Tap the green button above to send this order receipt to Sawera Sweets WhatsApp helpline for priority packing.'}
+            </p>
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => setIsInvoiceOpen(true)}
-              className="py-2.5 rounded-2xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+              className="py-2.5 rounded-2xl border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               <FileText className="w-4 h-4 text-gray-500" />
               <span>Official Invoice</span>
@@ -117,7 +161,7 @@ export default function OrderConfirmationPage() {
         </div>
 
         <p className="text-[11px] text-gray-400">
-          Need immediate support? Call Shop 1 directly: <a href="tel:03227434080" className="font-mono font-bold text-gray-700 hover:underline">0322 7434080</a>
+          Need immediate assistance? Call our Jhang Helpline directly: <a href="tel:03227434080" className="font-mono font-bold text-gray-700 hover:underline">0322 7434080</a>
         </p>
 
       </div>

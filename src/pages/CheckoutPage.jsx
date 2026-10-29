@@ -92,7 +92,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -154,7 +154,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      const createdOrder = db.createOrder(orderPayload);
+      const createdOrder = await db.createOrder(orderPayload);
 
       // Notify admin
       sendNotification({
