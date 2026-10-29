@@ -724,7 +724,31 @@ class SaweraDB {
         localStorage.setItem('sawera_settings', JSON.stringify({ ...localSettings, ...serverStore.settings }));
       }
 
-      // 4. Merge Admin Security
+      // 4. Merge Orders & Deleted Order IDs for Cross-Device Sync
+      const serverDeletedOrders = serverStore.deleted_order_ids;
+      const localDeletedOrders = this.get('deleted_order_ids') || [];
+      const combinedDelOrders = Array.from(new Set([...localDeletedOrders, ...(Array.isArray(serverDeletedOrders) ? serverDeletedOrders : [])]));
+      if (combinedDelOrders.length !== localDeletedOrders.length) {
+        localStorage.setItem('sawera_deleted_order_ids', JSON.stringify(combinedDelOrders));
+      }
+
+      if (Array.isArray(serverStore.orders) && serverStore.orders.length > 0) {
+        const localOrders = this.get('orders') || [];
+        const orderMap = new Map();
+        for (const o of localOrders) {
+          if (o && o.id && !combinedDelOrders.includes(o.id)) orderMap.set(o.id, o);
+        }
+        for (const o of serverStore.orders) {
+          if (o && o.id && !combinedDelOrders.includes(o.id) && !orderMap.has(o.id)) {
+            orderMap.set(o.id, o);
+          }
+        }
+        const mergedOrders = Array.from(orderMap.values());
+        mergedOrders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        localStorage.setItem('sawera_orders', JSON.stringify(mergedOrders));
+      }
+
+      // 5. Merge Admin Security
       if (serverStore.admin_security?.password) {
         const users = this.get('users');
         const adminPass = serverStore.admin_security.password;
@@ -1256,7 +1280,7 @@ class SaweraDB {
       updatedAt: new Date().toISOString()
     };
 
-    this.setLocal('orders', [newOrder, ...orders]);
+    this.set('orders', [newOrder, ...orders]);
     this.logActivity('New Order Placed', `Order ${newOrder.id} placed for Rs. ${newOrder.total} assigned to ${assignedBranch.name}.`);
 
     // Await cloud persistence so mobile connections never get cut short

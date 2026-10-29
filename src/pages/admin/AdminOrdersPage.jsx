@@ -39,6 +39,7 @@ export default function AdminOrdersPage() {
 
   const refreshOrders = async () => {
     setIsRefreshing(true);
+    await db.syncFromServer();
     await db.syncOrdersFromSupabase();
     setOrders(db.getOrders());
     setIsRefreshing(false);

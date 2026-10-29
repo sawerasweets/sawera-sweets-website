@@ -28,7 +28,10 @@ export default function AdminDashboardPage() {
   const [chats, setChats] = useState(() => db.get('chats'));
 
   useEffect(() => {
-    db.syncOrdersFromSupabase().then(() => {
+    Promise.allSettled([
+      db.syncFromServer(),
+      db.syncOrdersFromSupabase()
+    ]).then(() => {
       setOrders(db.getOrders());
     });
     const unsubscribe = db.subscribe(() => {
