@@ -1037,49 +1037,78 @@ class SaweraDB {
     return true;
   }
 
+  // Helper to normalize product images (supports up to 6 images per product)
+  normalizeProductImages(prod) {
+    if (!prod) return prod;
+    const rawList = Array.isArray(prod.images) && prod.images.length > 0
+      ? prod.images
+      : (prod.image ? [prod.image] : ['/images/products/gulab-jamun.svg']);
+    const cleanList = rawList.filter(Boolean).slice(0, 6);
+    const finalImages = cleanList.length > 0 ? cleanList : ['/images/products/gulab-jamun.svg'];
+    return {
+      ...prod,
+      images: finalImages,
+      image: finalImages[0] // Always maintain primary cover image for backwards compatibility
+    };
+  }
+
   // Product Operations
   getProducts() {
     const deletedIds = this.get('deleted_product_ids') || [];
     const prods = this.get('products');
 
+    let activeList = [];
     if (!Array.isArray(prods) || prods.length === 0) {
       if (localStorage.getItem('sawera_products') === null) {
         const catalog = seedInitialProducts().filter(c => !deletedIds.includes(c.id));
         this.set('products', catalog);
-        return catalog;
+        activeList = catalog;
       }
-      return [];
+    } else {
+      activeList = prods.filter(p => !deletedIds.includes(p.id));
     }
 
-    return prods.filter(p => !deletedIds.includes(p.id));
+    return activeList.map(p => this.normalizeProductImages(p));
   }
 
   getProductById(id) {
-    return this.getProducts().find(p => p.id === id);
+    const prod = this.getProducts().find(p => p.id === id);
+    return prod ? this.normalizeProductImages(prod) : undefined;
   }
 
   saveProduct(productData) {
     const products = this.getProducts();
+    const rawImages = (Array.isArray(productData.images) && productData.images.length > 0)
+      ? productData.images
+      : (productData.image ? [productData.image] : ['/images/products/gulab-jamun.svg']);
+    const cleanImages = rawImages.filter(Boolean).slice(0, 6);
+    const finalImages = cleanImages.length > 0 ? cleanImages : ['/images/products/gulab-jamun.svg'];
+
     let productToSave;
     if (productData.id && products.some(p => p.id === productData.id)) {
+      const existing = products.find(p => p.id === productData.id);
       productToSave = { 
-        ...products.find(p => p.id === productData.id), 
+        ...existing, 
         ...productData,
+        images: finalImages,
+        image: finalImages[0],
         updatedAt: new Date().toISOString()
       };
       const updated = products.map(p => p.id === productData.id ? productToSave : p);
       this.set('products', updated);
-      this.logActivity('Product Updated', `Product ${productData.name} updated.`);
+      this.logActivity('Product Updated', `Product ${productData.name} updated (${finalImages.length} images).`);
     } else {
       productToSave = {
         ...productData,
         id: productData.id || `prd-${Date.now()}`,
+        images: finalImages,
+        image: finalImages[0],
         isDemo: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       this.set('products', [productToSave, ...products]);
-      this.logActivity('Product Added', `New product ${productToSave.name} added.`);
+      this.logActivity('Product Added', `New product ${productToSave.name} added (${finalImages.length} images).`);
     }
 
     // If this product was previously in deletedIds, unmark it

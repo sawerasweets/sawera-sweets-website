@@ -19,6 +19,7 @@ import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/product/ProductCard';
+import ProductGallery from '../components/product/ProductGallery';
 import VariationSelector from '../components/product/VariationSelector';
 import ReviewFormModal from '../components/customer/ReviewFormModal';
 import AskQuestionModal from '../components/customer/AskQuestionModal';
@@ -172,18 +173,8 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             
             {/* Image Gallery */}
-            <div className="space-y-4">
-              <div className="relative aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-xs">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "/images/products/gulab-jamun.svg";
-                  }}
-                />
-              </div>
+            <div>
+              <ProductGallery product={product} />
             </div>
 
             {/* Product Info & Purchase Actions */}

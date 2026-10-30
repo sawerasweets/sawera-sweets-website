@@ -16,6 +16,7 @@ import {
 import db from '../../services/db';
 import { exportToCSV } from '../../services/exportUtils';
 import { CATEGORIES } from '../../data/categories';
+import ProductImageManager from '../../components/admin/ProductImageManager';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState(() => db.getProducts());
@@ -70,6 +71,7 @@ export default function AdminProductsPage() {
     unitType: 'kg',
     allowsDecimalQuantity: true,
     image: '/images/products/gulab-jamun.svg',
+    images: ['/images/products/gulab-jamun.svg'],
     description: '',
     ingredients: '',
     badge: 'Fresh Stock',
@@ -97,6 +99,7 @@ export default function AdminProductsPage() {
       unitType: initialCategory === 'sweets' ? 'kg' : 'piece',
       allowsDecimalQuantity: initialCategory === 'sweets',
       image: defaultImage,
+      images: [defaultImage],
       description: '',
       ingredients: '',
       badge: 'Fresh Stock',
@@ -114,18 +117,29 @@ export default function AdminProductsPage() {
     const newUnit = isDefaultOrSweetUnit ? getDefaultUnitForCategory(newCat) : formData.unit;
     const newImg = getDefaultImageForCategory(newCat);
 
-    setFormData(prev => ({
-      ...prev,
-      category: newCat,
-      unit: newUnit,
-      image: prev.image.includes('/images/categories/') || prev.image.includes('/images/products/gulab-jamun.svg') ? newImg : prev.image,
-      unitType: newCat === 'sweets' ? 'kg' : 'piece',
-      allowsDecimalQuantity: newCat === 'sweets'
-    }));
+    setFormData(prev => {
+      const isDefaultImg = !prev.image || prev.image.includes('/images/categories/') || prev.image.includes('/images/products/gulab-jamun.svg');
+      const updatedImg = isDefaultImg ? newImg : prev.image;
+      const updatedImages = (isDefaultImg || !prev.images || prev.images.length === 0) ? [newImg] : prev.images;
+
+      return {
+        ...prev,
+        category: newCat,
+        unit: newUnit,
+        image: updatedImg,
+        images: updatedImages,
+        unitType: newCat === 'sweets' ? 'kg' : 'piece',
+        allowsDecimalQuantity: newCat === 'sweets'
+      };
+    });
   };
 
   const handleOpenEdit = (prod) => {
     setEditingProduct(prod);
+    const existingImages = (Array.isArray(prod.images) && prod.images.length > 0)
+      ? prod.images.filter(Boolean)
+      : (prod.image ? [prod.image] : [getDefaultImageForCategory(prod.category)]);
+
     setFormData({
       name: prod.name || '',
       urduName: prod.urduName || '',
@@ -136,7 +150,8 @@ export default function AdminProductsPage() {
       unit: prod.unit || getDefaultUnitForCategory(prod.category),
       unitType: prod.unitType || (prod.category === 'sweets' ? 'kg' : 'piece'),
       allowsDecimalQuantity: Boolean(prod.allowsDecimalQuantity),
-      image: prod.image || getDefaultImageForCategory(prod.category),
+      image: existingImages[0] || getDefaultImageForCategory(prod.category),
+      images: existingImages.slice(0, 6),
       description: prod.description || '',
       ingredients: prod.ingredients || '',
       badge: prod.badge || '',
@@ -255,9 +270,18 @@ export default function AdminProductsPage() {
           discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null
         }));
 
+      // Clean up images: up to 6 images, with fallback to category default
+      const rawImages = (Array.isArray(formData.images) && formData.images.length > 0)
+        ? formData.images.filter(Boolean)
+        : (formData.image ? [formData.image] : [getDefaultImageForCategory(formData.category)]);
+      const cleanImages = rawImages.slice(0, 6);
+      const finalImages = cleanImages.length > 0 ? cleanImages : [getDefaultImageForCategory(formData.category)];
+
       const productPayload = {
         ...formData,
         id: editingProduct?.id,
+        image: finalImages[0],
+        images: finalImages,
         price: Number(formData.price),
         discountPrice: formData.discountPrice ? Number(formData.discountPrice) : null,
         isActive: formData.isActive !== false,
@@ -491,8 +515,16 @@ export default function AdminProductsPage() {
                   <tr key={p.id} className={`transition-colors ${isActive ? 'hover:bg-gray-50' : 'bg-gray-50/70 opacity-75'}`}>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 border p-1 flex-shrink-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-gray-50 border p-1 flex-shrink-0 flex items-center justify-center relative">
                           <img src={p.image} alt={p.name} className="max-h-full object-contain" />
+                          {Array.isArray(p.images) && p.images.length > 1 && (
+                            <span 
+                              className="absolute -bottom-1 -right-1 bg-[#07643D] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full shadow-xs border border-white"
+                              title={`${p.images.length} photos`}
+                            >
+                              {p.images.length}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5">
@@ -849,14 +881,19 @@ export default function AdminProductsPage() {
                 )}
               </div>
 
+              {/* Multi-Image Manager (Up to 6 images, reorder, cover selection, mobile/PC upload) */}
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Image URL / Path</label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="/images/products/gulab-jamun.svg"
-                  className="w-full p-2 border rounded-xl outline-none"
+                <ProductImageManager
+                  images={formData.images || [formData.image].filter(Boolean)}
+                  onChange={(newImages) => {
+                    const clean = Array.isArray(newImages) && newImages.length > 0 ? newImages : [getDefaultImageForCategory(formData.category)];
+                    setFormData(prev => ({
+                      ...prev,
+                      images: clean,
+                      image: clean[0] || getDefaultImageForCategory(prev.category)
+                    }));
+                  }}
+                  category={formData.category}
                 />
               </div>
 
