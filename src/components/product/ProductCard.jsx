@@ -16,10 +16,23 @@ export default function ProductCard({ product }) {
     toggleWishlist(product.id);
   };
 
-  const hasVariations = product.variations && product.variations.length > 0;
+  const activeVariations = (product.variations || []).filter(v => v.isActive !== false);
+  const hasVariations = activeVariations.length > 0;
+  const hasMultipleVariants = activeVariations.length > 1;
+
+  // Find lowest price among active variants for starting price ("From Rs. X")
+  const variantPrices = activeVariations
+    .map(v => v.discountPrice ?? v.price)
+    .filter(p => !isNaN(p) && p > 0);
+  const startingPrice = variantPrices.length > 0
+    ? Math.min(...variantPrices)
+    : (product.discountPrice ?? product.price);
+
+  // Check explicit default variant first
+  const explicitDefault = activeVariations.find(v => v.isDefault);
   
   // Detect if product has 500g/1kg/2kg weight options (traditional sweets)
-  const oneKgVariation = product.variations?.find(v => 
+  const oneKgVariation = activeVariations.find(v => 
     v.weight === '1kg' || 
     v.id === 'var-1kg' || 
     v.label?.toLowerCase().includes('1 kilo') || 
@@ -29,11 +42,10 @@ export default function ProductCard({ product }) {
 
   const hasKgVariations = Boolean(
     oneKgVariation || 
-    product.variations?.some(v => v.label?.toLowerCase().includes('500') || v.weight === '500g')
+    activeVariations.some(v => v.label?.toLowerCase().includes('500') || v.weight === '500g')
   );
 
-  // If sweet with kg options, enforce 1kg rate as requested by user; otherwise use first variation or null
-  const defaultVar = hasKgVariations ? (oneKgVariation || null) : (hasVariations ? product.variations[0] : null);
+  const defaultVar = explicitDefault || (hasKgVariations ? (oneKgVariation || null) : (hasVariations ? activeVariations[0] : null));
   const [selectedVariation, setSelectedVariation] = useState(defaultVar);
 
   const currentPrice = selectedVariation 
@@ -151,8 +163,8 @@ export default function ProductCard({ product }) {
           <p className="text-xs text-gray-500 mt-1">
             {isUrdu ? 'پیکنگ:' : 'Packaging:'}{' '}
             <span className="font-medium text-gray-700">
-              {hasKgVariations
-                ? (isUrdu ? '1 کلوگرام (ایک کلو)' : '1 Kilogram (1 kg)')
+              {hasMultipleVariants
+                ? (isUrdu ? `${activeVariations.length} مختلف سائز دستیاب` : `${activeVariations.length} Weight Options`)
                 : (selectedVariation
                     ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label)
                     : (isUrdu ? (product.urduUnit || product.unit) : product.unit))}
@@ -193,10 +205,15 @@ export default function ProductCard({ product }) {
         <div className="mt-4 pt-3 border-t border-gray-100">
           <div className="flex items-baseline justify-between mb-3">
             <div>
+              {hasMultipleVariants && (
+                <span className="text-[11px] font-bold text-gray-500 mr-1">
+                  {isUrdu ? 'شروع:' : 'From'}
+                </span>
+              )}
               <span className="text-base font-extrabold text-[#07643D]">
-                Rs. {currentPrice.toLocaleString()}
+                Rs. {(hasMultipleVariants ? startingPrice : currentPrice).toLocaleString()}
               </span>
-              {hasDiscount && (
+              {hasDiscount && !hasMultipleVariants && (
                 <span className="text-xs text-gray-400 line-through ml-2">
                   Rs. {originalPrice.toLocaleString()}
                 </span>

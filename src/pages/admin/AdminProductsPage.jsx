@@ -17,6 +17,7 @@ import db from '../../services/db';
 import { exportToCSV } from '../../services/exportUtils';
 import { CATEGORIES } from '../../data/categories';
 import ProductImageManager from '../../components/admin/ProductImageManager';
+import ProductVariantManager from '../../components/admin/ProductVariantManager';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState(() => db.getProducts());
@@ -198,27 +199,7 @@ export default function AdminProductsPage() {
   };
 
   const handlePriceChange = (newPrice) => {
-    setFormData(prev => {
-      const next = { ...prev, price: newPrice };
-      const num = Number(newPrice);
-      // If variations contain standard 500g, 1kg, 2kg, auto-align them with new Base Price!
-      if (num > 0 && prev.variations.length > 0) {
-        next.variations = prev.variations.map(v => {
-          const lbl = (v.label || '').toLowerCase();
-          if (lbl.includes('500') || lbl.includes('half') || lbl.includes('آدھا')) {
-            return { ...v, price: Math.round(num * 0.5) };
-          }
-          if (lbl.includes('1 kg') || lbl.includes('1kg') || lbl.includes('1 kilo') || lbl.includes('ایک کلو')) {
-            return { ...v, price: num };
-          }
-          if (lbl.includes('2 kg') || lbl.includes('2kg') || lbl.includes('2 kilo') || lbl.includes('دو کلو')) {
-            return { ...v, price: num * 2 };
-          }
-          return v;
-        });
-      }
-      return next;
-    });
+    setFormData(prev => ({ ...prev, price: newPrice }));
   };
 
   const syncVariationsFromBasePrice = () => {
@@ -259,15 +240,20 @@ export default function AdminProductsPage() {
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-
     try {
-      // Clean up variations: remove any empty labels
+      // Clean up variations: preserve id, urduLabel, weight, price, discountPrice, stock, isActive, isDefault
       const cleanedVariations = (formData.variations || [])
-        .filter(v => v.label && v.label.trim())
-        .map(v => ({
-          label: v.label.trim(),
+        .filter(v => v && v.label && String(v.label).trim())
+        .map((v, idx) => ({
+          id: v.id || `var-${Date.now()}-${idx}`,
+          label: String(v.label).trim(),
+          urduLabel: v.urduLabel ? String(v.urduLabel).trim() : '',
+          weight: v.weight || '',
           price: Number(v.price) || Number(formData.price) || 0,
-          discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null
+          discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null,
+          stock: (v.stock !== undefined && v.stock !== null && !isNaN(Number(v.stock))) ? Number(v.stock) : 50,
+          isActive: v.isActive !== false,
+          isDefault: Boolean(v.isDefault)
         }));
 
       // Clean up images: up to 6 images, with fallback to category default
@@ -760,126 +746,19 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Variations & Sizes Builder (Optional) */}
-              <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50/70 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
-                    <span className="font-bold text-gray-800 text-xs block">
-                      Sizes, Packs &amp; Variations (اختیاری - سائز و مختلف آپشنز)
-                    </span>
-                    <span className="text-[10px] text-gray-500">
-                      Agar 1 Piece vs Full Box, ya 50ml vs 100ml, ya 500g vs 1kg offer karna ho to add karein. Warna isko khali chhor dein.
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {formData.variations.length > 0 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={syncVariationsFromBasePrice}
-                          className="text-[#07643D] bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded-md font-bold text-[11px] hover:bg-emerald-100 cursor-pointer"
-                          title="Recalculate 500g (50%), 1kg (100%), 2kg (200%) from current Base Price"
-                        >
-                          ⚡ Sync with Base Price
-                        </button>
-                        <button
-                          type="button"
-                          onClick={clearAllVariations}
-                          className="text-red-600 font-semibold text-[11px] hover:underline cursor-pointer"
-                        >
-                          Clear All
-                        </button>
-                      </>
-                    )}
-                    <button
-                      type="button"
-                      onClick={addVariationRow}
-                      className="text-[#07643D] font-bold text-xs hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      + Add Option Row
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quick Presets for fast 1-click addition */}
-                <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-200/60">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-1">
-                    Quick Presets:
-                  </span>
-                  <button
-                    type="button"
-                    onClick={addPieceBoxPresets}
-                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
-                    title="Add 1 Piece & Full Box options"
-                  >
-                    + 1 Piece &amp; Full Box (ڈبہ)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={addPerfumePresets}
-                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
-                    title="Add 50ml & 100ml options"
-                  >
-                    + 50ml &amp; 100ml Bottle
-                  </button>
-                  <button
-                    type="button"
-                    onClick={addSweetsWeightPresets}
-                    className="text-[10px] px-2 py-1 rounded-md bg-white border border-gray-200 hover:border-[#07643D] hover:text-[#07643D] font-medium transition-colors cursor-pointer"
-                    title="Add 500g & 1kg sweet weights"
-                  >
-                    + 500g &amp; 1kg Box
-                  </button>
-                </div>
-
-                {formData.variations.length === 0 ? (
-                  <div className="p-3.5 bg-white rounded-xl border border-dashed border-gray-300 text-center space-y-1">
-                    <p className="text-gray-700 text-xs font-semibold">
-                      ✓ Single Price Item (کوئی اضافی سائز نہیں)
-                    </p>
-                    <p className="text-gray-400 text-[11px]">
-                      Ye product upar di gayi <strong>Regular Price {formData.price ? `(Rs. ${Number(formData.price).toLocaleString()})` : ''}</strong> par <strong>{formData.unit || 'Single Piece'}</strong> ke hisaab se sell hoga. Agar alag alag pack size nahi hain to yahan kuch add karne ki zaroorat nahi hai.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {formData.variations.map((v, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={v.label}
-                          onChange={(e) => updateVariation(i, 'label', e.target.value)}
-                          placeholder="Option Name (e.g. 1 Piece, Full Box, 50ml, 500g)"
-                          className="flex-1 p-2 border rounded-lg bg-white text-xs outline-none focus:border-[#07643D]"
-                        />
-                        <input
-                          type="number"
-                          value={v.price}
-                          onChange={(e) => updateVariation(i, 'price', e.target.value ? Number(e.target.value) : '')}
-                          placeholder="Price (PKR)"
-                          className="w-28 p-2 border rounded-lg bg-white font-mono text-xs outline-none focus:border-[#07643D]"
-                        />
-                        <input
-                          type="number"
-                          value={v.discountPrice ?? ''}
-                          onChange={(e) => updateVariation(i, 'discountPrice', e.target.value ? Number(e.target.value) : '')}
-                          placeholder="Sale Price (Opt)"
-                          className="w-28 p-2 border rounded-lg bg-white font-mono text-xs outline-none focus:border-[#07643D]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeVariation(i)}
-                          className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
-                          title="Remove this option"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Advanced Multiple Weight / Size Options Manager */}
+              <ProductVariantManager
+                variations={formData.variations}
+                onChange={(updatedVariations) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    variations: updatedVariations
+                  }));
+                }}
+                basePrice={formData.price}
+                baseDiscountPrice={formData.discountPrice}
+                category={formData.category}
+              />
 
               {/* Multi-Image Manager (Up to 6 images, reorder, cover selection, mobile/PC upload) */}
               <div>

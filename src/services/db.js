@@ -1037,19 +1037,43 @@ class SaweraDB {
     return true;
   }
 
-  // Helper to normalize product images (supports up to 6 images per product)
-  normalizeProductImages(prod) {
+  // Helper to normalize product images and variants
+  normalizeProduct(prod) {
     if (!prod) return prod;
+    // 1. Normalize Images (up to 6 images)
     const rawList = Array.isArray(prod.images) && prod.images.length > 0
       ? prod.images
       : (prod.image ? [prod.image] : ['/images/products/gulab-jamun.svg']);
     const cleanList = rawList.filter(Boolean).slice(0, 6);
     const finalImages = cleanList.length > 0 ? cleanList : ['/images/products/gulab-jamun.svg'];
+
+    // 2. Normalize Variations
+    let normalizedVariations = [];
+    if (Array.isArray(prod.variations) && prod.variations.length > 0) {
+      normalizedVariations = prod.variations.map((v, idx) => ({
+        id: v.id || `var-${idx}-${Date.now()}`,
+        label: v.label || '',
+        urduLabel: v.urduLabel || '',
+        weight: v.weight || '',
+        price: Number(v.price) || 0,
+        discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null,
+        stock: (v.stock !== undefined && v.stock !== null && !isNaN(Number(v.stock))) ? Number(v.stock) : 50,
+        isActive: v.isActive !== false,
+        isDefault: Boolean(v.isDefault)
+      }));
+    }
+
     return {
       ...prod,
       images: finalImages,
-      image: finalImages[0] // Always maintain primary cover image for backwards compatibility
+      image: finalImages[0], // Always maintain primary cover image for backwards compatibility
+      variations: normalizedVariations
     };
+  }
+
+  // Alias for backward compatibility
+  normalizeProductImages(prod) {
+    return this.normalizeProduct(prod);
   }
 
   // Product Operations
@@ -1068,12 +1092,12 @@ class SaweraDB {
       activeList = prods.filter(p => !deletedIds.includes(p.id));
     }
 
-    return activeList.map(p => this.normalizeProductImages(p));
+    return activeList.map(p => this.normalizeProduct(p));
   }
 
   getProductById(id) {
     const prod = this.getProducts().find(p => p.id === id);
-    return prod ? this.normalizeProductImages(prod) : undefined;
+    return prod ? this.normalizeProduct(prod) : undefined;
   }
 
   saveProduct(productData) {
@@ -1084,6 +1108,21 @@ class SaweraDB {
     const cleanImages = rawImages.filter(Boolean).slice(0, 6);
     const finalImages = cleanImages.length > 0 ? cleanImages : ['/images/products/gulab-jamun.svg'];
 
+    const rawVariations = Array.isArray(productData.variations) ? productData.variations : [];
+    const cleanedVariations = rawVariations
+      .filter(v => v && v.label && String(v.label).trim())
+      .map((v, idx) => ({
+        id: v.id || `var-${Date.now()}-${idx}`,
+        label: String(v.label).trim(),
+        urduLabel: v.urduLabel ? String(v.urduLabel).trim() : '',
+        weight: v.weight || '',
+        price: Number(v.price) || Number(productData.price) || 0,
+        discountPrice: (v.discountPrice !== '' && v.discountPrice !== null && !isNaN(Number(v.discountPrice))) ? Number(v.discountPrice) : null,
+        stock: (v.stock !== undefined && v.stock !== null && !isNaN(Number(v.stock))) ? Number(v.stock) : 50,
+        isActive: v.isActive !== false,
+        isDefault: Boolean(v.isDefault)
+      }));
+
     let productToSave;
     if (productData.id && products.some(p => p.id === productData.id)) {
       const existing = products.find(p => p.id === productData.id);
@@ -1092,23 +1131,25 @@ class SaweraDB {
         ...productData,
         images: finalImages,
         image: finalImages[0],
+        variations: cleanedVariations,
         updatedAt: new Date().toISOString()
       };
       const updated = products.map(p => p.id === productData.id ? productToSave : p);
       this.set('products', updated);
-      this.logActivity('Product Updated', `Product ${productData.name} updated (${finalImages.length} images).`);
+      this.logActivity('Product Updated', `Product ${productData.name} updated (${cleanedVariations.length} variants).`);
     } else {
       productToSave = {
         ...productData,
         id: productData.id || `prd-${Date.now()}`,
         images: finalImages,
         image: finalImages[0],
+        variations: cleanedVariations,
         isDemo: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       this.set('products', [productToSave, ...products]);
-      this.logActivity('Product Added', `New product ${productToSave.name} added (${finalImages.length} images).`);
+      this.logActivity('Product Added', `New product ${productToSave.name} added (${cleanedVariations.length} variants).`);
     }
 
     // If this product was previously in deletedIds, unmark it

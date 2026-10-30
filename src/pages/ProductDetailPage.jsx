@@ -41,14 +41,22 @@ export default function ProductDetailPage() {
 
   const findDefaultVariation = (prod) => {
     if (!prod?.variations || prod.variations.length === 0) return null;
-    const oneKg = prod.variations.find(v => 
+    const activeList = prod.variations.filter(v => v.isActive !== false);
+    if (activeList.length === 0) return null;
+
+    // 1. Explicit default set by admin
+    const explicitDefault = activeList.find(v => v.isDefault);
+    if (explicitDefault) return explicitDefault;
+
+    // 2. Fallback to 1kg if sweet with 1kg
+    const oneKg = activeList.find(v => 
       v.weight === '1kg' || 
       v.id === 'var-1kg' || 
       v.label?.toLowerCase().includes('1 kilo') || 
       v.label?.toLowerCase().includes('1kg') ||
       v.label?.includes('1 کلو')
     );
-    return oneKg || prod.variations[0];
+    return oneKg || activeList[0];
   };
 
   const [selectedVariation, setSelectedVariation] = useState(() => findDefaultVariation(product));
@@ -130,11 +138,20 @@ export default function ProductDetailPage() {
   const hasDiscount = (selectedVariation?.discountPrice && selectedVariation.discountPrice < selectedVariation.price) ||
     (!selectedVariation && product.discountPrice && product.discountPrice < product.price);
 
+  const selectedStock = selectedVariation?.stock !== undefined 
+    ? selectedVariation.stock 
+    : (product.stocks?.['shop-1'] ?? 50);
+
+  const isSelectedInStock = selectedStock > 0 && 
+    (selectedVariation ? selectedVariation.isActive !== false : product.isActive !== false);
+
   const handleAddToCart = () => {
+    if (!isSelectedInStock) return;
     addToCart(product, quantity, selectedVariation);
   };
 
   const handleBuyNow = () => {
+    if (!isSelectedInStock) return;
     addToCart(product, quantity, selectedVariation);
     navigate('/checkout');
   };
@@ -199,26 +216,59 @@ export default function ProductDetailPage() {
 
                 {/* Stock Status & Badges */}
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-[#07643D] bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{isUrdu ? 'دستیاب ہے • فوری ڈلیوری' : 'In Stock • Ready for Delivery'}</span>
+                  <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border ${
+                    isSelectedInStock 
+                      ? 'text-[#07643D] bg-emerald-50 border-emerald-100' 
+                      : 'text-red-700 bg-red-50 border-red-200'
+                  }`}>
+                    {isSelectedInStock ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>
+                          {selectedStock !== undefined 
+                            ? (isUrdu ? `دستیاب ہے (${selectedStock} دانے اسٹاک میں)` : `In Stock (${selectedStock} available)`) 
+                            : (isUrdu ? 'دستیاب ہے • فوری ڈلیوری' : 'In Stock • Ready for Delivery')}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{isUrdu ? 'اس سائز کا اسٹاک ختم ہے' : 'Out of Stock'}</span>
+                      </>
+                    )}
                   </span>
-                  <span className="text-xs text-gray-500 font-mono">{isUrdu ? 'پیکنگ:' : 'Unit:'} {product.unit}</span>
+                  <span className="text-xs text-gray-500 font-mono">
+                    {isUrdu ? 'منتخب سائز:' : 'Selected:'}{' '}
+                    {selectedVariation 
+                      ? (isUrdu ? (selectedVariation.urduLabel || selectedVariation.label) : selectedVariation.label) 
+                      : (product.unit || 'Standard')}
+                  </span>
                 </div>
 
                 {/* Pricing Block */}
-                <div className="p-4 rounded-2xl bg-[#FDFBF7] border border-[#D4AF37]/30 flex items-baseline gap-3">
-                  <span className="text-3xl font-extrabold text-[#07643D] font-mono">
-                    Rs. {currentPrice?.toLocaleString()}
-                  </span>
-                  {hasDiscount && (
-                    <span className="text-sm text-gray-400 line-through font-mono">
-                      Rs. {originalPrice?.toLocaleString()}
+                <div className="p-4 rounded-2xl bg-[#FDFBF7] border border-[#D4AF37]/30 flex flex-wrap items-baseline gap-3">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-extrabold text-[#07643D] font-mono">
+                      Rs. {currentPrice?.toLocaleString()}
                     </span>
+                    {hasDiscount && (
+                      <span className="text-sm text-gray-400 line-through font-mono">
+                        Rs. {originalPrice?.toLocaleString()}
+                      </span>
+                    )}
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      PKR
+                    </span>
+                  </div>
+
+                  {quantity > 1 && (
+                    <div className="ml-auto text-right">
+                      <span className="text-xs text-gray-400 block font-medium">{isUrdu ? 'کل رقم:' : 'Total Price:'}</span>
+                      <span className="text-base font-extrabold text-[#07643D] font-mono">
+                        Rs. {Math.round(currentPrice * quantity).toLocaleString()}
+                      </span>
+                    </div>
                   )}
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider ml-auto">
-                    PKR
-                  </span>
                 </div>
 
                 {/* Description */}
@@ -267,18 +317,28 @@ export default function ProductDetailPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button
                       onClick={handleAddToCart}
-                      className="py-3 px-4 rounded-xl bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/40 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
+                      disabled={!isSelectedInStock}
+                      className={`py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-xs ${
+                        isSelectedInStock 
+                          ? 'bg-emerald-50 hover:bg-[#07643D] text-[#07643D] hover:text-white border border-[#07643D]/40 cursor-pointer' 
+                          : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                      }`}
                     >
                       <ShoppingBag className="w-4 h-4" />
-                      <span>{isUrdu ? `ٹوکری میں شامل کریں (${quantity})` : `Add to Cart (${quantity})`}</span>
+                      <span>{isSelectedInStock ? (isUrdu ? `ٹوکری میں شامل کریں (${quantity})` : `Add to Cart (${quantity})`) : (isUrdu ? 'اسٹاک دستیاب نہیں' : 'Out of Stock')}</span>
                     </button>
 
                     <button
                       onClick={handleBuyNow}
-                      className="py-3 px-4 rounded-xl bg-[#07643D] hover:bg-[#043E26] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                      disabled={!isSelectedInStock}
+                      className={`py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all ${
+                        isSelectedInStock 
+                          ? 'bg-[#07643D] hover:bg-[#043E26] text-white hover:shadow-lg cursor-pointer' 
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
                     >
                       <Zap className="w-4 h-4 text-[#D4AF37]" />
-                      <span>{isUrdu ? 'ابھی خریدیں اور کیش ادا کریں' : 'Buy Now & Checkout'}</span>
+                      <span>{isSelectedInStock ? (isUrdu ? 'ابھی خریدیں اور کیش ادا کریں' : 'Buy Now & Checkout') : (isUrdu ? 'اسٹاک ختم ہے' : 'Unavailable')}</span>
                     </button>
                   </div>
                 )}
