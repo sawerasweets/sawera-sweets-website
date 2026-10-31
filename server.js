@@ -60,6 +60,23 @@ app.post('/api/sync', (req, res) => {
   }
 });
 
+// Immediate Order Alert Endpoint
+app.post('/api/notify-order', (req, res) => {
+  try {
+    const { order } = req.body || {};
+    if (order) {
+      console.log(`\n🔔 [ALERT] NEW ORDER RECEIVED: #${order.id}`);
+      console.log(`👤 Customer: ${order.customer?.name} (${order.customer?.phone})`);
+      console.log(`💰 Total: Rs. ${order.total} | Payment: ${order.paymentMethod}`);
+      console.log(`📦 Items: ${order.items?.length || 0} item(s)`);
+      console.log(`📍 City: ${order.city || 'Jhang'}\n`);
+    }
+    res.json({ success: true, timestamp: new Date().toISOString() });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Persistent Upload Storage Directory (public/uploads and dist/uploads)
 const PUBLIC_UPLOADS = path.join(__dirname, 'public', 'uploads');
 const DIST_UPLOADS = path.join(__dirname, 'dist', 'uploads');

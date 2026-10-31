@@ -9,8 +9,22 @@ export default function OrderConfirmationPage() {
   const navigate = useNavigate();
   const { isUrdu } = useLanguage();
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [waOpened, setWaOpened] = useState(false);
 
   const order = location.state?.order;
+
+  // Auto-trigger WhatsApp dispatch if not already opened
+  React.useEffect(() => {
+    if (order && !waOpened) {
+      const timer = setTimeout(() => {
+        try {
+          window.open(waUrl, '_blank');
+          setWaOpened(true);
+        } catch (e) {}
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [order?.id, waOpened]);
 
   if (!order) {
     return (

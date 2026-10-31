@@ -156,18 +156,60 @@ export default function CheckoutPage() {
     try {
       const createdOrder = await db.createOrder(orderPayload);
 
-      // Notify admin
+      // Build WhatsApp message for Store Owner (0322 7434080)
+      const customerCity = createdOrder.city || createdOrder.customer?.city || 'Jhang';
+      const itemsList = (createdOrder.items || [])
+        .map(i => `• ${i.name} (${i.selectedVariation || i.unit || '1 unit'}) x ${i.quantity} = Rs. ${((i.price || 0) * (i.quantity || 1)).toLocaleString()}`)
+        .join('\n');
+
+      const waMsg = 
+`Assalam o Alaikum Sawera Sweets & Bakers! 🍰
+
+🛍️ *New Order Placed on Website:* #${createdOrder.id}
+
+👤 *Customer:* ${createdOrder.customer?.name || ''}
+📱 *Phone:* ${createdOrder.customer?.phone || ''}
+📍 *City:* ${customerCity}
+🏠 *Address:* ${createdOrder.customer?.address || ''}
+
+📦 *Items Ordered:*
+${itemsList}
+
+🚚 *Delivery:* Rs. ${createdOrder.deliveryFee || 0}
+💰 *Total Payable:* Rs. ${createdOrder.total?.toLocaleString()} (${createdOrder.paymentMethod?.toUpperCase() || 'COD'})
+
+Baraye meharbani mera order confirm karein aur delivery time bata dein. Shukriya!`;
+
+      const waUrl = `https://wa.me/923227434080?text=${encodeURIComponent(waMsg)}`;
+
+      // Immediate WhatsApp dispatch trigger on customer submit
+      try {
+        window.open(waUrl, '_blank');
+      } catch (e) {
+        // Handled on confirmation page
+      }
+
+      // Notify local store session
       sendNotification({
         targetRole: 'admin',
         title: 'New Order Received',
         titleUrdu: 'نیا آرڈر موصول ہوا',
-        message: `Order #${createdOrder.id} for Rs. ${createdOrder.total} placed by ${createdOrder.customer.name}.`,
+        message: `Order #${createdOrder.id} for Rs. ${createdOrder.total} placed by ${createdOrder.customer?.name || 'Customer'}.`,
         type: 'info'
       });
 
+      // Call server notify API if online
+      try {
+        fetch('/api/notify-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: createdOrder })
+        }).catch(() => {});
+      } catch (e) {}
+
       clearCart();
       setIsSubmitting(false);
-      navigate('/order-confirmation', { state: { order: createdOrder } });
+      navigate('/order-confirmation', { state: { order: createdOrder, waUrl, autoOpen: true } });
     } catch (err) {
       console.error('Failed to create order', err);
       setError('An unexpected error occurred while placing order. Please try again.');
