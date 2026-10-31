@@ -1237,7 +1237,12 @@ class SaweraDB {
     return orders.filter(o => {
       if (!o || !o.id) return false;
       if (deletedSet.has(o.id) || knownDemoIds.has(o.id)) return false;
-      if (typeof o.id === 'string' && o.id.startsWith('SAV-TEST-')) return false;
+      if (typeof o.id === 'string' && (o.id.startsWith('SAV-TEST-') || o.id.includes('RLS'))) return false;
+      const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+      if (!isTestEnv) {
+        const custName = (o.customer?.name || '').toLowerCase();
+        if (custName.includes('test') || custName.includes('demo') || custName.includes('audit')) return false;
+      }
       return true;
     });
   }
