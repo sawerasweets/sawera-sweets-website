@@ -137,14 +137,14 @@ export default function CustomerLoginPage() {
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-gray-700 font-semibold mb-1">Email Address</label>
+                <label className="block text-gray-700 font-semibold mb-1">Email Address or Phone</label>
                 <div className="relative">
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. customer@sawerasweets.pk"
+                    placeholder="admin@sawerasweets.pk or 0322 7434080"
                     className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 focus:border-[#07643D] focus:ring-1 focus:ring-[#07643D] outline-none text-xs"
                   />
                   <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
