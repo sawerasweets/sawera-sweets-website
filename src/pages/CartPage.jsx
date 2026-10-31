@@ -1,12 +1,19 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { STORE_CONFIG } from '../data/storeConfig';
+import { db } from '../services/db';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart, subtotal, totalItems } = useCart();
   const navigate = useNavigate();
+
+  const settings = db.getSettings();
+  const freeThreshold = Number(settings.freeDeliveryThreshold || 3000);
+  const isFreeDelivery = Boolean(freeThreshold > 0 && subtotal >= freeThreshold);
+  const deliveryFee = isFreeDelivery ? 0 : Number(settings.defaultDeliveryFee ?? settings.deliveryFee ?? settings.deliveryOptions?.inCityFee ?? 180);
+  const totalAmount = subtotal + deliveryFee;
 
   if (cart.length === 0) {
     return (
@@ -173,22 +180,37 @@ export default function CartPage() {
                 <span className="font-bold text-gray-900">Rs. {subtotal.toLocaleString()}</span>
               </div>
 
-              <div className="flex justify-between text-gray-600">
-                <span>Estimated Delivery:</span>
-                <span className="font-mono text-[11px] text-gray-600">{STORE_CONFIG.delivery.standardDeliveryFee}</span>
+              <div className="flex justify-between items-center text-gray-600">
+                <span>Delivery Charges:</span>
+                {isFreeDelivery ? (
+                  <span className="font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full text-[10px] tracking-wide border border-emerald-200">
+                    FREE DELIVERY (مفت ڈلیوری)
+                  </span>
+                ) : (
+                  <span className="font-mono font-bold text-gray-900">Rs. {deliveryFee}</span>
+                )}
               </div>
 
+              {!isFreeDelivery && freeThreshold > 0 && (
+                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-center justify-between">
+                  <span>Add <strong>Rs. {(freeThreshold - subtotal).toLocaleString()}</strong> more for <strong>FREE Delivery</strong>!</span>
+                </div>
+              )}
+
               <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-[11px] text-[#07643D]">
-                <p className="font-semibold">Local Delivery Note:</p>
+                <p className="font-semibold flex items-center gap-1.5">
+                  <Truck className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Doorstep Delivery Policy:</span>
+                </p>
                 <p className="mt-0.5 text-emerald-800">
-                  Cash on Delivery and direct WhatsApp verification available at checkout.
+                  Fixed Rs. 180 delivery across Pakistan. <strong>FREE Delivery</strong> on all orders of Rs. 3,000 or more!
                 </p>
               </div>
 
               <div className="border-t border-gray-200 pt-3 flex justify-between items-baseline">
-                <span className="text-sm font-bold text-gray-900">Total:</span>
+                <span className="text-sm font-bold text-gray-900">Total Payable:</span>
                 <span className="text-xl font-extrabold text-[#07643D]">
-                  Rs. {subtotal.toLocaleString()}
+                  Rs. {totalAmount.toLocaleString()}
                 </span>
               </div>
             </div>

@@ -168,11 +168,11 @@ const lastCity = PAKISTAN_CITIES[PAKISTAN_CITIES.length - 1].name;
 assert(firstCity.startsWith('A') && lastCity.startsWith('Z'), `Cities ordered A to Z: Starts with ${firstCity}, ends with ${lastCity}`);
 
 // Delivery rules: Standard Nationwide Delivery Fee with Free Delivery threshold
-function calculateDelivery(subtotal, defaultFee = 100, freeThreshold = 3000) {
+function calculateDelivery(subtotal, defaultFee = 180, freeThreshold = 3000) {
   return (freeThreshold && subtotal >= freeThreshold) ? 0 : defaultFee;
 }
 
-assert(calculateDelivery(1500) === 100, 'Order Rs. 1500 delivery fee is standard Rs. 100');
+assert(calculateDelivery(1500) === 180, 'Order Rs. 1500 delivery fee is standard Rs. 180');
 assert(calculateDelivery(3000) === 0, 'Order Rs. 3000 qualifies for Free Delivery (Rs. 0)');
 assert(calculateDelivery(4500) === 0, 'Order Rs. 4500 qualifies for Free Delivery (Rs. 0)');
 assert(calculateDelivery(500, 150) === 150, 'Custom Admin delivery fee (Rs. 150) calculates correctly');

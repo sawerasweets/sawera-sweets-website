@@ -35,9 +35,9 @@ export const STORE_CONFIG = {
   delivery: {
     currency: "Rs.",
     currencyCode: "PKR",
-    inCityFee: 100,
-    outCityFee: 250,
-    standardDeliveryFee: "Rs. 100",
+    inCityFee: 180,
+    outCityFee: 180,
+    standardDeliveryFee: "Rs. 180",
     freeDeliveryMinimum: "Rs. 3,000",
     estimatedDeliveryTime: "30 - 60 Minutes (Jhang City) / 24 - 48 Hours (Other Cities)",
     coverageAreas: "Inside Jhang City & All Pakistan Courier Delivery"

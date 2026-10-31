@@ -194,7 +194,7 @@ export default function AdminSettingsPage() {
                 type="number"
                 min="0"
                 step="10"
-                value={settings.defaultDeliveryFee ?? settings.deliveryOptions?.inCityFee ?? 100}
+                value={settings.defaultDeliveryFee ?? settings.deliveryOptions?.inCityFee ?? 180}
                 onChange={(e) => {
                   const val = Number(e.target.value);
                   setSettings({
@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
                 className="w-full p-2.5 border rounded-xl bg-white outline-none font-mono text-sm focus:border-[#07643D]"
               />
               <p className="text-[10px] text-gray-500">
-                Current standard delivery fee charged at checkout (e.g. 100, 150, or 0 for free).
+                Current standard delivery fee charged at checkout (e.g. 180, 200, or 0 for free).
               </p>
             </div>
 
@@ -245,7 +245,7 @@ export default function AdminSettingsPage() {
           <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 flex items-center justify-between">
             <span>Customer Checkout Status:</span>
             <span className="font-bold text-[#07643D] font-mono">
-              Rs. {settings.defaultDeliveryFee ?? 100} Delivery Fee (Free on orders ≥ Rs. {(settings.freeDeliveryThreshold ?? 3000).toLocaleString()})
+              Rs. {settings.defaultDeliveryFee ?? 180} Delivery Fee (Free on orders ≥ Rs. {(settings.freeDeliveryThreshold ?? 3000).toLocaleString()})
             </span>
           </div>
         </div>

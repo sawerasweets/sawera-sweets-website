@@ -43,16 +43,16 @@ const defaultSettings = {
   loyaltyPointsRate: 100, // 1 point for every 100 PKR spent
   minOrderAmount: 250,
   freeDeliveryThreshold: 3000,
-  defaultDeliveryFee: 100,
+  defaultDeliveryFee: 180,
   deliveryOptions: {
-    inCityFee: 100,
+    inCityFee: 180,
     inCityLabel: "Inside Jhang City (جھنگ شہر)",
-    outCityFee: 250,
+    outCityFee: 180,
     outCityLabel: "Outside Jhang / Other Cities (دیگر شہر)",
     freeDeliveryThreshold: 3000
   },
   deliveryTiers: [
-    { id: "tier-1", maxKm: 5, fee: 100, label: "Local (0 - 5 km)" },
+    { id: "tier-1", maxKm: 5, fee: 180, label: "Local (0 - 5 km)" },
     { id: "tier-2", maxKm: 12, fee: 180, label: "City Wide (5 - 12 km)" },
     { id: "tier-3", maxKm: 25, fee: 280, label: "Suburbs (12 - 25 km)" },
     { id: "tier-4", maxKm: 999, fee: 450, label: "All Pakistan Express" }
@@ -1515,7 +1515,26 @@ class SaweraDB {
     if (!sets || Array.isArray(sets) || typeof sets !== 'object') {
       return defaultSettings;
     }
-    return { ...defaultSettings, ...sets };
+    const merged = { ...defaultSettings, ...sets };
+    // Seamless legacy migration: guarantee fixed Rs. 180 standard fee and Rs. 3,000 free threshold
+    if (merged.defaultDeliveryFee === 100 || merged.defaultDeliveryFee === 220 || !merged.defaultDeliveryFee) {
+      merged.defaultDeliveryFee = 180;
+    }
+    if (merged.deliveryOptions) {
+      if (merged.deliveryOptions.inCityFee === 100 || merged.deliveryOptions.inCityFee === 220 || !merged.deliveryOptions.inCityFee) {
+        merged.deliveryOptions.inCityFee = 180;
+      }
+      if (merged.deliveryOptions.outCityFee === 100 || merged.deliveryOptions.outCityFee === 220 || !merged.deliveryOptions.outCityFee) {
+        merged.deliveryOptions.outCityFee = 180;
+      }
+      if (!merged.deliveryOptions.freeDeliveryThreshold) {
+        merged.deliveryOptions.freeDeliveryThreshold = 3000;
+      }
+    }
+    if (!merged.freeDeliveryThreshold) {
+      merged.freeDeliveryThreshold = 3000;
+    }
+    return merged;
   }
 
   updateSettings(updates) {

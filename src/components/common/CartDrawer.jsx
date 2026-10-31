@@ -179,7 +179,7 @@ export default function CartDrawer() {
                 </span>
               </div>
               <p className="text-[11px] text-gray-500">
-                Delivery charges will be calculated during order checkout.
+                Delivery: <strong className="text-emerald-800 font-bold">{subtotal >= 3000 ? 'FREE DELIVERY (مفت)' : 'Rs. 180'}</strong> (Free on orders ≥ Rs. 3,000)
               </p>
 
               <div className="space-y-2 pt-1">

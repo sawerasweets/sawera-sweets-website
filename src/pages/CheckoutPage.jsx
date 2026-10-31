@@ -46,10 +46,10 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Delivery fee calculation controlled by Admin Settings
-  // Admin sets standard delivery charges and free delivery threshold in Admin Panel.
-  const isFreeDelivery = Boolean(settings.freeDeliveryThreshold && subtotal >= settings.freeDeliveryThreshold);
-  const configuredDeliveryFee = Number(settings.defaultDeliveryFee ?? settings.deliveryFee ?? 100);
+  // Delivery fee calculation controlled by Admin Settings (Rs. 180 fixed, Free on Rs. 3000+)
+  const freeThreshold = Number(settings.freeDeliveryThreshold || 3000);
+  const isFreeDelivery = Boolean(freeThreshold > 0 && subtotal >= freeThreshold);
+  const configuredDeliveryFee = Number(settings.defaultDeliveryFee ?? settings.deliveryFee ?? settings.deliveryOptions?.inCityFee ?? 180);
   const deliveryFee = isFreeDelivery ? 0 : configuredDeliveryFee;
   const totalPayable = subtotal + deliveryFee;
 
