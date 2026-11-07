@@ -150,6 +150,10 @@ app.post('/api/upload', (req, res) => {
   }
 });
 
+// Healthcheck routes for Hostinger and uptime monitors
+app.get('/health', (req, res) => res.status(200).send('OK'));
+app.get('/ping', (req, res) => res.status(200).send('pong'));
+
 // Serve static assets from Vite build directory
 app.use(express.static(path.join(__dirname, 'dist')));
 
@@ -158,6 +162,6 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Sawera Sweets & Bakers server listening on port ${PORT}`);
 });
