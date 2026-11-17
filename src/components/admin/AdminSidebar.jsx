@@ -19,7 +19,8 @@ import {
   Activity, 
   Settings, 
   ExternalLink,
-  Layers
+  Layers,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,6 +29,7 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile }) {
 
   const links = [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+    { to: '/admin/ai-manager', label: 'Sawera AI Manager', icon: Sparkles, adminOnly: true, isSpecial: true },
     { to: '/admin/categories', label: 'Categories Management', icon: Layers, perm: 'view_products' },
     { to: '/admin/products', label: 'Products & Catalog', icon: ShoppingBag, perm: 'view_products' },
     { to: '/admin/inventory', label: 'Inventory & Approvals', icon: Boxes, perm: 'manage_stock' },
@@ -109,7 +111,12 @@ export default function AdminSidebar({ isMobileOpen, onCloseMobile }) {
                 }
               >
                 <Icon className="w-4 h-4 text-[#D4AF37] flex-shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <span className="truncate flex-1">{item.label}</span>
+                {item.isSpecial && (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-400 text-black shadow-sm">
+                    AI
+                  </span>
+                )}
               </NavLink>
             );
           })}

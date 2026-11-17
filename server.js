@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import aiRoutes from './api/aiRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' }));
+
+// Mount Sawera AI Autonomous Manager API & Scheduler
+app.use('/api/ai', aiRoutes);
 
 // Server-side persistent storage for cross-device consistency (Mobile + Desktop sync)
 const DATA_DIR = path.join(__dirname, 'data');

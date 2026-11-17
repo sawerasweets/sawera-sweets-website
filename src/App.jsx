@@ -67,6 +67,7 @@ import AdminBannersPage from './pages/admin/AdminBannersPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
 import AdminActivityLogPage from './pages/admin/AdminActivityLogPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminAIDashboardPage from './pages/admin/AdminAIDashboardPage';
 
 // Helper to scroll to top on page navigation
 function ScrollToTop() {
@@ -131,6 +132,7 @@ function StorefrontLayout() {
           <Route path="banners" element={<AdminOnlyRoute element={<AdminBannersPage />} />} />
           <Route path="content" element={<AdminContentPage />} />
           <Route path="logs" element={<AdminOnlyRoute element={<AdminActivityLogPage />} />} />
+          <Route path="ai-manager" element={<AdminOnlyRoute element={<AdminAIDashboardPage />} />} />
           <Route path="settings" element={<AdminOnlyRoute element={<AdminSettingsPage />} />} />
         </Route>
       </Routes>
